@@ -22,6 +22,7 @@ function initApp() {
   while (container.offsetHeight < window.innerHeight * 2) {
     let elem = document.createElement("div");
     elem.classList.add("projects__item");
+    elem.setAttribute("data-id", index);
     elem.innerHTML = projects[index].title;
     container.appendChild(elem);
 
@@ -36,6 +37,7 @@ function initApp() {
   while (container.offsetHeight < window.innerHeight * 3) {
     let elem = document.createElement("div");
     elem.classList.add("projects__item");
+    elem.setAttribute("data-id", index);
     elem.innerHTML = projects[index].title;
 
     let oldHeight = container.offsetHeight;
@@ -75,8 +77,26 @@ function handleTiles() {
     let diff = window.scrollY - tile.offsetTop;
 
     if (Math.abs(diff) > window.innerHeight * 2) {
+      // remove tile
+      tile.remove();
+
+      // add new tile to top or bottom
       if (diff < 0) {
-        console.log("add to bottom");
+        let container = document.querySelector(".projects");
+        let lastId = container.lastChild.getAttribute("data-id");
+        lastId = parseInt(lastId, 10);
+
+        let thisId;
+        if (lastId === data.projects.length) {
+          thisId = 0;
+        } else {
+          thisId = lastId + 1;
+        }
+
+        let elem = document.createElement("div");
+        elem.classList.add("projects__item");
+        elem.setAttribute("data-id", thisId);
+        elem.innerHTML = data.projects[thisId - 1].title;
       } else {
         console.log("add to top");
       }
