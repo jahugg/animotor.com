@@ -48,7 +48,7 @@ function initApp() {
   }
   // correct scrolling position
   window.scrollBy(0, scrollY);
-  window.addEventListener("scroll", throttledEvent(handleTiles, 10000));
+  window.addEventListener("scroll", throttledEvent(handleTiles, 10));
 }
 
 initApp();
@@ -69,5 +69,17 @@ function throttledEvent(listener, delay) {
 }
 
 function handleTiles() {
-  console.log("handling");
+  let tiles = document.getElementsByClassName("projects__item");
+
+  for (let tile of tiles) {
+    let diff = window.scrollY - tile.offsetTop;
+
+    if (Math.abs(diff) > window.innerHeight * 2) {
+      if (diff < 0) {
+        console.log("add to bottom");
+      } else {
+        console.log("add to top");
+      }
+    }
+  }
 }
