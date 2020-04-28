@@ -20,7 +20,9 @@ function initApp() {
     addTile("bottom");
   }
 
-  // add event listeners
+  addTile("top");
+
+  // add event listener
   window.addEventListener("scroll", throttledEvent(handleTiles, 5));
 }
 
