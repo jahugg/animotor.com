@@ -2,53 +2,26 @@ import "./styles.less";
 import data from "./projects.json";
 
 function initApp() {
-  let app = document.getElementById("app");
   let projects = data.projects;
-
+  let app = document.getElementById("app");
   let container = document.createElement("div");
   container.classList.add("projects");
   app.appendChild(container);
 
-  // add all projects to container
-  for (let item of projects) {
-    let elem = document.createElement("div");
-    elem.classList.add("projects__item");
-    elem.innerHTML = item.title;
-    container.appendChild(elem);
+  // add first tile
+  let tile = document.createElement("div");
+  tile.classList.add("projects__item");
+  tile.innerHTML = projects[0].title;
+  tile.setAttribute("data-id", 0);
+  container.appendChild(tile);
+
+  // fill screen with tiles
+  while (container.offsetHeight < window.innerHeight) {
+    addTile("bottom");
   }
 
-  let index = 0;
-  // add projects after
-  while (container.offsetHeight < window.innerHeight * 2) {
-    let elem = document.createElement("div");
-    elem.classList.add("projects__item");
-    elem.innerHTML = projects[index].title;
-    container.appendChild(elem);
-
-    // cycle through projects
-    if (index === projects.length - 1) index = 0;
-    else index++;
-  }
-
-  index = projects.length - 1;
-  let scrollY = 0;
-  // add projects before
-  while (container.offsetHeight < window.innerHeight * 3) {
-    let elem = document.createElement("div");
-    elem.classList.add("projects__item");
-    elem.innerHTML = projects[index].title;
-
-    let oldHeight = container.offsetHeight;
-    container.prepend(elem);
-    scrollY += container.offsetHeight - oldHeight;
-
-    // cycle through projects
-    if (index === 0) index = projects.length - 1;
-    else index--;
-  }
-  // correct scrolling position
-  window.scrollBy(0, scrollY);
-  window.addEventListener("scroll", throttledEvent(handleTiles, 10000));
+  // add event listeners
+  window.addEventListener("scroll", throttledEvent(handleTiles, 5));
 }
 
 initApp();
@@ -68,6 +41,54 @@ function throttledEvent(listener, delay) {
   };
 }
 
-function handleTiles() {
-  console.log("handling");
+function handleTiles(event) {
+  let container = document.querySelector(".projects");
+
+  if (window.pageYOffset === 0) {
+    addTile("top");
+  } else if (
+    window.pageYOffset + window.innerHeight ===
+    container.offsetHeight
+  ) {
+    addTile("bottom");
+  }
+}
+
+function addTile(pos) {
+  let projects = data.projects;
+  let container = document.querySelector(".projects");
+  let oldContainerHeight = container.offsetHeight;
+  let tile = document.createElement("div");
+  tile.classList.add("projects__item");
+  let newId = 0;
+
+  if (pos === "top") {
+    // add top
+    let prevId = parseInt(container.firstChild.getAttribute("data-id"), 10);
+    if (prevId === 0) newId = projects.length - 1;
+    else newId = prevId - 1;
+    container.prepend(tile);
+    // correct scroll position for new tile
+    let tileHeight = container.offsetHeight - oldContainerHeight;
+    window.scrollBy(0, tileHeight);
+
+    // remove opposite child if not visible
+    if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
+      container.lastChild.remove();
+  } else if (pos === "bottom") {
+    // add bottom
+    let prevId = parseInt(container.lastChild.getAttribute("data-id"), 10);
+    if (prevId === projects.length - 1) newId = 0;
+    else newId = prevId + 1;
+    container.appendChild(tile);
+
+    // remove opposite child if not visible
+    let tileHeight = container.offsetHeight - oldContainerHeight;
+    if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
+      container.firstChild.remove();
+  }
+
+  // customise tile
+  tile.innerHTML = projects[newId].title;
+  tile.setAttribute("data-id", newId);
 }
