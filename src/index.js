@@ -1,5 +1,6 @@
 import "./styles.less";
 import data from "./projects.json";
+import mediaFiles from './media/*.*'
 
 function initApp() {
   let projects = data.projects;
@@ -22,8 +23,16 @@ function initApp() {
 
   addTile("top");
 
+  let videoContainer = document.createElement("div");
+  videoContainer.classList.add("animation");
+  videoContainer.innerHTML = `<video>
+    <source src="`+mediaFiles["huhn"]["mp4"]+`" type="video/mp4">
+  </video`;
+  app.appendChild(videoContainer);
+
   // add event listener
   window.addEventListener("scroll", throttledEvent(handleTiles, 5));
+  window.addEventListener("scroll", throttledEvent(controlVideo, 5));
 }
 
 initApp();
@@ -41,6 +50,14 @@ function throttledEvent(listener, delay) {
     }
     // else, do nothing (throttling)
   };
+}
+
+function controlVideo(event) {
+
+  let video = document.querySelector(".animation video") 
+  video.currentTime += .01;
+  if (video.currentTime >= video.duration)
+    video.currentTime = 0;
 }
 
 function handleTiles(event) {

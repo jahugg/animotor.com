@@ -2,29 +2,24 @@ body {
   font-family: sans-serif;
   margin: 0;
 }
-
 #app {
   position: relative;
   display: flex;
   justify-content: center;
 }
-
 .projects {
   background: grey;
 }
-
 .animation {
   width: 150px;
   position: fixed;
   top: 0;
   left: 0;
-
-  video {
-    width: 100%;
-    display: block;
-  }
 }
-
+.animation video {
+  width: 100%;
+  display: block;
+}
 .projects__item {
   display: flex;
   justify-content: center;
