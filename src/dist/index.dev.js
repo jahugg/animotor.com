@@ -1,5 +1,7 @@
 "use strict";
 
+require("./fonts.less");
+
 require("./styles.less");
 
 var _projects = _interopRequireDefault(require("./projects.json"));
@@ -8,31 +10,57 @@ var _ = _interopRequireDefault(require("./media/*.*"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+var lastScrollPos = 0;
+
 function initApp() {
-  var projects = _projects["default"].projects;
+  var projectData = _projects["default"].projects;
   var app = document.getElementById("app");
-  var container = document.createElement("div");
-  container.classList.add("projects");
-  app.appendChild(container); // add first tile
+  var main = document.getElementById("main");
+  var nav = document.getElementById("nav");
+  var projects = document.createElement("div");
+  projects.classList.add("projects");
+  main.appendChild(projects);
 
-  var tile = document.createElement("div");
-  tile.classList.add("projects__item");
-  tile.innerHTML = projects[0].title;
-  tile.setAttribute("data-id", 0);
-  container.appendChild(tile); // fill screen with tiles
-
-  while (container.offsetHeight < window.innerHeight) {
-    addTile("bottom");
+  for (var i = 0; i < 10; i++) {
+    var project = document.createElement("div");
+    project.classList.add("projects__project");
+    project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">";
+    projects.appendChild(project);
   }
 
-  addTile("top");
-  var videoContainer = document.createElement("div");
-  videoContainer.classList.add("animation");
-  videoContainer.innerHTML = "<video>\n    <source src=\"" + _["default"]["huhn"]["mp4"] + "\" type=\"video/mp4\">\n  </video";
-  app.appendChild(videoContainer); // add event listener
-
-  window.addEventListener("scroll", throttledEvent(handleTiles, 5));
-  window.addEventListener("scroll", throttledEvent(controlVideo, 5));
+  var animation = document.createElement("img");
+  animation.classList.add("tiny-anim");
+  animation.src = _["default"]["1_huhn_00050"]["png"];
+  document.querySelector(".nav__home").appendChild(animation); // add animation to navigation
+  // let anim = document.createElement("video");
+  // anim.classList.add("tiny-anim");
+  // anim.setAttribute("loop", true);
+  // anim.setAttribute("preload", "auto");
+  // anim.innerHTML = `<source src="`+mediaFiles["huhn"]["mp4"]+`" type="video/mp4">`;
+  // document.querySelector(".nav__home").appendChild(anim);
+  // app.addEventListener("wheel", controlAnim);
+  // window.requestAnimationFrame(animate);
+  // function animate(){
+  //   playAnim();
+  //   window.requestAnimationFrame(animate);
+  // }
+  // let container = document.createElement("div");
+  // container.classList.add("projects");
+  // app.appendChild(container);
+  // add first tile
+  // let tile = document.createElement("div");
+  // tile.classList.add("projects__tile");
+  // tile.innerHTML = projects[0].title;
+  // tile.setAttribute("data-id", 0);
+  // container.appendChild(tile);
+  // // fill screen with tiles
+  // while (container.offsetHeight < window.innerHeight) {
+  //   addTile("bottom");
+  // }
+  // addTile("top");
+  // // add event listener
+  // window.addEventListener("scroll", throttledEvent(handleTiles, 5));
+  // window.addEventListener("scroll", throttledEvent(controlAnim, 0));
 }
 
 initApp(); // event throttling
@@ -52,10 +80,20 @@ function throttledEvent(listener, delay) {
   };
 }
 
-function controlVideo(event) {
-  var video = document.querySelector(".animation video");
-  video.currentTime += .01;
-  if (video.currentTime >= video.duration) video.currentTime = 0;
+function playAnim(event) {
+  var video = document.querySelector(".tiny-anim");
+  var increment = 0.05;
+  video.currentTime += increment;
+  console.log(video.currentTime);
+  if (video.currentTime >= video.duration) video.currentTime = 0;else if (video.currentTime <= 0) video.currentTime = video.duration;
+}
+
+function controlAnim(event) {
+  var delta = event.deltaY * 0.005;
+  var video = document.querySelector(".tiny-anim");
+  video.currentTime += delta;
+  console.log(video.currentTime + "s");
+  if (video.currentTime >= video.duration) video.currentTime = 0;else if (video.currentTime <= 0) video.currentTime = video.duration;
 }
 
 function handleTiles(event) {
@@ -73,7 +111,7 @@ function addTile(pos) {
   var container = document.querySelector(".projects");
   var oldContainerHeight = container.offsetHeight;
   var tile = document.createElement("div");
-  tile.classList.add("projects__item");
+  tile.classList.add("projects__tile");
   var newId = 0;
 
   if (pos === "top") {

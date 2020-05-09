@@ -1,38 +1,75 @@
+import "./fonts.less";
 import "./styles.less";
 import data from "./projects.json";
-import mediaFiles from './media/*.*'
+import mediaFiles from './media/*.*';
+
+let lastScrollPos = 0;
 
 function initApp() {
-  let projects = data.projects;
+  let projectData = data.projects;
   let app = document.getElementById("app");
-  let container = document.createElement("div");
-  container.classList.add("projects");
-  app.appendChild(container);
+  let main = document.getElementById("main");
+  let nav = document.getElementById("nav");
 
-  // add first tile
-  let tile = document.createElement("div");
-  tile.classList.add("projects__item");
-  tile.innerHTML = projects[0].title;
-  tile.setAttribute("data-id", 0);
-  container.appendChild(tile);
+  let projects = document.createElement("div");
+  projects.classList.add("projects");
+  main.appendChild(projects);
 
-  // fill screen with tiles
-  while (container.offsetHeight < window.innerHeight) {
-    addTile("bottom");
+  for (let i = 0; i < 10; i++) {
+    let project = document.createElement("div");
+    project.classList.add("projects__project");
+    project.innerHTML=`<img src="`+mediaFiles["11_Laser"]["jpg"]+`">`;
+    projects.appendChild(project);
   }
 
-  addTile("top");
+  let animation = document.createElement("img");
+  animation.classList.add("tiny-anim");
+  animation.src = mediaFiles["1_huhn_00050"]["png"];
+  document.querySelector(".nav__home").appendChild(animation);
 
-  let videoContainer = document.createElement("div");
-  videoContainer.classList.add("animation");
-  videoContainer.innerHTML = `<video>
-    <source src="`+mediaFiles["huhn"]["mp4"]+`" type="video/mp4">
-  </video`;
-  app.appendChild(videoContainer);
+  
+  
 
-  // add event listener
-  window.addEventListener("scroll", throttledEvent(handleTiles, 5));
-  window.addEventListener("scroll", throttledEvent(controlVideo, 5));
+
+// add animation to navigation
+// let anim = document.createElement("video");
+// anim.classList.add("tiny-anim");
+// anim.setAttribute("loop", true);
+// anim.setAttribute("preload", "auto");
+// anim.innerHTML = `<source src="`+mediaFiles["huhn"]["mp4"]+`" type="video/mp4">`;
+// document.querySelector(".nav__home").appendChild(anim);
+
+  // app.addEventListener("wheel", controlAnim);
+  // window.requestAnimationFrame(animate);
+
+  // function animate(){
+  //   playAnim();
+  //   window.requestAnimationFrame(animate);
+  // }
+
+
+  // let container = document.createElement("div");
+  // container.classList.add("projects");
+  // app.appendChild(container);
+
+  // add first tile
+  // let tile = document.createElement("div");
+  // tile.classList.add("projects__tile");
+  // tile.innerHTML = projects[0].title;
+  // tile.setAttribute("data-id", 0);
+  // container.appendChild(tile);
+
+  // // fill screen with tiles
+  // while (container.offsetHeight < window.innerHeight) {
+  //   addTile("bottom");
+  // }
+
+  // addTile("top");
+
+
+  // // add event listener
+  // window.addEventListener("scroll", throttledEvent(handleTiles, 5));
+  // window.addEventListener("scroll", throttledEvent(controlAnim, 0));
 }
 
 initApp();
@@ -52,12 +89,31 @@ function throttledEvent(listener, delay) {
   };
 }
 
-function controlVideo(event) {
+function playAnim(event){
+  let video = document.querySelector(".tiny-anim");
+  let increment = 0.05;
+  video.currentTime += increment;
+  console.log(video.currentTime);
 
-  let video = document.querySelector(".animation video") 
-  video.currentTime += .01;
   if (video.currentTime >= video.duration)
     video.currentTime = 0;
+  else if (video.currentTime <= 0)
+    video.currentTime = video.duration;
+  
+}
+
+function controlAnim(event) {
+  let delta = event.deltaY * 0.005;
+
+  let video = document.querySelector(".tiny-anim");
+  video.currentTime += delta;
+
+console.log(video.currentTime+"s");
+
+  if (video.currentTime >= video.duration)
+    video.currentTime = 0;
+  else if (video.currentTime <= 0)
+    video.currentTime = video.duration;
 }
 
 function handleTiles(event) {
@@ -78,7 +134,7 @@ function addTile(pos) {
   let container = document.querySelector(".projects");
   let oldContainerHeight = container.offsetHeight;
   let tile = document.createElement("div");
-  tile.classList.add("projects__item");
+  tile.classList.add("projects__tile");
   let newId = 0;
 
   if (pos === "top") {
