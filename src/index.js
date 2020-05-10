@@ -1,75 +1,90 @@
+import MarkdownIt from "markdown-it";
 import "./fonts.less";
 import "./styles.less";
 import data from "./projects.json";
-import mediaFiles from './media/*.*';
+import mediaFiles from "./media/*.*";
+import contentInfo from "./content-info.md";
 
-let lastScrollPos = 0;
+let md = new MarkdownIt();
+let defaultRoute = "/";
+let pages =
+  [{
+    "title": "home",
+    "route": "/",
+    "content": "loadProjects()"
+  }, {
+    "title": "info",
+    "route": "/info",
+    "content": "content-info.md"
+  }];
 
 function initApp() {
   let projectData = data.projects;
-  let app = document.getElementById("app");
-  let main = document.getElementById("main");
-  let nav = document.getElementById("nav");
 
-  let projects = document.createElement("div");
-  projects.classList.add("projects");
-  main.appendChild(projects);
+  navigateToCurrentURL();
+}
 
-  for (let i = 0; i < 10; i++) {
-    let project = document.createElement("div");
-    project.classList.add("projects__project");
-    project.innerHTML=`<img src="`+mediaFiles["11_Laser"]["jpg"]+`">`;
-    projects.appendChild(project);
+// ==============================
+// navigate to current url
+function navigateToCurrentURL() {
+
+  // read route from url
+  var urlPath = window.location.pathname;
+
+  // get valid routes
+  let validRoutes = [];
+  for (let page of pages) {
+    validRoutes.push(page.route);
   }
 
-  let animation = document.createElement("img");
-  animation.classList.add("tiny-anim");
-  animation.src = mediaFiles["1_huhn_00050"]["png"];
-  document.querySelector(".nav__home").appendChild(animation);
+  // check if string matches a valid route
+  let pageRoute = defaultRoute;
+  if (validRoutes.includes(urlPath))
+    pageRoute = urlPath;
 
-  
-  
+  // create state object
+  let stateObj = { route: pageRoute };
 
+  // build page
+  buildPage(stateObj);
+}
 
-// add animation to navigation
-// let anim = document.createElement("video");
-// anim.classList.add("tiny-anim");
-// anim.setAttribute("loop", true);
-// anim.setAttribute("preload", "auto");
-// anim.innerHTML = `<source src="`+mediaFiles["huhn"]["mp4"]+`" type="video/mp4">`;
-// document.querySelector(".nav__home").appendChild(anim);
+// ==============================
+// build new page
+function buildPage(stateObj) {
 
-  // app.addEventListener("wheel", controlAnim);
-  // window.requestAnimationFrame(animate);
+  // clear page
+  let main = document.getElementById("main");
+  main.innerHTML = "";
 
-  // function animate(){
-  //   playAnim();
-  //   window.requestAnimationFrame(animate);
-  // }
+  // fetch matching page object
+  let currentPage;
+  for (let page of pages)
+    if (page.route == stateObj.route)
+      currentPage = page;
 
+  // push page browser history
+  window.history.pushState(stateObj, '', currentPage.route);
 
-  // let container = document.createElement("div");
-  // container.classList.add("projects");
-  // app.appendChild(container);
+  // build page contents
+  if (currentPage.title === "home") {
+    let projects = document.createElement("div");
+    projects.classList.add("projects");
+    main.appendChild(projects);
 
-  // add first tile
-  // let tile = document.createElement("div");
-  // tile.classList.add("projects__tile");
-  // tile.innerHTML = projects[0].title;
-  // tile.setAttribute("data-id", 0);
-  // container.appendChild(tile);
+    for (let i = 0; i < 10; i++) {
+      let project = document.createElement("div");
+      project.classList.add("projects__project");
+      project.innerHTML = `<img src="` + mediaFiles["11_Laser"]["jpg"] + `">`;
+      projects.appendChild(project);
+    }
 
-  // // fill screen with tiles
-  // while (container.offsetHeight < window.innerHeight) {
-  //   addTile("bottom");
-  // }
-
-  // addTile("top");
-
-
-  // // add event listener
-  // window.addEventListener("scroll", throttledEvent(handleTiles, 5));
-  // window.addEventListener("scroll", throttledEvent(controlAnim, 0));
+  } else if (currentPage.title === "info") {
+    let link = document.querySelector("#nav a");
+    link.href = "/";
+    link.innerHTML = "work";
+    main.innerHTML = md.render(contentInfo);
+  }
 }
 
 initApp();
@@ -77,11 +92,11 @@ initApp();
 // event throttling
 function throttledEvent(listener, delay) {
   let timeout;
-  return function(event) {
+  return function (event) {
     if (!timeout) {
       // no timer running
       listener(event); // run the function
-      timeout = setTimeout(function() {
+      timeout = setTimeout(function () {
         timeout = null;
       }, delay); // start a timer that turns itself off when it's done
     }
@@ -89,7 +104,7 @@ function throttledEvent(listener, delay) {
   };
 }
 
-function playAnim(event){
+function playAnim(event) {
   let video = document.querySelector(".tiny-anim");
   let increment = 0.05;
   video.currentTime += increment;
@@ -99,16 +114,16 @@ function playAnim(event){
     video.currentTime = 0;
   else if (video.currentTime <= 0)
     video.currentTime = video.duration;
-  
+
 }
 
-function controlAnim(event) {
+function controlAnim(event) {
   let delta = event.deltaY * 0.005;
 
   let video = document.querySelector(".tiny-anim");
   video.currentTime += delta;
 
-console.log(video.currentTime+"s");
+  console.log(video.currentTime + "s");
 
   if (video.currentTime >= video.duration)
     video.currentTime = 0;

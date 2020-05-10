@@ -16,62 +16,44 @@ video {
 *:after {
   box-sizing: inherit;
 }
+.debug {
+  border: solid 1px red;
+}
 #app {
-  font-family: "GTAmerica", Arial, sans-serif;
-  font-size: 1rem;
+  font: normal 1rem/1em "GTAmerica", Arial, sans-serif;
   width: 100vw;
   min-height: 100vh;
 }
-main {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
 #nav {
   position: fixed;
+  z-index: 10;
   display: flex;
-  flex-wrap: wrap;
-  align-content: space-between;
-  height: 100vh;
+  justify-content: space-between;
   width: 100%;
 }
 #nav a {
+  display: block;
   text-decoration: none;
   color: black;
-}
-#nav > * {
-  flex: 50%;
-  padding: 10px;
-}
-#nav > *:nth-child(2n) {
-  text-align: right;
-}
-.nav__home .tiny-anim {
-  width: 120px;
+  padding: 0.5em 1em;
+  border: solid 1px red;
 }
 .projects {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
   width: 100%;
-  padding: 0 30px;
+  border: solid 1px red;
 }
 .projects__project {
-  width: 100%;
-  height: calc(100vw - 60px);
-  padding: 5px 0;
+  box-sizing: content-box;
+  width: 200px;
+  height: 200px;
+  padding: 3px 0;
 }
 .projects__project img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-.projects__tile {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 5px;
-  background: black;
-  color: white;
-  width: 100px;
-  height: 100px;
-  font-size: 2em;
-  display: none;
 }
