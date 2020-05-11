@@ -42,7 +42,6 @@ video {
   text-decoration: none;
   color: black;
   padding: 0.5em 1em;
-  border: solid 1px red;
 }
 .projects {
   position: relative;
@@ -50,9 +49,12 @@ video {
   align-items: center;
   flex-direction: column;
   width: 100%;
+  height: 100vh;
+  overflow: scroll;
   border: solid 1px red;
 }
 .projects__project {
+  position: relative;
   box-sizing: content-box;
   width: 200px;
   height: 200px;
@@ -62,6 +64,13 @@ video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.projects__project div {
+  position: absolute;
+  top: 0;
+  font-size: 3em;
+  line-height: 1em;
+  color: white;
 }
 .about {
   padding: 0 30px;

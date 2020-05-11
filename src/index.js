@@ -5,28 +5,28 @@ import mediaFiles from "./media/*.*";
 import contentInfo from "./content-info.md";
 
 let defaultRoute = "/";
-let pages =
-  [{
-    "title": "home",
-    "route": "/",
-    "content": "loadProjects()"
-  }, {
-    "title": "info",
-    "route": "/info",
-    "content": "content-info.md"
-  }];
+let pages = [{
+  "title": "home",
+  "route": "/",
+  "content": "loadProjects()"
+}, {
+  "title": "info",
+  "route": "/info",
+  "content": "content-info.md"
+}];
+let pointStart = false;
+let pointDrag = false;
 
 function initApp() {
   navigateToCurrentURL();
 
   // add custom link functionality
   let links = document.querySelectorAll('a[data-link="page"]');
-  for (let link of links) {
+  for (let link of links)
     link.addEventListener("click", handlePageLink);
-  }
 }
 
-function handlePageLink(event){
+function handlePageLink(event) {
   event.preventDefault();
 
   let target = event.target;
@@ -37,7 +37,6 @@ function handlePageLink(event){
   buildPage(stateObj);
 }
 
-// ==============================
 // navigate to current url
 function navigateToCurrentURL() {
 
@@ -61,7 +60,6 @@ function navigateToCurrentURL() {
   buildPage(stateObj);
 }
 
-// ==============================
 // build new page
 function buildPage(stateObj) {
 
@@ -80,26 +78,91 @@ function buildPage(stateObj) {
 
   // build page contents
   if (currentPage.title === "home") {
-    let link = document.querySelector("#nav a");
-    link.href = "/info";
-    link.innerHTML = "about";
-
-    let projects = document.createElement("div");
-    projects.classList.add("projects");
-    main.appendChild(projects);
-
-    for (let i = 0; i < 10; i++) {
-      let project = document.createElement("div");
-      project.classList.add("projects__project");
-      project.innerHTML = `<img src="` + mediaFiles["11_Laser"]["jpg"] + `">`;
-      projects.appendChild(project);
-    }
+    loadProjects();
 
   } else if (currentPage.title === "info") {
     let link = document.querySelector("#nav a");
     link.href = "/";
     link.innerHTML = "work";
     main.innerHTML = `<article class="about">` + contentInfo + `</article>`;
+  }
+}
+
+function loadProjects() {
+
+  let link = document.querySelector("#nav a");
+  link.href = "/info";
+  link.innerHTML = "about";
+
+  let projects = document.createElement("div");
+  projects.classList.add("projects");
+  main.appendChild(projects);
+
+
+  while (projects.scrollHeight <= window.innerHeight)
+    appendProject();
+
+  if (projects.scrollTop === 0)
+    prependProject();
+
+  projects.addEventListener("wheel", customScroll);
+
+  let scale = 1;
+  function customScroll(event) {
+    event.preventDefault;
+
+    scale += event.deltaY * -0.01;
+    scale = Math.min(Math.max(.125, scale), 4);
+  }
+
+  function appendProject() {
+
+    let newId = 0;
+    let projects = document.querySelector(".projects");
+    let project = document.createElement("div");
+    project.classList.add("projects__project");
+
+    // has children
+    if (projects.hasChildNodes()) {
+      let prevId = parseInt(projects.lastChild.getAttribute("data-id"), 10);
+      if (prevId === data.projects.length - 1) newId = 0;
+      else newId = prevId + 1;
+
+      // remove opposite child if not visible
+      // let tileHeight = container.offsetHeight - oldContainerHeight;
+      // if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
+      //   container.firstChild.remove();
+    }
+
+    project.innerHTML = `<img src="` + mediaFiles["11_Laser"]["jpg"] + `">
+    <div>`+ data.projects[newId].title + `</div>`;
+    project.setAttribute("data-id", newId);
+    projects.appendChild(project);
+  }
+
+  function prependProject() {
+
+    let newId = 0;
+    let projects = document.querySelector(".projects");
+    let project = document.createElement("div");
+    project.classList.add("projects__project");
+
+    let prevId = parseInt(projects.firstChild.getAttribute("data-id"), 10);
+    if (prevId === 0) newId = data.projects.length - 1;
+    else newId = prevId - 1;
+
+    project.innerHTML = `<img src="` + mediaFiles["11_Laser"]["jpg"] + `">
+  <div>`+ data.projects[newId].title + `</div>`;
+    project.setAttribute("data-id", newId);
+    projects.prepend(project);
+
+    // correct scroll position for new tile
+    // let tileHeight = container.offsetHeight - oldContainerHeight;
+    // window.scrollBy(0, tileHeight);
+
+    // // remove opposite child if not visible
+    // if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
+    //   container.lastChild.remove();
   }
 }
 
@@ -156,45 +219,6 @@ function handleTiles(event) {
   ) {
     addTile("bottom");
   }
-}
-
-function addTile(pos) {
-  let projects = data.projects;
-  let container = document.querySelector(".projects");
-  let oldContainerHeight = container.offsetHeight;
-  let tile = document.createElement("div");
-  tile.classList.add("projects__tile");
-  let newId = 0;
-
-  if (pos === "top") {
-    // add top
-    let prevId = parseInt(container.firstChild.getAttribute("data-id"), 10);
-    if (prevId === 0) newId = projects.length - 1;
-    else newId = prevId - 1;
-    container.prepend(tile);
-    // correct scroll position for new tile
-    let tileHeight = container.offsetHeight - oldContainerHeight;
-    window.scrollBy(0, tileHeight);
-
-    // remove opposite child if not visible
-    if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
-      container.lastChild.remove();
-  } else if (pos === "bottom") {
-    // add bottom
-    let prevId = parseInt(container.lastChild.getAttribute("data-id"), 10);
-    if (prevId === projects.length - 1) newId = 0;
-    else newId = prevId + 1;
-    container.appendChild(tile);
-
-    // remove opposite child if not visible
-    let tileHeight = container.offsetHeight - oldContainerHeight;
-    if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
-      container.firstChild.remove();
-  }
-
-  // customise tile
-  tile.innerHTML = projects[newId].title;
-  tile.setAttribute("data-id", newId);
 }
 
 initApp();

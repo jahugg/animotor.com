@@ -22,6 +22,8 @@ var pages = [{
   "route": "/info",
   "content": "content-info.md"
 }];
+var pointStart = false;
+var pointDrag = false;
 
 function initApp() {
   navigateToCurrentURL(); // add custom link functionality
@@ -60,8 +62,7 @@ function handlePageLink(event) {
     route: target.getAttribute("href")
   };
   buildPage(stateObj);
-} // ==============================
-// navigate to current url
+} // navigate to current url
 
 
 function navigateToCurrentURL() {
@@ -84,8 +85,7 @@ function navigateToCurrentURL() {
   }; // build page
 
   buildPage(stateObj);
-} // ==============================
-// build new page
+} // build new page
 
 
 function buildPage(stateObj) {
@@ -122,25 +122,71 @@ function buildPage(stateObj) {
   window.history.pushState(stateObj, '', currentPage.route); // build page contents
 
   if (currentPage.title === "home") {
-    var link = document.querySelector("#nav a");
-    link.href = "/info";
-    link.innerHTML = "about";
-    var projects = document.createElement("div");
-    projects.classList.add("projects");
-    main.appendChild(projects);
-
-    for (var i = 0; i < 10; i++) {
-      var project = document.createElement("div");
-      project.classList.add("projects__project");
-      project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">";
-      projects.appendChild(project);
-    }
+    loadProjects();
   } else if (currentPage.title === "info") {
-    var _link = document.querySelector("#nav a");
-
-    _link.href = "/";
-    _link.innerHTML = "work";
+    var link = document.querySelector("#nav a");
+    link.href = "/";
+    link.innerHTML = "work";
     main.innerHTML = "<article class=\"about\">" + _contentInfo["default"] + "</article>";
+  }
+}
+
+function loadProjects() {
+  var link = document.querySelector("#nav a");
+  link.href = "/info";
+  link.innerHTML = "about";
+  var projects = document.createElement("div");
+  projects.classList.add("projects");
+  main.appendChild(projects);
+
+  while (projects.scrollHeight <= window.innerHeight) {
+    appendProject();
+  }
+
+  if (projects.scrollTop === 0) prependProject();
+  projects.addEventListener("wheel", customScroll);
+  var scale = 1;
+
+  function customScroll(event) {
+    event.preventDefault;
+    scale += event.deltaY * -0.01;
+    scale = Math.min(Math.max(.125, scale), 4);
+  }
+
+  function appendProject() {
+    var newId = 0;
+    var projects = document.querySelector(".projects");
+    var project = document.createElement("div");
+    project.classList.add("projects__project"); // has children
+
+    if (projects.hasChildNodes()) {
+      var prevId = parseInt(projects.lastChild.getAttribute("data-id"), 10);
+      if (prevId === _projects["default"].projects.length - 1) newId = 0;else newId = prevId + 1; // remove opposite child if not visible
+      // let tileHeight = container.offsetHeight - oldContainerHeight;
+      // if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
+      //   container.firstChild.remove();
+    }
+
+    project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">\n    <div>" + _projects["default"].projects[newId].title + "</div>";
+    project.setAttribute("data-id", newId);
+    projects.appendChild(project);
+  }
+
+  function prependProject() {
+    var newId = 0;
+    var projects = document.querySelector(".projects");
+    var project = document.createElement("div");
+    project.classList.add("projects__project");
+    var prevId = parseInt(projects.firstChild.getAttribute("data-id"), 10);
+    if (prevId === 0) newId = _projects["default"].projects.length - 1;else newId = prevId - 1;
+    project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">\n  <div>" + _projects["default"].projects[newId].title + "</div>";
+    project.setAttribute("data-id", newId);
+    projects.prepend(project); // correct scroll position for new tile
+    // let tileHeight = container.offsetHeight - oldContainerHeight;
+    // window.scrollBy(0, tileHeight);
+    // // remove opposite child if not visible
+    // if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
+    //   container.lastChild.remove();
   }
 } // event throttling
 
@@ -184,41 +230,6 @@ function handleTiles(event) {
   } else if (window.pageYOffset + window.innerHeight === container.offsetHeight) {
     addTile("bottom");
   }
-}
-
-function addTile(pos) {
-  var projects = _projects["default"].projects;
-  var container = document.querySelector(".projects");
-  var oldContainerHeight = container.offsetHeight;
-  var tile = document.createElement("div");
-  tile.classList.add("projects__tile");
-  var newId = 0;
-
-  if (pos === "top") {
-    // add top
-    var prevId = parseInt(container.firstChild.getAttribute("data-id"), 10);
-    if (prevId === 0) newId = projects.length - 1;else newId = prevId - 1;
-    container.prepend(tile); // correct scroll position for new tile
-
-    var tileHeight = container.offsetHeight - oldContainerHeight;
-    window.scrollBy(0, tileHeight); // remove opposite child if not visible
-
-    if (container.offsetHeight - tileHeight >= window.innerHeight * 2) container.lastChild.remove();
-  } else if (pos === "bottom") {
-    // add bottom
-    var _prevId = parseInt(container.lastChild.getAttribute("data-id"), 10);
-
-    if (_prevId === projects.length - 1) newId = 0;else newId = _prevId + 1;
-    container.appendChild(tile); // remove opposite child if not visible
-
-    var _tileHeight = container.offsetHeight - oldContainerHeight;
-
-    if (container.offsetHeight - _tileHeight >= window.innerHeight * 2) container.firstChild.remove();
-  } // customise tile
-
-
-  tile.innerHTML = projects[newId].title;
-  tile.setAttribute("data-id", newId);
 }
 
 initApp();
