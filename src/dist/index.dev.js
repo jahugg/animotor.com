@@ -1,7 +1,5 @@
 "use strict";
 
-var _markdownIt = _interopRequireDefault(require("markdown-it"));
-
 require("./fonts.less");
 
 require("./styles.less");
@@ -14,7 +12,6 @@ var _contentInfo = _interopRequireDefault(require("./content-info.md"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var md = new _markdownIt["default"]();
 var defaultRoute = "/";
 var pages = [{
   "title": "home",
@@ -27,8 +24,42 @@ var pages = [{
 }];
 
 function initApp() {
-  var projectData = _projects["default"].projects;
-  navigateToCurrentURL();
+  navigateToCurrentURL(); // add custom link functionality
+
+  var links = document.querySelectorAll('a[data-link="page"]');
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = links[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var link = _step.value;
+      link.addEventListener("click", handlePageLink);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+        _iterator["return"]();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+}
+
+function handlePageLink(event) {
+  event.preventDefault();
+  var target = event.target; // create state object
+
+  var stateObj = {
+    route: target.getAttribute("href")
+  };
+  buildPage(stateObj);
 } // ==============================
 // navigate to current url
 
@@ -63,16 +94,37 @@ function buildPage(stateObj) {
   main.innerHTML = ""; // fetch matching page object
 
   var currentPage;
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
 
-  for (var _i2 = 0, _pages2 = pages; _i2 < _pages2.length; _i2++) {
-    var page = _pages2[_i2];
-    if (page.route == stateObj.route) currentPage = page;
-  } // push page browser history
+  try {
+    for (var _iterator2 = pages[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var page = _step2.value;
+      if (page.route == stateObj.route) currentPage = page;
+    } // push page browser history
 
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+        _iterator2["return"]();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
 
   window.history.pushState(stateObj, '', currentPage.route); // build page contents
 
   if (currentPage.title === "home") {
+    var link = document.querySelector("#nav a");
+    link.href = "/info";
+    link.innerHTML = "about";
     var projects = document.createElement("div");
     projects.classList.add("projects");
     main.appendChild(projects);
@@ -84,14 +136,14 @@ function buildPage(stateObj) {
       projects.appendChild(project);
     }
   } else if (currentPage.title === "info") {
-    var link = document.querySelector("#nav a");
-    link.href = "/";
-    link.innerHTML = "work";
-    main.innerHTML = md.render(_contentInfo["default"]);
-  }
-}
+    var _link = document.querySelector("#nav a");
 
-initApp(); // event throttling
+    _link.href = "/";
+    _link.innerHTML = "work";
+    main.innerHTML = "<article class=\"about\">" + _contentInfo["default"] + "</article>";
+  }
+} // event throttling
+
 
 function throttledEvent(listener, delay) {
   var timeout;
@@ -168,3 +220,5 @@ function addTile(pos) {
   tile.innerHTML = projects[newId].title;
   tile.setAttribute("data-id", newId);
 }
+
+initApp();

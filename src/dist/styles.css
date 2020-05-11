@@ -19,13 +19,19 @@ video {
 .debug {
   border: solid 1px red;
 }
+.text-h2 {
+  font-size: 1.2em;
+  text-align: center;
+  margin-top: 4em;
+}
 #app {
-  font: normal 1rem/1em "GTAmerica", Arial, sans-serif;
+  font: normal 1rem/1em "GTAmerica", Helvetica, Arial, sans-serif;
   width: 100vw;
   min-height: 100vh;
 }
 #nav {
   position: fixed;
+  top: 0;
   z-index: 10;
   display: flex;
   justify-content: space-between;
@@ -56,4 +62,21 @@ video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.about {
+  padding: 0 30px;
+}
+.about p:first-of-type {
+  text-align: center;
+}
+.about h1 {
+  font-size: 1.2em;
+  text-align: center;
+  margin-top: 4em;
+}
+.about a {
+  color: black;
+}
+.about a:hover {
+  text-decoration: underline !important;
 }

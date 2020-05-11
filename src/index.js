@@ -1,11 +1,9 @@
-import MarkdownIt from "markdown-it";
 import "./fonts.less";
 import "./styles.less";
 import data from "./projects.json";
 import mediaFiles from "./media/*.*";
 import contentInfo from "./content-info.md";
 
-let md = new MarkdownIt();
 let defaultRoute = "/";
 let pages =
   [{
@@ -19,9 +17,24 @@ let pages =
   }];
 
 function initApp() {
-  let projectData = data.projects;
-
   navigateToCurrentURL();
+
+  // add custom link functionality
+  let links = document.querySelectorAll('a[data-link="page"]');
+  for (let link of links) {
+    link.addEventListener("click", handlePageLink);
+  }
+}
+
+function handlePageLink(event){
+  event.preventDefault();
+
+  let target = event.target;
+
+  // create state object
+  let stateObj = { route: target.getAttribute("href") };
+
+  buildPage(stateObj);
 }
 
 // ==============================
@@ -33,9 +46,8 @@ function navigateToCurrentURL() {
 
   // get valid routes
   let validRoutes = [];
-  for (let page of pages) {
+  for (let page of pages)
     validRoutes.push(page.route);
-  }
 
   // check if string matches a valid route
   let pageRoute = defaultRoute;
@@ -68,6 +80,10 @@ function buildPage(stateObj) {
 
   // build page contents
   if (currentPage.title === "home") {
+    let link = document.querySelector("#nav a");
+    link.href = "/info";
+    link.innerHTML = "about";
+
     let projects = document.createElement("div");
     projects.classList.add("projects");
     main.appendChild(projects);
@@ -83,11 +99,9 @@ function buildPage(stateObj) {
     let link = document.querySelector("#nav a");
     link.href = "/";
     link.innerHTML = "work";
-    main.innerHTML = md.render(contentInfo);
+    main.innerHTML = `<article class="about">` + contentInfo + `</article>`;
   }
 }
-
-initApp();
 
 // event throttling
 function throttledEvent(listener, delay) {
@@ -182,3 +196,5 @@ function addTile(pos) {
   tile.innerHTML = projects[newId].title;
   tile.setAttribute("data-id", newId);
 }
+
+initApp();

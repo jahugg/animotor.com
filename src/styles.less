@@ -31,17 +31,24 @@ video {
   border: solid 1px red;
 }
 
+.text-h2 {
+  font-size: 1.2em;
+  text-align: center;
+  margin-top: 4em;
+}
+
 // ================
 // Animotor styles
 
 #app {
-  font      : normal 1rem/1em "GTAmerica", Arial, sans-serif;
+  font      : normal 1rem/1em "GTAmerica", Helvetica, Arial, sans-serif;
   width     : 100vw;
   min-height: 100vh;
 }
 
 #nav {
   position       : fixed;
+  top            : 0;
   z-index        : 10;
   display        : flex;
   justify-content: space-between;
@@ -60,7 +67,6 @@ video {
   position   : relative;
   display    : flex;
   align-items: center;
-  ;
   flex-direction: column;
   width         : 100%;
   .debug;
@@ -76,5 +82,25 @@ video {
     width     : 100%;
     height    : 100%;
     object-fit: cover;
+  }
+}
+
+.about {
+  padding: 0 30px;
+
+  p:first-of-type {
+    text-align: center;
+  }
+
+  h1 {
+    .text-h2;
+  }
+
+  a {
+    color: black;
+
+    &:hover {
+      text-decoration: underline !important;
+    }
   }
 }
