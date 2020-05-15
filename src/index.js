@@ -10,8 +10,8 @@ let pages = [{
   "route": "/",
   "content": "loadProjects()"
 }, {
-  "title": "info",
-  "route": "/info",
+  "title": "about",
+  "route": "/about",
   "content": "content-info.md"
 }];
 let pointStart = false;
@@ -80,7 +80,7 @@ function buildPage(stateObj) {
   if (currentPage.title === "home") {
     loadProjects();
 
-  } else if (currentPage.title === "info") {
+  } else if (currentPage.title === "about") {
     let link = document.querySelector("#nav a");
     link.href = "/";
     link.innerHTML = "work";
@@ -91,13 +91,16 @@ function buildPage(stateObj) {
 function loadProjects() {
 
   let link = document.querySelector("#nav a");
-  link.href = "/info";
+  link.href = "/about";
   link.innerHTML = "about";
+
+  let container = document.createElement("div");
+  container.classList.add("projects-container");
+  main.appendChild(container);
 
   let projects = document.createElement("div");
   projects.classList.add("projects");
-  main.appendChild(projects);
-
+  container.appendChild(projects);
 
   while (projects.scrollHeight <= window.innerHeight)
     appendProject();
@@ -105,14 +108,27 @@ function loadProjects() {
   if (projects.scrollTop === 0)
     prependProject();
 
-  projects.addEventListener("wheel", customScroll);
+  container.addEventListener("wheel", customScroll);
 
   let scale = 1;
   function customScroll(event) {
     event.preventDefault;
 
+    let container = document.querySelector(".projects-container");
+    let projects = document.querySelector(".projects");
+    let projectRef = document.querySelector(".projects__project");
+
+    let transformY = projects.style.transform.replace(/[^\d.]/g, '');
+    console.log(transformY);
+    
+    if (scrollY < 10)
+      console.log("prepend");
+    else if (scrollY > 1000)
+      console.log("append");
+
     scale += event.deltaY * -0.01;
     scale = Math.min(Math.max(.125, scale), 4);
+    console.log(scale);
   }
 
   function appendProject() {
@@ -143,7 +159,9 @@ function loadProjects() {
   function prependProject() {
 
     let newId = 0;
+    let container = document.querySelector(".projects-container");
     let projects = document.querySelector(".projects");
+    let oldProjectsHeight = projects.offsetHeight;
     let project = document.createElement("div");
     project.classList.add("projects__project");
 
@@ -157,12 +175,12 @@ function loadProjects() {
     projects.prepend(project);
 
     // correct scroll position for new tile
-    // let tileHeight = container.offsetHeight - oldContainerHeight;
-    // window.scrollBy(0, tileHeight);
+    let itemHeight = projects.offsetHeight - oldProjectsHeight;
+      projects.style.transform = "translateY("+(-itemHeight)+"px)";
 
-    // // remove opposite child if not visible
-    // if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
-    //   container.lastChild.remove();
+    // remove opposite child if not visible
+    if (projects.offsetHeight - project.offsetHeight * 2 >= window.innerHeight)
+      projects.lastChild.remove();
   }
 }
 
@@ -206,19 +224,6 @@ function controlAnim(event) {
     video.currentTime = 0;
   else if (video.currentTime <= 0)
     video.currentTime = video.duration;
-}
-
-function handleTiles(event) {
-  let container = document.querySelector(".projects");
-
-  if (window.pageYOffset === 0) {
-    addTile("top");
-  } else if (
-    window.pageYOffset + window.innerHeight ===
-    container.offsetHeight
-  ) {
-    addTile("bottom");
-  }
 }
 
 initApp();

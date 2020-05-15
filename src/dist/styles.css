@@ -1,5 +1,6 @@
 ::selection {
-  color: black;
+  background: black;
+  color: white;
 }
 html {
   box-sizing: border-box;
@@ -25,7 +26,7 @@ video {
   margin-top: 4em;
 }
 #app {
-  font: normal 1rem/1em "GTAmerica", Helvetica, Arial, sans-serif;
+  font: normal 1rem / normal "GTAmerica", Helvetica, Arial, sans-serif;
   width: 100vw;
   min-height: 100vh;
 }
@@ -43,19 +44,23 @@ video {
   color: black;
   padding: 0.5em 1em;
 }
-.projects {
-  position: relative;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
+.projects-container {
   height: 100vh;
-  overflow: scroll;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
   border: solid 1px red;
 }
+.projects {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: blue;
+}
 .projects__project {
-  position: relative;
   box-sizing: content-box;
+  position: relative;
   width: 200px;
   height: 200px;
   padding: 3px 0;

@@ -2,7 +2,8 @@
 // Prefered Default styles
 
 ::selection {
-  color: black;
+  background: black;
+  color     : white;
 }
 
 html {
@@ -41,7 +42,7 @@ video {
 // Animotor styles
 
 #app {
-  font      : normal 1rem/1em "GTAmerica", Helvetica, Arial, sans-serif;
+  font      : normal 1rem/normal "GTAmerica", Helvetica, Arial, sans-serif;
   width     : 100vw;
   min-height: 100vh;
 }
@@ -62,20 +63,25 @@ video {
   }
 }
 
-.projects {
-  position      : relative;
-  display       : flex;
-  align-items   : center;
-  flex-direction: column;
-  width         : 100%;
-  height        : 100vh;
-  overflow      : scroll;
+.projects-container {
+  height         : 100vh;
+  display        : flex;
+  justify-content: center;
+  align-items    : flex-start;
+  overflow       : hidden;
   .debug;
 }
 
+.projects {
+  display        : flex;
+  flex-direction : column;
+  justify-content: center;
+  background     : blue;
+}
+
 .projects__project {
-  position: relative;
   box-sizing: content-box;
+  position  : relative;
   width     : 200px;
   height    : 200px;
   padding   : 3px 0;
@@ -87,11 +93,11 @@ video {
   }
 
   div {
-    position: absolute;
-    top: 0;
-    font-size: 3em;
+    position   : absolute;
+    top        : 0;
+    font-size  : 3em;
     line-height: 1em;
-    color: white;
+    color      : white;
   }
 }
 
