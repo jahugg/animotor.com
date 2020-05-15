@@ -146,35 +146,52 @@ function loadProjects() {
     appendProject();
   }
 
-  if (projects.scrollTop === 0) prependProject();
   container.addEventListener("wheel", customScroll);
   var scale = 1;
 
   function customScroll(event) {
     event.preventDefault;
-    var container = document.querySelector(".projects-container");
-    var projects = document.querySelector(".projects");
-    var projectRef = document.querySelector(".projects__project");
-    var transformY = projects.style.transform.replace(/[^\d.]/g, '');
-    console.log(transformY);
-    if (scrollY < 10) console.log("prepend");else if (scrollY > 1000) console.log("append");
-    scale += event.deltaY * -0.01;
-    scale = Math.min(Math.max(.125, scale), 4);
-    console.log(scale);
+    var projects = document.querySelector(".projects"); // get current translateY value
+
+    var matrix = window.getComputedStyle(projects).getPropertyValue('transform');
+    var translateY; // set to 0 if no value available
+
+    if (matrix === "none") {
+      projects.style.transform = "translateY(0)";
+      translateY = 0;
+    } else {
+      // get value from css
+      var matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
+      translateY = parseInt(matrixValues[5], 10);
+    } // apply scroll distance
+
+
+    translateY += event.deltaY;
+    projects.style.transform = "translateY(" + translateY + "px)"; // check for projects out of screen
+
+    var top = projects.firstChild;
+    var bottom = projects.lastChild; // remove first child if out of screen
+
+    if (Math.abs(translateY) > top.offsetHeight) {
+      top.remove();
+      projects.style.transform = "translateY(0)";
+    } // remove last child if out of screen
+    else if (projects.offsetHeight - bottom.offsetHeight - Math.abs(translateY) > window.innerHeight) bottom.remove(); // prepend new child if top reached
+
+
+    if (translateY >= 0) prependProject(); // append new child if bottom reached
+    else if (window.innerHeight + Math.abs(translateY) > projects.offsetHeight) appendProject();
   }
 
   function appendProject() {
     var newId = 0;
     var projects = document.querySelector(".projects");
     var project = document.createElement("div");
-    project.classList.add("projects__project"); // has children
+    project.classList.add("projects__project"); // define new id if children exist
 
     if (projects.hasChildNodes()) {
       var prevId = parseInt(projects.lastChild.getAttribute("data-id"), 10);
-      if (prevId === _projects["default"].projects.length - 1) newId = 0;else newId = prevId + 1; // remove opposite child if not visible
-      // let tileHeight = container.offsetHeight - oldContainerHeight;
-      // if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
-      //   container.firstChild.remove();
+      if (prevId === _projects["default"].projects.length - 1) newId = 0;else newId = prevId + 1;
     }
 
     project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">\n    <div>" + _projects["default"].projects[newId].title + "</div>";
@@ -184,21 +201,16 @@ function loadProjects() {
 
   function prependProject() {
     var newId = 0;
-    var container = document.querySelector(".projects-container");
     var projects = document.querySelector(".projects");
-    var oldProjectsHeight = projects.offsetHeight;
     var project = document.createElement("div");
     project.classList.add("projects__project");
     var prevId = parseInt(projects.firstChild.getAttribute("data-id"), 10);
     if (prevId === 0) newId = _projects["default"].projects.length - 1;else newId = prevId - 1;
     project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">\n  <div>" + _projects["default"].projects[newId].title + "</div>";
     project.setAttribute("data-id", newId);
-    projects.prepend(project); // correct scroll position for new tile
+    projects.prepend(project); // correct scroll position for new project
 
-    var itemHeight = projects.offsetHeight - oldProjectsHeight;
-    projects.style.transform = "translateY(" + -itemHeight + "px)"; // remove opposite child if not visible
-
-    if (projects.offsetHeight - project.offsetHeight * 2 >= window.innerHeight) projects.lastChild.remove();
+    projects.style.transform = "translateY(" + -project.offsetHeight + "px)";
   }
 } // event throttling
 

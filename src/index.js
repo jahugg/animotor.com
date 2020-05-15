@@ -105,30 +105,53 @@ function loadProjects() {
   while (projects.scrollHeight <= window.innerHeight)
     appendProject();
 
-  if (projects.scrollTop === 0)
-    prependProject();
-
   container.addEventListener("wheel", customScroll);
 
   let scale = 1;
   function customScroll(event) {
     event.preventDefault;
 
-    let container = document.querySelector(".projects-container");
     let projects = document.querySelector(".projects");
-    let projectRef = document.querySelector(".projects__project");
 
-    let transformY = projects.style.transform.replace(/[^\d.]/g, '');
-    console.log(transformY);
-    
-    if (scrollY < 10)
-      console.log("prepend");
-    else if (scrollY > 1000)
-      console.log("append");
+    // get current translateY value
+    let matrix = window.getComputedStyle(projects).getPropertyValue('transform');
+    let translateY;
 
-    scale += event.deltaY * -0.01;
-    scale = Math.min(Math.max(.125, scale), 4);
-    console.log(scale);
+    // set to 0 if no value available
+    if (matrix === "none") {
+      projects.style.transform = "translateY(0)";
+      translateY = 0;
+
+    } else {  // get value from css
+      let matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
+      translateY = parseInt(matrixValues[5], 10);
+    }
+
+    // apply scroll distance
+    translateY += event.deltaY;
+    projects.style.transform = "translateY(" + translateY + "px)";
+
+    // check for projects out of screen
+    let top = projects.firstChild;
+    let bottom = projects.lastChild;
+
+    // remove first child if out of screen
+    if (Math.abs(translateY) > top.offsetHeight) {
+      top.remove();
+      projects.style.transform = "translateY(0)";
+    }
+    // remove last child if out of screen
+    else if (projects.offsetHeight - bottom.offsetHeight - Math.abs(translateY)
+      > window.innerHeight)
+      bottom.remove();
+
+    // prepend new child if top reached
+    if (translateY >= 0)
+      prependProject();
+
+    // append new child if bottom reached
+    else if (window.innerHeight + Math.abs(translateY) > projects.offsetHeight)
+      appendProject();
   }
 
   function appendProject() {
@@ -138,16 +161,11 @@ function loadProjects() {
     let project = document.createElement("div");
     project.classList.add("projects__project");
 
-    // has children
+    // define new id if children exist
     if (projects.hasChildNodes()) {
       let prevId = parseInt(projects.lastChild.getAttribute("data-id"), 10);
       if (prevId === data.projects.length - 1) newId = 0;
       else newId = prevId + 1;
-
-      // remove opposite child if not visible
-      // let tileHeight = container.offsetHeight - oldContainerHeight;
-      // if (container.offsetHeight - tileHeight >= window.innerHeight * 2)
-      //   container.firstChild.remove();
     }
 
     project.innerHTML = `<img src="` + mediaFiles["11_Laser"]["jpg"] + `">
@@ -159,9 +177,7 @@ function loadProjects() {
   function prependProject() {
 
     let newId = 0;
-    let container = document.querySelector(".projects-container");
     let projects = document.querySelector(".projects");
-    let oldProjectsHeight = projects.offsetHeight;
     let project = document.createElement("div");
     project.classList.add("projects__project");
 
@@ -174,13 +190,8 @@ function loadProjects() {
     project.setAttribute("data-id", newId);
     projects.prepend(project);
 
-    // correct scroll position for new tile
-    let itemHeight = projects.offsetHeight - oldProjectsHeight;
-      projects.style.transform = "translateY("+(-itemHeight)+"px)";
-
-    // remove opposite child if not visible
-    if (projects.offsetHeight - project.offsetHeight * 2 >= window.innerHeight)
-      projects.lastChild.remove();
+    // correct scroll position for new project
+    projects.style.transform = "translateY(" + (-project.offsetHeight) + "px)";
   }
 }
 
