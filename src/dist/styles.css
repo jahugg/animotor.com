@@ -3,9 +3,15 @@
   color: white;
 }
 html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
   box-sizing: border-box;
 }
 body {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
   margin: 0;
 }
 img,
@@ -50,13 +56,11 @@ video {
   justify-content: center;
   align-items: flex-start;
   overflow: hidden;
-  border: solid 1px red;
 }
 .projects {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: blue;
 }
 .projects__project {
   box-sizing: content-box;

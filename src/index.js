@@ -14,8 +14,6 @@ let pages = [{
   "route": "/about",
   "content": "content-info.md"
 }];
-let pointStart = false;
-let pointDrag = false;
 
 function initApp() {
   navigateToCurrentURL();
@@ -102,22 +100,77 @@ function loadProjects() {
   projects.classList.add("projects");
   container.appendChild(projects);
 
+  // fill screen with tiles
   while (projects.scrollHeight <= window.innerHeight)
     appendProject();
 
-  container.addEventListener("wheel", customScroll);
+  // register event listeners
+  container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+  container.addEventListener("touchstart", handleTouchStart, false);
+  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+  container.addEventListener("touchend", handleTouchEnd, false);
+  container.addEventListener("touchcancel", handleTouchEnd, false);
 
-  let scale = 1;
-  function customScroll(event) {
-    event.preventDefault;
+  // handle touch events
+  let lastTouchPosY;
+  let endTouchPosY;
+
+  function handleTouchStart(event) {
+    event.preventDefault();
+    let touches = event.changedTouches;
+    lastTouchPosY = touches[0].pageY;
+  }
+
+  function handleTouchMove(event) {
+    event.preventDefault();
+    endTouchPosY = lastTouchPosY;  // save for touch end
+    let touches = event.changedTouches;
+    let deltaY = (lastTouchPosY - touches[0].pageY) * -1;
+    lastTouchPosY = touches[0].pageY;
+    customScroll(deltaY);
+  }
+
+  // PASS DELTA !!!!
+  function handleTouchEnd(event) {
+    event.preventDefault();
+    let touches = event.changedTouches;
+    let deltaY = (endTouchPosY - touches[0].pageY) * -1;
+    console.log("touch ended with: " + deltaY);
+
+    // window.requestAnimationFrame(slowDownScroll(deltaY))
+  }
+
+  function slowDownScroll(deltaY) {
+
+    if (deltaY > 0) deltaY--;
+    else deltaY++;
+
+    customScroll(deltaY);
+
+    if (deltaY !== 0) {
+      window.requestAnimationFrame(slowDownScroll(deltaY));
+    } else {
+      console.log("animation ended ");
+    }
+  }
+
+  // handle wheel event
+  function handleWheel(event) {
+    event.preventDefault();
+    let deltaY = event.deltaY * -1
+    customScroll(deltaY);
+  }
+
+  // trigger custom scrolling of filmstrip
+  function customScroll(deltaY) {
+
+    console.log(deltaY);
 
     let projects = document.querySelector(".projects");
-
-    // get current translateY value
     let matrix = window.getComputedStyle(projects).getPropertyValue('transform');
     let translateY;
 
-    // set to 0 if no value available
+    // set to 0 if transform not set
     if (matrix === "none") {
       projects.style.transform = "translateY(0)";
       translateY = 0;
@@ -127,10 +180,12 @@ function loadProjects() {
       translateY = parseInt(matrixValues[5], 10);
     }
 
+    //---------
     // apply scroll distance
-    translateY += event.deltaY;
+    translateY += deltaY;
     projects.style.transform = "translateY(" + translateY + "px)";
 
+    //---------
     // check for projects out of screen
     let top = projects.firstChild;
     let bottom = projects.lastChild;
@@ -145,6 +200,7 @@ function loadProjects() {
       > window.innerHeight)
       bottom.remove();
 
+    //---------
     // prepend new child if top reached
     if (translateY >= 0)
       prependProject();

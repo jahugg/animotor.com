@@ -22,8 +22,6 @@ var pages = [{
   "route": "/about",
   "content": "content-info.md"
 }];
-var pointStart = false;
-var pointDrag = false;
 
 function initApp() {
   navigateToCurrentURL(); // add custom link functionality
@@ -140,21 +138,70 @@ function loadProjects() {
   main.appendChild(container);
   var projects = document.createElement("div");
   projects.classList.add("projects");
-  container.appendChild(projects);
+  container.appendChild(projects); // fill screen with tiles
 
   while (projects.scrollHeight <= window.innerHeight) {
     appendProject();
+  } // register event listeners
+
+
+  container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+  container.addEventListener("touchstart", handleTouchStart, false);
+  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+  container.addEventListener("touchend", handleTouchEnd, false);
+  container.addEventListener("touchcancel", handleTouchEnd, false); // handle touch events
+
+  var lastTouchPosY;
+  var endTouchPosY;
+
+  function handleTouchStart(event) {
+    event.preventDefault();
+    var touches = event.changedTouches;
+    lastTouchPosY = touches[0].pageY;
   }
 
-  container.addEventListener("wheel", customScroll);
-  var scale = 1;
+  function handleTouchMove(event) {
+    event.preventDefault();
+    endTouchPosY = lastTouchPosY; // save for touch end
 
-  function customScroll(event) {
-    event.preventDefault;
-    var projects = document.querySelector(".projects"); // get current translateY value
+    var touches = event.changedTouches;
+    var deltaY = (lastTouchPosY - touches[0].pageY) * -1;
+    lastTouchPosY = touches[0].pageY;
+    customScroll(deltaY);
+  } // PASS DELTA !!!!
 
+
+  function handleTouchEnd(event) {
+    event.preventDefault();
+    var touches = event.changedTouches;
+    var deltaY = (endTouchPosY - touches[0].pageY) * -1;
+    console.log("touch ended with: " + deltaY); // window.requestAnimationFrame(slowDownScroll(deltaY))
+  }
+
+  function slowDownScroll(deltaY) {
+    if (deltaY > 0) deltaY--;else deltaY++;
+    customScroll(deltaY);
+
+    if (deltaY !== 0) {
+      window.requestAnimationFrame(slowDownScroll(deltaY));
+    } else {
+      console.log("animation ended ");
+    }
+  } // handle wheel event
+
+
+  function handleWheel(event) {
+    event.preventDefault();
+    var deltaY = event.deltaY * -1;
+    customScroll(deltaY);
+  } // trigger custom scrolling of filmstrip
+
+
+  function customScroll(deltaY) {
+    console.log(deltaY);
+    var projects = document.querySelector(".projects");
     var matrix = window.getComputedStyle(projects).getPropertyValue('transform');
-    var translateY; // set to 0 if no value available
+    var translateY; // set to 0 if transform not set
 
     if (matrix === "none") {
       projects.style.transform = "translateY(0)";
@@ -163,11 +210,13 @@ function loadProjects() {
       // get value from css
       var matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
       translateY = parseInt(matrixValues[5], 10);
-    } // apply scroll distance
+    } //---------
+    // apply scroll distance
 
 
-    translateY += event.deltaY;
-    projects.style.transform = "translateY(" + translateY + "px)"; // check for projects out of screen
+    translateY += deltaY;
+    projects.style.transform = "translateY(" + translateY + "px)"; //---------
+    // check for projects out of screen
 
     var top = projects.firstChild;
     var bottom = projects.lastChild; // remove first child if out of screen
@@ -176,7 +225,8 @@ function loadProjects() {
       top.remove();
       projects.style.transform = "translateY(0)";
     } // remove last child if out of screen
-    else if (projects.offsetHeight - bottom.offsetHeight - Math.abs(translateY) > window.innerHeight) bottom.remove(); // prepend new child if top reached
+    else if (projects.offsetHeight - bottom.offsetHeight - Math.abs(translateY) > window.innerHeight) bottom.remove(); //---------
+    // prepend new child if top reached
 
 
     if (translateY >= 0) prependProject(); // append new child if bottom reached
