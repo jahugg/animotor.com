@@ -114,11 +114,13 @@ function loadProjects() {
   // handle touch events
   let lastTouchPosY;
   let endTouchPosY;
+  let reqAnimFrame;
 
   function handleTouchStart(event) {
     event.preventDefault();
     let touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
+    cancelAnimationFrame(reqAnimFrame);
   }
 
   function handleTouchMove(event) {
@@ -130,27 +132,26 @@ function loadProjects() {
     customScroll(deltaY);
   }
 
-  // PASS DELTA !!!!
   function handleTouchEnd(event) {
     event.preventDefault();
     let touches = event.changedTouches;
     let deltaY = (endTouchPosY - touches[0].pageY) * -1;
-    console.log("touch ended with: " + deltaY);
 
-    // window.requestAnimationFrame(slowDownScroll(deltaY))
-  }
+    reqAnimFrame = requestAnimationFrame(slowDownScrollStep);
 
-  function slowDownScroll(deltaY) {
+    // gradually slow down scrolling
+    function slowDownScrollStep(timestamp) {
+      // clamp delta
+      deltaY = Math.min(Math.max(deltaY, -80), 80);
 
-    if (deltaY > 0) deltaY--;
-    else deltaY++;
+      customScroll(deltaY);
 
-    customScroll(deltaY);
+      if (deltaY > 0 || deltaY < 0) {
+        reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
 
-    if (deltaY !== 0) {
-      window.requestAnimationFrame(slowDownScroll(deltaY));
-    } else {
-      console.log("animation ended ");
+        if (deltaY > 0) deltaY--;
+        else if (deltaY < 0) deltaY++;
+      }
     }
   }
 
@@ -291,6 +292,12 @@ function controlAnim(event) {
     video.currentTime = 0;
   else if (video.currentTime <= 0)
     video.currentTime = video.duration;
+}
+
+function map(num, in_min, in_max, out_min, out_max) {
+  // taken from
+  // (https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers/23202637)
+  return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 initApp();

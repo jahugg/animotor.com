@@ -153,11 +153,13 @@ function loadProjects() {
 
   var lastTouchPosY;
   var endTouchPosY;
+  var reqAnimFrame;
 
   function handleTouchStart(event) {
     event.preventDefault();
     var touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
+    cancelAnimationFrame(reqAnimFrame);
   }
 
   function handleTouchMove(event) {
@@ -168,24 +170,23 @@ function loadProjects() {
     var deltaY = (lastTouchPosY - touches[0].pageY) * -1;
     lastTouchPosY = touches[0].pageY;
     customScroll(deltaY);
-  } // PASS DELTA !!!!
-
+  }
 
   function handleTouchEnd(event) {
     event.preventDefault();
     var touches = event.changedTouches;
     var deltaY = (endTouchPosY - touches[0].pageY) * -1;
-    console.log("touch ended with: " + deltaY); // window.requestAnimationFrame(slowDownScroll(deltaY))
-  }
+    reqAnimFrame = requestAnimationFrame(slowDownScrollStep); // gradually slow down scrolling
 
-  function slowDownScroll(deltaY) {
-    if (deltaY > 0) deltaY--;else deltaY++;
-    customScroll(deltaY);
+    function slowDownScrollStep(timestamp) {
+      // clamp delta
+      deltaY = Math.min(Math.max(deltaY, -80), 80);
+      customScroll(deltaY);
 
-    if (deltaY !== 0) {
-      window.requestAnimationFrame(slowDownScroll(deltaY));
-    } else {
-      console.log("animation ended ");
+      if (deltaY > 0 || deltaY < 0) {
+        reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+        if (deltaY > 0) deltaY--;else if (deltaY < 0) deltaY++;
+      }
     }
   } // handle wheel event
 
@@ -294,6 +295,12 @@ function controlAnim(event) {
   video.currentTime += delta;
   console.log(video.currentTime + "s");
   if (video.currentTime >= video.duration) video.currentTime = 0;else if (video.currentTime <= 0) video.currentTime = video.duration;
+}
+
+function map(num, in_min, in_max, out_min, out_max) {
+  // taken from
+  // (https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers/23202637)
+  return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 initApp();
