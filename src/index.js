@@ -2,6 +2,7 @@ import "./fonts.less";
 import "./styles.less";
 import data from "./projects.json";
 import mediaFiles from "./media/*.*";
+import animation from "./animation/*.*";
 import contentInfo from "./content-info.md";
 
 let defaultRoute = "/";
@@ -105,9 +106,9 @@ function loadProjects() {
     appendProject();
 
   // register event listeners
-  container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+  container.addEventListener("wheel", throttledEvent(handleWheel, 0));
   container.addEventListener("touchstart", handleTouchStart, false);
-  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 0), false);
   container.addEventListener("touchend", handleTouchEnd, false);
   container.addEventListener("touchcancel", handleTouchEnd, false);
 
@@ -165,7 +166,8 @@ function loadProjects() {
   // trigger custom scrolling of filmstrip
   function customScroll(deltaY) {
 
-    console.log(deltaY);
+    // consider using a mutation observer to observe
+    // transform changes.
 
     let projects = document.querySelector(".projects");
     let matrix = window.getComputedStyle(projects).getPropertyValue('transform');
@@ -225,7 +227,9 @@ function loadProjects() {
       else newId = prevId + 1;
     }
 
-    project.innerHTML = `<img src="` + mediaFiles["11_Laser"]["jpg"] + `">
+    let animFrame = newId.toString().padStart(5, "0");
+
+    project.innerHTML = `<img src="` + animation["1_huhn_"+animFrame]["png"] + `">
     <div>`+ data.projects[newId].title + `</div>`;
     project.setAttribute("data-id", newId);
     projects.appendChild(project);
@@ -242,7 +246,9 @@ function loadProjects() {
     if (prevId === 0) newId = data.projects.length - 1;
     else newId = prevId - 1;
 
-    project.innerHTML = `<img src="` + mediaFiles["11_Laser"]["jpg"] + `">
+    let animFrame = newId.toString().padStart(5, "0");
+
+    project.innerHTML = `<img src="` + animation["1_huhn_"+animFrame]["png"] + `">
   <div>`+ data.projects[newId].title + `</div>`;
     project.setAttribute("data-id", newId);
     projects.prepend(project);

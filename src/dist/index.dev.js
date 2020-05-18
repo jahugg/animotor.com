@@ -8,6 +8,8 @@ var _projects = _interopRequireDefault(require("./projects.json"));
 
 var _ = _interopRequireDefault(require("./media/*.*"));
 
+var _2 = _interopRequireDefault(require("./animation/*.*"));
+
 var _contentInfo = _interopRequireDefault(require("./content-info.md"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -145,9 +147,9 @@ function loadProjects() {
   } // register event listeners
 
 
-  container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+  container.addEventListener("wheel", throttledEvent(handleWheel, 0));
   container.addEventListener("touchstart", handleTouchStart, false);
-  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 0), false);
   container.addEventListener("touchend", handleTouchEnd, false);
   container.addEventListener("touchcancel", handleTouchEnd, false); // handle touch events
 
@@ -199,7 +201,8 @@ function loadProjects() {
 
 
   function customScroll(deltaY) {
-    console.log(deltaY);
+    // consider using a mutation observer to observe
+    // transform changes.
     var projects = document.querySelector(".projects");
     var matrix = window.getComputedStyle(projects).getPropertyValue('transform');
     var translateY; // set to 0 if transform not set
@@ -245,7 +248,8 @@ function loadProjects() {
       if (prevId === _projects["default"].projects.length - 1) newId = 0;else newId = prevId + 1;
     }
 
-    project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">\n    <div>" + _projects["default"].projects[newId].title + "</div>";
+    var animFrame = newId.toString().padStart(5, "0");
+    project.innerHTML = "<img src=\"" + _2["default"]["1_huhn_" + animFrame]["png"] + "\">\n    <div>" + _projects["default"].projects[newId].title + "</div>";
     project.setAttribute("data-id", newId);
     projects.appendChild(project);
   }
@@ -257,7 +261,8 @@ function loadProjects() {
     project.classList.add("projects__project");
     var prevId = parseInt(projects.firstChild.getAttribute("data-id"), 10);
     if (prevId === 0) newId = _projects["default"].projects.length - 1;else newId = prevId - 1;
-    project.innerHTML = "<img src=\"" + _["default"]["11_Laser"]["jpg"] + "\">\n  <div>" + _projects["default"].projects[newId].title + "</div>";
+    var animFrame = newId.toString().padStart(5, "0");
+    project.innerHTML = "<img src=\"" + _2["default"]["1_huhn_" + animFrame]["png"] + "\">\n  <div>" + _projects["default"].projects[newId].title + "</div>";
     project.setAttribute("data-id", newId);
     projects.prepend(project); // correct scroll position for new project
 
