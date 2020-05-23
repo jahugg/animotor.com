@@ -138,25 +138,20 @@ function loadHome() {
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   main.appendChild(container);
-  var projects = document.createElement("div");
-  projects.classList.add("infinite-scroll");
-  container.appendChild(projects); // fill screen with tiles
+  var infiniteScroll = document.createElement("div");
+  infiniteScroll.classList.add("infinite-scroll");
+  container.appendChild(infiniteScroll); // fill screen with tiles
 
-  while (projects.scrollHeight <= window.innerHeight) {
+  while (infiniteScroll.scrollHeight <= window.innerHeight) {
     appendItem();
   } // register event listeners
 
 
-  container.addEventListener("wheel", throttledEvent(handleWheel, 0));
+  container.addEventListener("wheel", throttledEvent(handleWheel, 5));
   container.addEventListener("touchstart", handleTouchStart, false);
-  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 0), false);
+  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
   container.addEventListener("touchend", handleTouchEnd, false);
-  container.addEventListener("touchcancel", handleTouchEnd, false); // Select the node that will be observed for mutations
-
-  var targetNode = projects;
-  var config = {
-    attributes: true
-  }; // Callback function to execute when mutations are observed
+  container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
   var handleInfiniteScroll = function handleInfiniteScroll(mutationsList, observer) {
     var _iteratorNormalCompletion3 = true;
@@ -168,20 +163,21 @@ function loadHome() {
         var mutation = _step3.value;
 
         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-          var infiniteScroll = document.querySelector(".infinite-scroll");
+          var _infiniteScroll = document.querySelector(".infinite-scroll");
+
           var translateY = getScrollPos();
-          var firstChild = infiniteScroll.firstChild;
-          var lastChild = infiniteScroll.lastChild; // remove first child if out of bounds
+          var firstChild = _infiniteScroll.firstChild;
+          var lastChild = _infiniteScroll.lastChild; // remove first child if out of bounds
 
           if (Math.abs(translateY) > firstChild.offsetHeight) {
             firstChild.remove();
-            infiniteScroll.style.transform = "translateY(0)";
+            _infiniteScroll.style.transform = "translateY(0)";
           } // remove last child out of bounds
-          else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY) > window.innerHeight) lastChild.remove(); // prepend new child if top reached
+          else if (_infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY) > window.innerHeight) lastChild.remove(); // prepend new child if top reached
 
 
           if (translateY > 0) prependItem(); // append new child if bottom reached
-          else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight) appendItem();
+          else if (window.innerHeight + Math.abs(translateY) > _infiniteScroll.offsetHeight) appendItem();
         }
       }
     } catch (err) {
@@ -202,7 +198,9 @@ function loadHome() {
 
 
   var observer = new MutationObserver(handleInfiniteScroll);
-  observer.observe(targetNode, config); // handle touch events
+  observer.observe(infiniteScroll, {
+    attributes: true
+  }); // handle touch events
 
   var lastTouchPosY;
   var endTouchPosY;
@@ -256,10 +254,10 @@ function loadHome() {
   function getScrollPos() {
     var infiniteScroll = document.querySelector(".infinite-scroll");
     var matrix = window.getComputedStyle(infiniteScroll).getPropertyValue('transform');
-    var translateY; // set to 0 if transform not set
+    var translateY; // set to 0 if transform not yet set
 
     if (matrix === "none") {
-      projects.style.transform = "translateY(0)";
+      infiniteScroll.style.transform = "translateY(0)";
       translateY = 0;
     } else {
       // get value from css
@@ -277,34 +275,32 @@ function loadHome() {
 
   function appendItem() {
     var newId = 0;
-    var projects = document.querySelector(".infinite-scroll");
-    var project = document.createElement("div");
-    project.classList.add("infinite-scroll__item"); // define new id if children exist
+    var infinteScroll = document.querySelector(".infinite-scroll");
+    var item = document.createElement("div");
+    item.classList.add("infinite-scroll__item"); // define new id if children exist
 
-    if (projects.hasChildNodes()) {
-      var prevId = parseInt(projects.lastChild.getAttribute("data-id"), 10);
-      if (prevId === _projects["default"].projects.length - 1) newId = 0;else newId = prevId + 1;
+    if (infinteScroll.hasChildNodes()) {
+      var prevId = parseInt(infinteScroll.lastChild.getAttribute("data-id"), 10);
+      if (prevId === Object.keys(_2["default"]).length - 1) newId = 0;else newId = prevId + 1;
     }
 
-    var animFrame = newId.toString().padStart(5, "0");
-    project.innerHTML = "<img src=\"" + _2["default"]["1_huhn_" + animFrame]["png"] + "\">\n    <div>" + _projects["default"].projects[newId].title + "</div>";
-    project.setAttribute("data-id", newId);
-    projects.appendChild(project);
+    item.innerHTML = "<img src=\"" + _2["default"]["Untitled_Artwork-" + (newId + 1)]["png"] + "\">\n    <div>" + newId + "</div>";
+    item.setAttribute("data-id", newId);
+    infinteScroll.appendChild(item);
   }
 
   function prependItem() {
     var newId = 0;
-    var projects = document.querySelector(".infinite-scroll");
-    var project = document.createElement("div");
-    project.classList.add("infinite-scroll__item");
-    var prevId = parseInt(projects.firstChild.getAttribute("data-id"), 10);
-    if (prevId === 0) newId = _projects["default"].projects.length - 1;else newId = prevId - 1;
-    var animFrame = newId.toString().padStart(5, "0");
-    project.innerHTML = "<img src=\"" + _2["default"]["1_huhn_" + animFrame]["png"] + "\">\n  <div>" + _projects["default"].projects[newId].title + "</div>";
-    project.setAttribute("data-id", newId);
-    projects.prepend(project); // correct scroll position for new project
+    var infiniteScroll = document.querySelector(".infinite-scroll");
+    var item = document.createElement("div");
+    item.classList.add("infinite-scroll__item");
+    var prevId = parseInt(infiniteScroll.firstChild.getAttribute("data-id"), 10);
+    if (prevId === 0) newId = Object.keys(_2["default"]).length - 1;else newId = prevId - 1;
+    item.innerHTML = "<img src=\"" + _2["default"]["Untitled_Artwork-" + (newId + 1)]["png"] + "\">\n  <div>" + newId + "</div>";
+    item.setAttribute("data-id", newId);
+    infiniteScroll.prepend(item); // correct scroll position for new item
 
-    projects.style.transform = "translateY(" + -project.offsetHeight + "px)";
+    infiniteScroll.style.transform = "translateY(" + -item.offsetHeight + "px)";
   }
 } // event throttling
 
