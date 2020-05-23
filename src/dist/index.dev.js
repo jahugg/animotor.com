@@ -169,9 +169,7 @@ function loadHome() {
 
         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
           var infiniteScroll = document.querySelector(".infinite-scroll");
-          var matrix = window.getComputedStyle(projects).getPropertyValue('transform');
-          var matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
-          var translateY = parseInt(matrixValues[5], 10);
+          var translateY = getScrollPos();
           var firstChild = infiniteScroll.firstChild;
           var lastChild = infiniteScroll.lastChild; // remove first child if out of bounds
 
@@ -224,7 +222,8 @@ function loadHome() {
     var touches = event.changedTouches;
     var deltaY = (lastTouchPosY - touches[0].pageY) * -1;
     lastTouchPosY = touches[0].pageY;
-    customScroll(deltaY);
+    var translateY = getScrollPos() + deltaY;
+    setScrollPos(translateY);
   }
 
   function handleTouchEnd(event) {
@@ -236,7 +235,8 @@ function loadHome() {
     function slowDownScrollStep(timestamp) {
       // clamp delta
       deltaY = Math.min(Math.max(deltaY, -80), 80);
-      customScroll(deltaY);
+      var translateY = getScrollPos() + deltaY;
+      setScrollPos(translateY);
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
@@ -249,19 +249,13 @@ function loadHome() {
   function handleWheel(event) {
     event.preventDefault();
     var deltaY = event.deltaY * -1;
-    customScroll(deltaY);
+    var translateY = getScrollPos() + deltaY;
+    setScrollPos(translateY);
   }
 
   function getScrollPos() {
-    return;
-  }
-
-  function setScrollPos() {} // trigger custom scrolling of infinity scroll
-
-
-  function customScroll(deltaY) {
-    var projects = document.querySelector(".infinite-scroll");
-    var matrix = window.getComputedStyle(projects).getPropertyValue('transform');
+    var infiniteScroll = document.querySelector(".infinite-scroll");
+    var matrix = window.getComputedStyle(infiniteScroll).getPropertyValue('transform');
     var translateY; // set to 0 if transform not set
 
     if (matrix === "none") {
@@ -271,12 +265,14 @@ function loadHome() {
       // get value from css
       var matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
       translateY = parseInt(matrixValues[5], 10);
-    } //---------
-    // apply scroll distance
+    }
 
+    return translateY;
+  }
 
-    translateY += deltaY;
-    projects.style.transform = "translateY(" + translateY + "px)";
+  function setScrollPos(pos) {
+    var infiniteScroll = document.querySelector(".infinite-scroll");
+    infiniteScroll.style.transform = "translateY(" + pos + "px)";
   }
 
   function appendItem() {
