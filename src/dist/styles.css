@@ -31,6 +31,9 @@ video {
   text-align: center;
   margin-top: 4em;
 }
+:root {
+  --app-header-height: 0;
+}
 #app {
   font: normal 1rem / normal "GTAmerica", Helvetica, Arial, sans-serif;
   width: 100vw;
@@ -50,31 +53,32 @@ video {
   color: black;
   padding: 0.5em 1em;
 }
-.projects-container {
+.infinite-scroll-container {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   overflow: hidden;
 }
-.projects {
+.infinite-scroll {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.projects__project {
+.infinite-scroll__item {
   box-sizing: content-box;
   position: relative;
   width: 200px;
   height: 200px;
   padding: 3px 0;
+  border: solid 1px red;
 }
-.projects__project img {
+.infinite-scroll__item img {
   width: 100%;
   height: 100%;
   object-fit: scale-down;
 }
-.projects__project div {
+.infinite-scroll__item div {
   position: absolute;
   top: 0;
   font-size: 3em;
@@ -83,6 +87,8 @@ video {
 }
 .about {
   padding: 0 30px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 .about p:first-of-type {
   text-align: center;

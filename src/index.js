@@ -27,12 +27,8 @@ function initApp() {
 
 function handlePageLink(event) {
   event.preventDefault();
-
   let target = event.target;
-
-  // create state object
-  let stateObj = { route: target.getAttribute("href") };
-
+  let stateObj = { route: target.getAttribute("href") }; // create state object
   buildPage(stateObj);
 }
 
@@ -77,7 +73,7 @@ function buildPage(stateObj) {
 
   // build page contents
   if (currentPage.title === "home") {
-    loadProjects();
+    loadHome();
 
   } else if (currentPage.title === "about") {
     let link = document.querySelector("#nav a");
@@ -87,23 +83,23 @@ function buildPage(stateObj) {
   }
 }
 
-function loadProjects() {
+function loadHome() {
 
   let link = document.querySelector("#nav a");
   link.href = "/about";
   link.innerHTML = "about";
 
   let container = document.createElement("div");
-  container.classList.add("projects-container");
+  container.classList.add("infinite-scroll-container");
   main.appendChild(container);
 
   let projects = document.createElement("div");
-  projects.classList.add("projects");
+  projects.classList.add("infinite-scroll");
   container.appendChild(projects);
 
   // fill screen with tiles
   while (projects.scrollHeight <= window.innerHeight)
-    appendProject();
+    appendItem();
 
   // register event listeners
   container.addEventListener("wheel", throttledEvent(handleWheel, 0));
@@ -111,6 +107,48 @@ function loadProjects() {
   container.addEventListener("touchmove", throttledEvent(handleTouchMove, 0), false);
   container.addEventListener("touchend", handleTouchEnd, false);
   container.addEventListener("touchcancel", handleTouchEnd, false);
+
+  // Select the node that will be observed for mutations
+  const targetNode = projects;
+  const config = { attributes: true };
+
+  // Callback function to execute when mutations are observed
+  const handleInfiniteScroll = function (mutationsList, observer) {
+    for (let mutation of mutationsList) {
+      if (mutation.type === 'attributes' &&
+        mutation.attributeName === 'style') {
+
+        let infiniteScroll = document.querySelector(".infinite-scroll");
+        let matrix = window.getComputedStyle(projects).getPropertyValue('transform');
+        let matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
+        let translateY = parseInt(matrixValues[5], 10);
+        let firstChild = infiniteScroll.firstChild;
+        let lastChild = infiniteScroll.lastChild;
+
+        // remove first child if out of bounds
+        if (Math.abs(translateY) > firstChild.offsetHeight) {
+          firstChild.remove();
+          infiniteScroll.style.transform = "translateY(0)";
+        }
+        // remove last child out of bounds
+        else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY)
+          > window.innerHeight)
+            lastChild.remove();
+
+        // prepend new child if top reached
+        if (translateY > 0)
+          prependItem();
+
+        // append new child if bottom reached
+        else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight)
+          appendItem();
+      }
+    }
+  };
+
+  // create mutation obsever to handle translateY changes
+  const observer = new MutationObserver(handleInfiniteScroll);
+  observer.observe(targetNode, config);
 
   // handle touch events
   let lastTouchPosY;
@@ -163,13 +201,17 @@ function loadProjects() {
     customScroll(deltaY);
   }
 
-  // trigger custom scrolling of filmstrip
+  function getScrollPos() {
+    return;
+  }
+
+  function setScrollPos() {
+  }
+
+  // trigger custom scrolling of infinity scroll
   function customScroll(deltaY) {
 
-    // consider using a mutation observer to observe
-    // transform changes.
-
-    let projects = document.querySelector(".projects");
+    let projects = document.querySelector(".infinite-scroll");
     let matrix = window.getComputedStyle(projects).getPropertyValue('transform');
     let translateY;
 
@@ -187,38 +229,14 @@ function loadProjects() {
     // apply scroll distance
     translateY += deltaY;
     projects.style.transform = "translateY(" + translateY + "px)";
-
-    //---------
-    // check for projects out of screen
-    let top = projects.firstChild;
-    let bottom = projects.lastChild;
-
-    // remove first child if out of screen
-    if (Math.abs(translateY) > top.offsetHeight) {
-      top.remove();
-      projects.style.transform = "translateY(0)";
-    }
-    // remove last child if out of screen
-    else if (projects.offsetHeight - bottom.offsetHeight - Math.abs(translateY)
-      > window.innerHeight)
-      bottom.remove();
-
-    //---------
-    // prepend new child if top reached
-    if (translateY >= 0)
-      prependProject();
-
-    // append new child if bottom reached
-    else if (window.innerHeight + Math.abs(translateY) > projects.offsetHeight)
-      appendProject();
   }
 
-  function appendProject() {
+  function appendItem() {
 
     let newId = 0;
-    let projects = document.querySelector(".projects");
+    let projects = document.querySelector(".infinite-scroll");
     let project = document.createElement("div");
-    project.classList.add("projects__project");
+    project.classList.add("infinite-scroll__item");
 
     // define new id if children exist
     if (projects.hasChildNodes()) {
@@ -229,18 +247,18 @@ function loadProjects() {
 
     let animFrame = newId.toString().padStart(5, "0");
 
-    project.innerHTML = `<img src="` + animation["1_huhn_"+animFrame]["png"] + `">
+    project.innerHTML = `<img src="` + animation["1_huhn_" + animFrame]["png"] + `">
     <div>`+ data.projects[newId].title + `</div>`;
     project.setAttribute("data-id", newId);
     projects.appendChild(project);
   }
 
-  function prependProject() {
+  function prependItem() {
 
     let newId = 0;
-    let projects = document.querySelector(".projects");
+    let projects = document.querySelector(".infinite-scroll");
     let project = document.createElement("div");
-    project.classList.add("projects__project");
+    project.classList.add("infinite-scroll__item");
 
     let prevId = parseInt(projects.firstChild.getAttribute("data-id"), 10);
     if (prevId === 0) newId = data.projects.length - 1;
@@ -248,7 +266,7 @@ function loadProjects() {
 
     let animFrame = newId.toString().padStart(5, "0");
 
-    project.innerHTML = `<img src="` + animation["1_huhn_"+animFrame]["png"] + `">
+    project.innerHTML = `<img src="` + animation["1_huhn_" + animFrame]["png"] + `">
   <div>`+ data.projects[newId].title + `</div>`;
     project.setAttribute("data-id", newId);
     projects.prepend(project);
@@ -271,33 +289,6 @@ function throttledEvent(listener, delay) {
     }
     // else, do nothing (throttling)
   };
-}
-
-function playAnim(event) {
-  let video = document.querySelector(".tiny-anim");
-  let increment = 0.05;
-  video.currentTime += increment;
-  console.log(video.currentTime);
-
-  if (video.currentTime >= video.duration)
-    video.currentTime = 0;
-  else if (video.currentTime <= 0)
-    video.currentTime = video.duration;
-
-}
-
-function controlAnim(event) {
-  let delta = event.deltaY * 0.005;
-
-  let video = document.querySelector(".tiny-anim");
-  video.currentTime += delta;
-
-  console.log(video.currentTime + "s");
-
-  if (video.currentTime >= video.duration)
-    video.currentTime = 0;
-  else if (video.currentTime <= 0)
-    video.currentTime = video.duration;
 }
 
 function map(num, in_min, in_max, out_min, out_max) {
