@@ -187,11 +187,11 @@ function loadHome() {
 
 
           if (translateY > 0) prependItem(); // append new child if bottom reached
-          else if (window.innerHeight + Math.abs(translateY) > _infiniteScroll.offsetHeight) appendItem(); // handle static animation frame
+          else if (window.innerHeight + Math.abs(translateY) > _infiniteScroll.offsetHeight) appendItem(); // ----------
+          // handle static animation frame
 
           var items = document.getElementsByClassName("infinite-scroll__item");
           var staticContainer = document.querySelector(".static-anim");
-          var staticImage = staticContainer.querySelector("img");
           var staticRect = staticContainer.getBoundingClientRect();
           var closestItem = void 0;
           var lastDist = 9999; // find closest item
@@ -230,6 +230,7 @@ function loadHome() {
           var closestRect = closestItem.getBoundingClientRect();
 
           if (closestRect.top <= staticRect.top) {
+            var staticImage = staticContainer.querySelector("img");
             var id = closestItem.getAttribute("data-id");
             staticImage.src = _2["default"][animKeys[id]]["png"];
             staticImage.setAttribute("data-id", id);

@@ -71,7 +71,6 @@ video {
   width: 200px;
   height: 200px;
   padding: 3px 0;
-  background: black;
 }
 .infinite-scroll__item img {
   width: 100%;
@@ -86,7 +85,6 @@ video {
   color: white;
 }
 .static-anim {
-  border: solid 1px red;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -94,7 +92,6 @@ video {
   z-index: 10;
   width: 200px;
   height: 200px;
-  background: rgba(0, 0, 0, 0.8);
 }
 .static-anim img {
   width: 100%;
