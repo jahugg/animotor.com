@@ -134,7 +134,17 @@ function buildPage(stateObj) {
 function loadHome() {
   var link = document.querySelector("#nav a");
   link.href = "/about";
-  link.innerHTML = "about";
+  link.innerHTML = "about"; // static animation frame
+
+  var animKeys = Object.keys(_2["default"]);
+  var staticAnim = document.createElement("div");
+  staticAnim.classList.add("static-anim");
+  main.appendChild(staticAnim);
+  var frame = document.createElement("img");
+  frame.src = _2["default"][animKeys[0]]["png"];
+  frame.setAttribute("data-id", 0);
+  staticAnim.appendChild(frame); // infinite scroll
+
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   main.appendChild(container);
@@ -241,14 +251,23 @@ function loadHome() {
         if (deltaY > 0) deltaY--;else if (deltaY < 0) deltaY++;
       }
     }
-  } // handle wheel event
+  }
 
+  var wheelTracker = 0; // handle wheel event
 
   function handleWheel(event) {
     event.preventDefault();
     var deltaY = event.deltaY * -1;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
+    wheelTracker += event.deltaY;
+    var item = document.querySelector(".infinite-scroll__item");
+
+    if (wheelTracker >= item.offsetHeight || wheelTracker <= item.offsetHeight * -1) {
+      console.log("next frame");
+      wheelTracker = 0;
+      handleStaticFrame(deltaY);
+    }
   }
 
   function getScrollPos() {
@@ -277,14 +296,15 @@ function loadHome() {
     var newId = 0;
     var infinteScroll = document.querySelector(".infinite-scroll");
     var item = document.createElement("div");
-    item.classList.add("infinite-scroll__item"); // define new id if children exist
+    item.classList.add("infinite-scroll__item");
+    var animKeys = Object.keys(_2["default"]); // define new id if children exist
 
     if (infinteScroll.hasChildNodes()) {
       var prevId = parseInt(infinteScroll.lastChild.getAttribute("data-id"), 10);
-      if (prevId === Object.keys(_2["default"]).length - 1) newId = 0;else newId = prevId + 1;
+      if (prevId === animKeys.length - 1) newId = 0;else newId = prevId + 1;
     }
 
-    item.innerHTML = "<img src=\"" + _2["default"]["Untitled_Artwork-" + (newId + 1)]["png"] + "\">\n    <div>" + newId + "</div>";
+    item.innerHTML = "<img src=\"" + _2["default"][animKeys[newId]]["png"] + "\">\n    <div>" + newId + "</div>";
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
   }
@@ -294,13 +314,31 @@ function loadHome() {
     var infiniteScroll = document.querySelector(".infinite-scroll");
     var item = document.createElement("div");
     item.classList.add("infinite-scroll__item");
+    var animKeys = Object.keys(_2["default"]);
     var prevId = parseInt(infiniteScroll.firstChild.getAttribute("data-id"), 10);
-    if (prevId === 0) newId = Object.keys(_2["default"]).length - 1;else newId = prevId - 1;
-    item.innerHTML = "<img src=\"" + _2["default"]["Untitled_Artwork-" + (newId + 1)]["png"] + "\">\n  <div>" + newId + "</div>";
+    if (prevId === 0) newId = animKeys.length - 1;else newId = prevId - 1;
+    item.innerHTML = "<img src=\"" + _2["default"][animKeys[newId]]["png"] + "\">\n  <div>" + newId + "</div>";
     item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item); // correct scroll position for new item
 
     infiniteScroll.style.transform = "translateY(" + -item.offsetHeight + "px)";
+  }
+
+  function handleStaticFrame(deltaY) {
+    var newId;
+    var frame = staticAnim.querySelector(".static-anim img");
+    var curId = parseInt(frame.getAttribute("data-id"), 10);
+    var animKeys = Object.keys(_2["default"]); // define new id
+
+    if (deltaY > 0) {
+      if (curId === animKeys.length - 1) newId = 0;else newId = curId + 1;
+    } else {
+      if (curId === 0) newId = animKeys.length - 1;else newId = curId - 1;
+    } // update frame
+
+
+    frame.src = _2["default"][animKeys[newId]]["png"];
+    frame.setAttribute("data-id", newId);
   }
 } // event throttling
 

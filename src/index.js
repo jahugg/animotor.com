@@ -89,6 +89,17 @@ function loadHome() {
   link.href = "/about";
   link.innerHTML = "about";
 
+  // static animation frame
+  let animKeys = Object.keys(animation);
+  let staticAnim = document.createElement("div");
+  staticAnim.classList.add("static-anim");
+  main.appendChild(staticAnim);
+  let frame = document.createElement("img");
+  frame.src = animation[animKeys[0]]["png"];
+  frame.setAttribute("data-id", 0);
+  staticAnim.appendChild(frame);
+
+  // infinite scroll
   let container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   main.appendChild(container);
@@ -191,12 +202,23 @@ function loadHome() {
     }
   }
 
+  let wheelTracker = 0;
+
   // handle wheel event
   function handleWheel(event) {
     event.preventDefault();
     let deltaY = event.deltaY * -1
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
+
+    wheelTracker += event.deltaY;
+    let item = document.querySelector(".infinite-scroll__item");
+    if (wheelTracker >= item.offsetHeight ||
+      wheelTracker <= (item.offsetHeight * -1)) {
+      console.log("next frame");
+      wheelTracker = 0;
+      handleStaticFrame(deltaY);
+    }
   }
 
   function getScrollPos() {
@@ -228,16 +250,17 @@ function loadHome() {
     let infinteScroll = document.querySelector(".infinite-scroll");
     let item = document.createElement("div");
     item.classList.add("infinite-scroll__item");
+    let animKeys = Object.keys(animation);
 
     // define new id if children exist
     if (infinteScroll.hasChildNodes()) {
       let prevId = parseInt(infinteScroll.lastChild.getAttribute("data-id"), 10);
-      if (prevId === Object.keys(animation).length - 1) newId = 0;
+      if (prevId === animKeys.length - 1) newId = 0;
       else newId = prevId + 1;
     }
 
-    item.innerHTML = `<img src="` + animation["Untitled_Artwork-" + (newId + 1)]["png"] + `">
-    <div>`+ newId +`</div>`;
+    item.innerHTML = `<img src="` + animation[animKeys[newId]]["png"] + `">
+    <div>`+ newId + `</div>`;
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
   }
@@ -248,18 +271,40 @@ function loadHome() {
     let infiniteScroll = document.querySelector(".infinite-scroll");
     let item = document.createElement("div");
     item.classList.add("infinite-scroll__item");
+    let animKeys = Object.keys(animation);
 
     let prevId = parseInt(infiniteScroll.firstChild.getAttribute("data-id"), 10);
-    if (prevId === 0) newId = Object.keys(animation).length - 1;
+    if (prevId === 0) newId = animKeys.length - 1;
     else newId = prevId - 1;
 
-    item.innerHTML = `<img src="` + animation["Untitled_Artwork-" + (newId + 1)]["png"] + `">
-  <div>`+ newId +`</div>`;
-  item.setAttribute("data-id", newId);
+    item.innerHTML = `<img src="` + animation[animKeys[newId]]["png"] + `">
+  <div>`+ newId + `</div>`;
+    item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item);
 
     // correct scroll position for new item
     infiniteScroll.style.transform = "translateY(" + (-item.offsetHeight) + "px)";
+  }
+
+  function handleStaticFrame(deltaY) {
+    let newId;
+    let frame = staticAnim.querySelector(".static-anim img");
+    let curId = parseInt(frame.getAttribute("data-id"), 10);
+    let animKeys = Object.keys(animation);
+
+    // define new id
+    if (deltaY > 0) {
+      if (curId === animKeys.length - 1) newId = 0;
+      else newId = curId + 1;
+    } else {
+      if (curId === 0) newId = animKeys.length - 1;
+      else newId = curId - 1;
+    }
+
+    // update frame
+    frame.src = animation[animKeys[newId]]["png"];
+    frame.setAttribute("data-id", newId);
+
   }
 }
 
