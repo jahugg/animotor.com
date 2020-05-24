@@ -92,6 +92,7 @@ video {
   z-index: 10;
   width: 200px;
   height: 200px;
+  opacity: 0;
 }
 .static-anim img {
   width: 100%;
