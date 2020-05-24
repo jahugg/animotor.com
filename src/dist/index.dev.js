@@ -280,6 +280,7 @@ function loadHome() {
     lastTouchPosY = touches[0].pageY;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
+    controlFade(deltaY);
   }
 
   function handleTouchEnd(event) {
@@ -293,6 +294,7 @@ function loadHome() {
       deltaY = Math.min(Math.max(deltaY, -80), 80);
       var translateY = getScrollPos() + deltaY;
       setScrollPos(translateY);
+      controlFade(deltaY);
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
