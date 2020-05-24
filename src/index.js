@@ -120,7 +120,7 @@ function loadHome() {
   container.addEventListener("touchcancel", handleTouchEnd, false);
 
   // callback function to execute when mutations are observed
-  const handleInfiniteScroll = function (mutationsList, observer) {
+  const onScrollChange = function (mutationsList, observer) {
     for (let mutation of mutationsList) {
       if (mutation.type === 'attributes' &&
         mutation.attributeName === 'style') {
@@ -147,12 +147,40 @@ function loadHome() {
         // append new child if bottom reached
         else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight)
           appendItem();
+
+        // handle static animation frame
+        let items = document.getElementsByClassName("infinite-scroll__item");
+        let staticContainer = document.querySelector(".static-anim");
+        let staticImage = staticContainer.querySelector("img");
+        let staticRect = staticContainer.getBoundingClientRect();
+        let closestItem;
+        let lastDist = 9999;
+
+        // find closest item
+        for (let item of items) {
+          let itemRect = item.getBoundingClientRect();
+          let dist = Math.abs(itemRect.top - staticRect.top);
+
+          if (dist < lastDist) {
+            lastDist = dist;
+            closestItem = item;
+          }
+        }
+
+        // if closest item is above static apply image
+        let closestRect = closestItem.getBoundingClientRect();
+
+        if (closestRect.top <= staticRect.top) {
+          let id = closestItem.getAttribute("data-id");
+          staticImage.src = animation[animKeys[id]]["png"];
+          staticImage.setAttribute("data-id", id);
+        }
       }
     }
   };
 
   // create mutation obsever to handle translateY changes
-  const observer = new MutationObserver(handleInfiniteScroll);
+  const observer = new MutationObserver(onScrollChange);
   observer.observe(infiniteScroll, { attributes: true });
 
   // handle touch events
@@ -178,7 +206,6 @@ function loadHome() {
 
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
-    controlStaticAnim(deltaY);
   }
 
   function handleTouchEnd(event) {
@@ -195,7 +222,6 @@ function loadHome() {
 
       let translateY = getScrollPos() + deltaY;
       setScrollPos(translateY);
-      controlStaticAnim(deltaY);
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
@@ -212,17 +238,6 @@ function loadHome() {
     let deltaY = event.deltaY * -1
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
-    controlStaticAnim(event.deltaY);
-  }
-
-  function controlStaticAnim(deltaY) {
-    moveTracker += deltaY;
-    let item = document.querySelector(".infinite-scroll__item");
-    if (moveTracker >= item.offsetHeight ||
-      moveTracker <= (item.offsetHeight * -1)) {
-      moveTracker = 0;
-      handleStaticFrame(deltaY);
-    }
   }
 
   function getScrollPos() {
@@ -288,27 +303,6 @@ function loadHome() {
 
     // correct scroll position for new item
     infiniteScroll.style.transform = "translateY(" + (-item.offsetHeight) + "px)";
-  }
-
-  function handleStaticFrame(deltaY) {
-    let newId;
-    let frame = staticAnim.querySelector(".static-anim img");
-    let curId = parseInt(frame.getAttribute("data-id"), 10);
-    let animKeys = Object.keys(animation);
-
-    // define new id
-    if (deltaY > 0) {
-      if (curId === animKeys.length - 1) newId = 0;
-      else newId = curId + 1;
-    } else {
-      if (curId === 0) newId = animKeys.length - 1;
-      else newId = curId - 1;
-    }
-
-    // update frame
-    frame.src = animation[animKeys[newId]]["png"];
-    frame.setAttribute("data-id", newId);
-
   }
 }
 

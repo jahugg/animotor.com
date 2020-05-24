@@ -163,7 +163,7 @@ function loadHome() {
   container.addEventListener("touchend", handleTouchEnd, false);
   container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
-  var handleInfiniteScroll = function handleInfiniteScroll(mutationsList, observer) {
+  var onScrollChange = function onScrollChange(mutationsList, observer) {
     var _iteratorNormalCompletion3 = true;
     var _didIteratorError3 = false;
     var _iteratorError3 = undefined;
@@ -187,7 +187,53 @@ function loadHome() {
 
 
           if (translateY > 0) prependItem(); // append new child if bottom reached
-          else if (window.innerHeight + Math.abs(translateY) > _infiniteScroll.offsetHeight) appendItem();
+          else if (window.innerHeight + Math.abs(translateY) > _infiniteScroll.offsetHeight) appendItem(); // handle static animation frame
+
+          var items = document.getElementsByClassName("infinite-scroll__item");
+          var staticContainer = document.querySelector(".static-anim");
+          var staticImage = staticContainer.querySelector("img");
+          var staticRect = staticContainer.getBoundingClientRect();
+          var closestItem = void 0;
+          var lastDist = 9999; // find closest item
+
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var item = _step4.value;
+              var itemRect = item.getBoundingClientRect();
+              var dist = Math.abs(itemRect.top - staticRect.top);
+
+              if (dist < lastDist) {
+                lastDist = dist;
+                closestItem = item;
+              }
+            } // if closest item is above static apply image
+
+          } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                _iterator4["return"]();
+              }
+            } finally {
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+
+          var closestRect = closestItem.getBoundingClientRect();
+
+          if (closestRect.top <= staticRect.top) {
+            var id = closestItem.getAttribute("data-id");
+            staticImage.src = _2["default"][animKeys[id]]["png"];
+            staticImage.setAttribute("data-id", id);
+          }
         }
       }
     } catch (err) {
@@ -207,7 +253,7 @@ function loadHome() {
   }; // create mutation obsever to handle translateY changes
 
 
-  var observer = new MutationObserver(handleInfiniteScroll);
+  var observer = new MutationObserver(onScrollChange);
   observer.observe(infiniteScroll, {
     attributes: true
   }); // handle touch events
@@ -233,7 +279,6 @@ function loadHome() {
     lastTouchPosY = touches[0].pageY;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
-    controlStaticAnim(deltaY);
   }
 
   function handleTouchEnd(event) {
@@ -247,7 +292,6 @@ function loadHome() {
       deltaY = Math.min(Math.max(deltaY, -80), 80);
       var translateY = getScrollPos() + deltaY;
       setScrollPos(translateY);
-      controlStaticAnim(deltaY);
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
@@ -262,17 +306,6 @@ function loadHome() {
     var deltaY = event.deltaY * -1;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
-    controlStaticAnim(event.deltaY);
-  }
-
-  function controlStaticAnim(deltaY) {
-    moveTracker += deltaY;
-    var item = document.querySelector(".infinite-scroll__item");
-
-    if (moveTracker >= item.offsetHeight || moveTracker <= item.offsetHeight * -1) {
-      moveTracker = 0;
-      handleStaticFrame(deltaY);
-    }
   }
 
   function getScrollPos() {
@@ -327,23 +360,6 @@ function loadHome() {
     infiniteScroll.prepend(item); // correct scroll position for new item
 
     infiniteScroll.style.transform = "translateY(" + -item.offsetHeight + "px)";
-  }
-
-  function handleStaticFrame(deltaY) {
-    var newId;
-    var frame = staticAnim.querySelector(".static-anim img");
-    var curId = parseInt(frame.getAttribute("data-id"), 10);
-    var animKeys = Object.keys(_2["default"]); // define new id
-
-    if (deltaY > 0) {
-      if (curId === animKeys.length - 1) newId = 0;else newId = curId + 1;
-    } else {
-      if (curId === 0) newId = animKeys.length - 1;else newId = curId - 1;
-    } // update frame
-
-
-    frame.src = _2["default"][animKeys[newId]]["png"];
-    frame.setAttribute("data-id", newId);
   }
 } // event throttling
 
