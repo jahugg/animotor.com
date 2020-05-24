@@ -215,6 +215,7 @@ function loadHome() {
   var lastTouchPosY;
   var endTouchPosY;
   var reqAnimFrame;
+  var moveTracker = 0;
 
   function handleTouchStart(event) {
     event.preventDefault();
@@ -232,6 +233,7 @@ function loadHome() {
     lastTouchPosY = touches[0].pageY;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
+    controlStaticAnim(deltaY);
   }
 
   function handleTouchEnd(event) {
@@ -245,27 +247,30 @@ function loadHome() {
       deltaY = Math.min(Math.max(deltaY, -80), 80);
       var translateY = getScrollPos() + deltaY;
       setScrollPos(translateY);
+      controlStaticAnim(deltaY);
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
         if (deltaY > 0) deltaY--;else if (deltaY < 0) deltaY++;
       }
     }
-  }
+  } // handle wheel event
 
-  var wheelTracker = 0; // handle wheel event
 
   function handleWheel(event) {
     event.preventDefault();
     var deltaY = event.deltaY * -1;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
-    wheelTracker += event.deltaY;
+    controlStaticAnim(event.deltaY);
+  }
+
+  function controlStaticAnim(deltaY) {
+    moveTracker += deltaY;
     var item = document.querySelector(".infinite-scroll__item");
 
-    if (wheelTracker >= item.offsetHeight || wheelTracker <= item.offsetHeight * -1) {
-      console.log("next frame");
-      wheelTracker = 0;
+    if (moveTracker >= item.offsetHeight || moveTracker <= item.offsetHeight * -1) {
+      moveTracker = 0;
       handleStaticFrame(deltaY);
     }
   }

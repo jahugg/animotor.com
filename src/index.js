@@ -160,6 +160,8 @@ function loadHome() {
   let endTouchPosY;
   let reqAnimFrame;
 
+  let moveTracker = 0;
+
   function handleTouchStart(event) {
     event.preventDefault();
     let touches = event.changedTouches;
@@ -176,6 +178,7 @@ function loadHome() {
 
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
+    controlStaticAnim(deltaY);
   }
 
   function handleTouchEnd(event) {
@@ -192,6 +195,7 @@ function loadHome() {
 
       let translateY = getScrollPos() + deltaY;
       setScrollPos(translateY);
+      controlStaticAnim(deltaY);
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
@@ -202,21 +206,21 @@ function loadHome() {
     }
   }
 
-  let wheelTracker = 0;
-
   // handle wheel event
   function handleWheel(event) {
     event.preventDefault();
     let deltaY = event.deltaY * -1
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
+    controlStaticAnim(event.deltaY);
+  }
 
-    wheelTracker += event.deltaY;
+  function controlStaticAnim(deltaY) {
+    moveTracker += deltaY;
     let item = document.querySelector(".infinite-scroll__item");
-    if (wheelTracker >= item.offsetHeight ||
-      wheelTracker <= (item.offsetHeight * -1)) {
-      console.log("next frame");
-      wheelTracker = 0;
+    if (moveTracker >= item.offsetHeight ||
+      moveTracker <= (item.offsetHeight * -1)) {
+      moveTracker = 0;
       handleStaticFrame(deltaY);
     }
   }
