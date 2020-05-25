@@ -63,18 +63,43 @@ video {
 }
 
 #nav {
-  position       : fixed;
-  top            : 0;
-  z-index        : 10;
-  display        : flex;
-  justify-content: space-between;
-  width          : 100%;
+  position: fixed;
+  z-index : 100;
+  top     : 0;
+  padding : .5em 1em;
+
+  ul {
+    margin         : 0;
+    padding        : 0;
+    list-style-type: none;
+  }
 
   a {
-    display        : block;
+    position       : relative;
     text-decoration: none;
     color          : black;
-    padding        : .5em 1em;
+    line-height    : 1.4em;
+
+    &:after {
+      content         : "";
+      position        : absolute;
+      bottom          : 0;
+      left            : 0;
+      width           : 100%;
+      height          : 2px;
+      background      : rgba(0, 0, 0, .9);
+      transform       : scaleX(0);
+      transform-origin: 0 50%;
+      transition      : transform .1s;
+    }
+
+    &:hover,
+    &:focus,
+    &[data-active] {
+      &:after {
+        transform: scaleX(1);
+      }
+    }
   }
 }
 
@@ -131,7 +156,7 @@ video {
   }
 }
 
-.about {
+.info {
   padding  : 0 30px;
   max-width: 600px;
   margin   : 0 auto;

@@ -9,10 +9,14 @@ let defaultRoute = "/";
 let pages = [{
   "title": "home",
   "route": "/",
-  "content": "loadProjects()"
+  "content": "loadHome()"
+},{
+  "title": "work",
+  "route": "/work",
+  "content": "loadWork()"
 }, {
-  "title": "about",
-  "route": "/about",
+  "title": "info",
+  "route": "/info",
   "content": "content-info.md"
 }];
 
@@ -20,7 +24,7 @@ function initApp() {
   navigateToCurrentURL();
 
   // add custom link functionality
-  let links = document.querySelectorAll('a[data-link="page"]');
+  let links = document.querySelectorAll('a[data-link]');
   for (let link of links)
     link.addEventListener("click", handlePageLink);
 }
@@ -71,39 +75,41 @@ function buildPage(stateObj) {
   // push page browser history
   window.history.pushState(stateObj, '', currentPage.route);
 
+  // handle navigation items
+  let links = document.querySelectorAll('a[data-link]');
+  for (let link of links)
+    link.removeAttribute("data-active");
+
+  // set link for current page as active
+  document.querySelector('a[href="'+currentPage.route+'"]').setAttribute("data-active", "");
+
   // build page contents
   if (currentPage.title === "home") {
     loadHome();
 
-  } else if (currentPage.title === "about") {
-    let link = document.querySelector("#nav a");
-    link.href = "/";
-    link.innerHTML = "work";
-    main.innerHTML = `<article class="about">` + contentInfo + `</article>`;
+  } else if (currentPage.title === "info") {
+    main.innerHTML = `<article class="info">` + contentInfo + `</article>`;
   }
 }
 
 function loadHome() {
 
-  let link = document.querySelector("#nav a");
-  link.href = "/about";
-  link.innerHTML = "about";
+  // container
+  let container = document.createElement("div");
+  container.classList.add("infinite-scroll-container");
+  main.appendChild(container);
 
   // static animation frame
   let animKeys = Object.keys(animation);
   let staticAnim = document.createElement("div");
   staticAnim.classList.add("static-anim");
-  main.appendChild(staticAnim);
+  container.appendChild(staticAnim);
   let frame = document.createElement("img");
   frame.src = animation[animKeys[0]]["png"];
   frame.setAttribute("data-id", 0);
   staticAnim.appendChild(frame);
 
   // infinite scroll
-  let container = document.createElement("div");
-  container.classList.add("infinite-scroll-container");
-  main.appendChild(container);
-
   let infiniteScroll = document.createElement("div");
   infiniteScroll.classList.add("infinite-scroll");
   container.appendChild(infiniteScroll);
@@ -248,7 +254,7 @@ function loadHome() {
     let speed = Math.abs(deltaY);
     let max = 100;
     speed = Math.min(Math.max(speed, 0), max);
-    let fadeInv = map(speed, 0, max, 1, 0);
+    let fadeInv = map(speed, 0, max, .8, .2);
     let fade = map(speed, 0, max, 0, 1);
     
     let staticAnim = document.querySelector(".static-anim");

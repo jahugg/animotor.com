@@ -18,17 +18,21 @@ var defaultRoute = "/";
 var pages = [{
   "title": "home",
   "route": "/",
-  "content": "loadProjects()"
+  "content": "loadHome()"
 }, {
-  "title": "about",
-  "route": "/about",
+  "title": "work",
+  "route": "/work",
+  "content": "loadWork()"
+}, {
+  "title": "info",
+  "route": "/info",
   "content": "content-info.md"
 }];
 
 function initApp() {
   navigateToCurrentURL(); // add custom link functionality
 
-  var links = document.querySelectorAll('a[data-link="page"]');
+  var links = document.querySelectorAll('a[data-link]');
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -119,35 +123,58 @@ function buildPage(stateObj) {
     }
   }
 
-  window.history.pushState(stateObj, '', currentPage.route); // build page contents
+  window.history.pushState(stateObj, '', currentPage.route); // handle navigation items
+
+  var links = document.querySelectorAll('a[data-link]');
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = links[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      var link = _step3.value;
+      link.removeAttribute("data-active");
+    } // set link for current page as active
+
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+        _iterator3["return"]();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
+
+  document.querySelector('a[href="' + currentPage.route + '"]').setAttribute("data-active", ""); // build page contents
 
   if (currentPage.title === "home") {
     loadHome();
-  } else if (currentPage.title === "about") {
-    var link = document.querySelector("#nav a");
-    link.href = "/";
-    link.innerHTML = "work";
-    main.innerHTML = "<article class=\"about\">" + _contentInfo["default"] + "</article>";
+  } else if (currentPage.title === "info") {
+    main.innerHTML = "<article class=\"info\">" + _contentInfo["default"] + "</article>";
   }
 }
 
 function loadHome() {
-  var link = document.querySelector("#nav a");
-  link.href = "/about";
-  link.innerHTML = "about"; // static animation frame
+  // container
+  var container = document.createElement("div");
+  container.classList.add("infinite-scroll-container");
+  main.appendChild(container); // static animation frame
 
   var animKeys = Object.keys(_2["default"]);
   var staticAnim = document.createElement("div");
   staticAnim.classList.add("static-anim");
-  main.appendChild(staticAnim);
+  container.appendChild(staticAnim);
   var frame = document.createElement("img");
   frame.src = _2["default"][animKeys[0]]["png"];
   frame.setAttribute("data-id", 0);
   staticAnim.appendChild(frame); // infinite scroll
 
-  var container = document.createElement("div");
-  container.classList.add("infinite-scroll-container");
-  main.appendChild(container);
   var infiniteScroll = document.createElement("div");
   infiniteScroll.classList.add("infinite-scroll");
   container.appendChild(infiniteScroll); // fill screen with tiles
@@ -164,13 +191,13 @@ function loadHome() {
   container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
   var onScrollChange = function onScrollChange(mutationsList, observer) {
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    var _iteratorNormalCompletion4 = true;
+    var _didIteratorError4 = false;
+    var _iteratorError4 = undefined;
 
     try {
-      for (var _iterator3 = mutationsList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var mutation = _step3.value;
+      for (var _iterator4 = mutationsList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        var mutation = _step4.value;
 
         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
           var _infiniteScroll = document.querySelector(".infinite-scroll");
@@ -196,13 +223,13 @@ function loadHome() {
           var closestItem = void 0;
           var lastDist = 9999; // find closest item
 
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var item = _step4.value;
+            for (var _iterator5 = items[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var item = _step5.value;
               var itemRect = item.getBoundingClientRect();
               var dist = Math.abs(itemRect.top - staticRect.top);
 
@@ -213,16 +240,16 @@ function loadHome() {
             } // if closest item is above static apply image
 
           } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-                _iterator4["return"]();
+              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+                _iterator5["return"]();
               }
             } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
+              if (_didIteratorError5) {
+                throw _iteratorError5;
               }
             }
           }
@@ -238,16 +265,16 @@ function loadHome() {
         }
       }
     } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
+      _didIteratorError4 = true;
+      _iteratorError4 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-          _iterator3["return"]();
+        if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+          _iterator4["return"]();
         }
       } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
+        if (_didIteratorError4) {
+          throw _iteratorError4;
         }
       }
     }
@@ -316,7 +343,7 @@ function loadHome() {
     var speed = Math.abs(deltaY);
     var max = 100;
     speed = Math.min(Math.max(speed, 0), max);
-    var fadeInv = map(speed, 0, max, 1, 0);
+    var fadeInv = map(speed, 0, max, .8, .2);
     var fade = map(speed, 0, max, 0, 1);
     var staticAnim = document.querySelector(".static-anim");
     var infiniteScroll = document.querySelector(".infinite-scroll");
