@@ -10,7 +10,7 @@ let pages = [{
   "title": "home",
   "route": "/",
   "content": "loadHome()"
-},{
+}, {
   "title": "work",
   "route": "/work",
   "content": "loadWork()"
@@ -81,7 +81,7 @@ function buildPage(stateObj) {
     link.removeAttribute("data-active");
 
   // set link for current page as active
-  document.querySelector('a[href="'+currentPage.route+'"]').setAttribute("data-active", "");
+  document.querySelector('a[href="' + currentPage.route + '"]').setAttribute("data-active", "");
 
   // build page contents
   if (currentPage.title === "home") {
@@ -234,9 +234,10 @@ function loadHome() {
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+        let stepSize = .5;
 
-        if (deltaY > 0) deltaY--;
-        else if (deltaY < 0) deltaY++;
+        if (deltaY > 0) deltaY -= stepSize;
+        else if (deltaY < 0) deltaY += stepSize;
       }
     }
   }
@@ -244,6 +245,7 @@ function loadHome() {
   // handle wheel event
   function handleWheel(event) {
     event.preventDefault();
+    console.log(event);
     let deltaY = event.deltaY * -1
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
@@ -256,10 +258,10 @@ function loadHome() {
     speed = Math.min(Math.max(speed, 0), max);
     let fadeInv = map(speed, 0, max, .8, .2);
     let fade = map(speed, 0, max, 0, 1);
-    
+
     let staticAnim = document.querySelector(".static-anim");
     let infiniteScroll = document.querySelector(".infinite-scroll");
-    staticAnim.style.opacity = fade;
+    // staticAnim.style.opacity = fade;
     infiniteScroll.style.opacity = fadeInv;
   }
 

@@ -325,7 +325,8 @@ function loadHome() {
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
-        if (deltaY > 0) deltaY--;else if (deltaY < 0) deltaY++;
+        var stepSize = .5;
+        if (deltaY > 0) deltaY -= stepSize;else if (deltaY < 0) deltaY += stepSize;
       }
     }
   } // handle wheel event
@@ -333,6 +334,7 @@ function loadHome() {
 
   function handleWheel(event) {
     event.preventDefault();
+    console.log(event);
     var deltaY = event.deltaY * -1;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
@@ -346,8 +348,8 @@ function loadHome() {
     var fadeInv = map(speed, 0, max, .8, .2);
     var fade = map(speed, 0, max, 0, 1);
     var staticAnim = document.querySelector(".static-anim");
-    var infiniteScroll = document.querySelector(".infinite-scroll");
-    staticAnim.style.opacity = fade;
+    var infiniteScroll = document.querySelector(".infinite-scroll"); // staticAnim.style.opacity = fade;
+
     infiniteScroll.style.opacity = fadeInv;
   }
 
