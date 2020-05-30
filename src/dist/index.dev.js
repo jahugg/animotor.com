@@ -334,7 +334,6 @@ function loadHome() {
 
   function handleWheel(event) {
     event.preventDefault();
-    console.log(event);
     var deltaY = event.deltaY * -1;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
@@ -343,14 +342,14 @@ function loadHome() {
 
   function controlFade(deltaY) {
     var speed = Math.abs(deltaY);
-    var max = 100;
+    var max = 50;
     speed = Math.min(Math.max(speed, 0), max);
-    var fadeInv = map(speed, 0, max, .8, .2);
-    var fade = map(speed, 0, max, 0, 1);
+    var fadeScroll = map(speed, 0, max, 1, .2);
+    var fadeStatic = map(speed, 10, max, 0, 1);
     var staticAnim = document.querySelector(".static-anim");
-    var infiniteScroll = document.querySelector(".infinite-scroll"); // staticAnim.style.opacity = fade;
-
-    infiniteScroll.style.opacity = fadeInv;
+    var infiniteScroll = document.querySelector(".infinite-scroll");
+    staticAnim.style.opacity = fadeStatic;
+    infiniteScroll.style.opacity = fadeScroll;
   }
 
   function getScrollPos() {
