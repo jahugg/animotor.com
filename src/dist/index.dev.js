@@ -15,19 +15,29 @@ var _contentInfo = _interopRequireDefault(require("./content-info.md"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 var defaultRoute = "/";
-var pages = [{
-  "title": "home",
-  "route": "/",
-  "content": "loadHome()"
-}, {
-  "title": "work",
-  "route": "/work",
-  "content": "loadWork()"
-}, {
-  "title": "info",
-  "route": "/info",
-  "content": "content-info.md"
-}];
+var pages = {
+  home: {
+    title: "Home",
+    slug: "/",
+    loadContents: function loadContents() {
+      loadHome();
+    }
+  },
+  work: {
+    title: "Work",
+    slug: "/work",
+    loadContents: function loadContents() {
+      loadWork();
+    }
+  },
+  info: {
+    title: "Info",
+    slug: "/info",
+    loadContents: function loadContents() {
+      loadInfo();
+    }
+  }
+};
 
 function initApp() {
   navigateToCurrentURL(); // add custom link functionality
@@ -62,7 +72,7 @@ function handlePageLink(event) {
   event.preventDefault();
   var target = event.target;
   var stateObj = {
-    route: target.getAttribute("href")
+    slug: target.getAttribute("href")
   }; // create state object
 
   buildPage(stateObj);
@@ -70,22 +80,18 @@ function handlePageLink(event) {
 
 
 function navigateToCurrentURL() {
-  // read route from url
-  var urlPath = window.location.pathname; // get valid routes
-
-  var validRoutes = [];
-
-  for (var _i = 0, _pages = pages; _i < _pages.length; _i++) {
-    var page = _pages[_i];
-    validRoutes.push(page.route);
-  } // check if string matches a valid route
-
+  // read slug from url
+  var urlPath = window.location.pathname; // check slug for validity
 
   var pageRoute = defaultRoute;
-  if (validRoutes.includes(urlPath)) pageRoute = urlPath; // create state object
+
+  for (var key in pages) {
+    if (pages[key].slug === urlPath) pageRoute = pages[key].slug;
+  } // create state object
+
 
   var stateObj = {
-    route: pageRoute
+    slug: pageRoute
   }; // build page
 
   buildPage(stateObj);
@@ -98,15 +104,24 @@ function buildPage(stateObj) {
   main.innerHTML = ""; // fetch matching page object
 
   var currentPage;
+
+  for (var key in pages) {
+    if (pages[key].slug === stateObj.slug) currentPage = pages[key];
+  } // push page browser history
+
+
+  window.history.pushState(stateObj, '', currentPage.slug); // handle navigation items
+
+  var links = document.querySelectorAll('a[data-link]');
   var _iteratorNormalCompletion2 = true;
   var _didIteratorError2 = false;
   var _iteratorError2 = undefined;
 
   try {
-    for (var _iterator2 = pages[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var page = _step2.value;
-      if (page.route == stateObj.route) currentPage = page;
-    } // push page browser history
+    for (var _iterator2 = links[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var link = _step2.value;
+      link.removeAttribute("data-active");
+    } // set link for current page as active
 
   } catch (err) {
     _didIteratorError2 = true;
@@ -123,41 +138,17 @@ function buildPage(stateObj) {
     }
   }
 
-  window.history.pushState(stateObj, '', currentPage.route); // handle navigation items
+  document.querySelector('a[href="' + currentPage.slug + '"]').setAttribute("data-active", ""); // load respective page contents
 
-  var links = document.querySelectorAll('a[data-link]');
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
+  currentPage.loadContents();
+}
 
-  try {
-    for (var _iterator3 = links[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      var link = _step3.value;
-      link.removeAttribute("data-active");
-    } // set link for current page as active
+function loadInfo() {
+  main.innerHTML = "<article class=\"info\">" + _contentInfo["default"] + "</article>";
+}
 
-  } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-        _iterator3["return"]();
-      }
-    } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
-      }
-    }
-  }
-
-  document.querySelector('a[href="' + currentPage.route + '"]').setAttribute("data-active", ""); // build page contents
-
-  if (currentPage.title === "home") {
-    loadHome();
-  } else if (currentPage.title === "info") {
-    main.innerHTML = "<article class=\"info\">" + _contentInfo["default"] + "</article>";
-  }
+function loadWork() {
+  console.log("load work");
 }
 
 function loadHome() {
@@ -191,13 +182,13 @@ function loadHome() {
   container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
   var onScrollChange = function onScrollChange(mutationsList, observer) {
-    var _iteratorNormalCompletion4 = true;
-    var _didIteratorError4 = false;
-    var _iteratorError4 = undefined;
+    var _iteratorNormalCompletion3 = true;
+    var _didIteratorError3 = false;
+    var _iteratorError3 = undefined;
 
     try {
-      for (var _iterator4 = mutationsList[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-        var mutation = _step4.value;
+      for (var _iterator3 = mutationsList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        var mutation = _step3.value;
 
         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
           var _infiniteScroll = document.querySelector(".infinite-scroll");
@@ -223,13 +214,13 @@ function loadHome() {
           var closestItem = void 0;
           var lastDist = 9999; // find closest item
 
-          var _iteratorNormalCompletion5 = true;
-          var _didIteratorError5 = false;
-          var _iteratorError5 = undefined;
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
 
           try {
-            for (var _iterator5 = items[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var item = _step5.value;
+            for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var item = _step4.value;
               var itemRect = item.getBoundingClientRect();
               var dist = Math.abs(itemRect.top - staticRect.top);
 
@@ -240,16 +231,16 @@ function loadHome() {
             } // if closest item is above static apply image
 
           } catch (err) {
-            _didIteratorError5 = true;
-            _iteratorError5 = err;
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
-                _iterator5["return"]();
+              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                _iterator4["return"]();
               }
             } finally {
-              if (_didIteratorError5) {
-                throw _iteratorError5;
+              if (_didIteratorError4) {
+                throw _iteratorError4;
               }
             }
           }
@@ -265,16 +256,16 @@ function loadHome() {
         }
       }
     } catch (err) {
-      _didIteratorError4 = true;
-      _iteratorError4 = err;
+      _didIteratorError3 = true;
+      _iteratorError3 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-          _iterator4["return"]();
+        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+          _iterator3["return"]();
         }
       } finally {
-        if (_didIteratorError4) {
-          throw _iteratorError4;
+        if (_didIteratorError3) {
+          throw _iteratorError3;
         }
       }
     }
@@ -325,7 +316,7 @@ function loadHome() {
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
-        var stepSize = .5;
+        var stepSize = .25;
         if (deltaY > 0) deltaY -= stepSize;else if (deltaY < 0) deltaY += stepSize;
       }
     }
@@ -344,7 +335,7 @@ function loadHome() {
     var speed = Math.abs(deltaY);
     var max = 80;
     speed = Math.min(Math.max(speed, 0), max);
-    var fadeScroll = map(speed, 0, max, 1, .05);
+    var fadeScroll = map(speed, 0, max, 1, .1);
     var fadeStatic = map(speed, 20, max, 0, 1);
     var staticAnim = document.querySelector(".static-anim");
     var infiniteScroll = document.querySelector(".infinite-scroll");

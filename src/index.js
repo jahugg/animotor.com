@@ -6,19 +6,23 @@ import animation from "./animation/*.*";
 import contentInfo from "./content-info.md";
 
 let defaultRoute = "/";
-let pages = [{
-  "title": "home",
-  "route": "/",
-  "content": "loadHome()"
-}, {
-  "title": "work",
-  "route": "/work",
-  "content": "loadWork()"
-}, {
-  "title": "info",
-  "route": "/info",
-  "content": "content-info.md"
-}];
+let pages = {
+  home: {
+    title: "Home",
+    slug: "/",
+    loadContents: function(){ loadHome() }
+  },
+  work: {
+    title: "Work",
+    slug: "/work",
+    loadContents: function(){ loadWork() }
+  },
+  info: {
+    title: "Info",
+    slug: "/info",
+    loadContents: function(){ loadInfo() }
+  }
+};
 
 function initApp() {
   navigateToCurrentURL();
@@ -32,28 +36,24 @@ function initApp() {
 function handlePageLink(event) {
   event.preventDefault();
   let target = event.target;
-  let stateObj = { route: target.getAttribute("href") }; // create state object
+  let stateObj = { slug: target.getAttribute("href") }; // create state object
   buildPage(stateObj);
 }
 
 // navigate to current url
 function navigateToCurrentURL() {
 
-  // read route from url
+  // read slug from url
   var urlPath = window.location.pathname;
 
-  // get valid routes
-  let validRoutes = [];
-  for (let page of pages)
-    validRoutes.push(page.route);
-
-  // check if string matches a valid route
+  // check slug for validity
   let pageRoute = defaultRoute;
-  if (validRoutes.includes(urlPath))
-    pageRoute = urlPath;
+  for (let key in pages)
+    if (pages[key].slug === urlPath)
+    pageRoute = pages[key].slug;
 
   // create state object
-  let stateObj = { route: pageRoute };
+  let stateObj = { slug: pageRoute };
 
   // build page
   buildPage(stateObj);
@@ -68,12 +68,12 @@ function buildPage(stateObj) {
 
   // fetch matching page object
   let currentPage;
-  for (let page of pages)
-    if (page.route == stateObj.route)
-      currentPage = page;
+  for (let key in pages)
+    if (pages[key].slug === stateObj.slug)
+      currentPage = pages[key];
 
   // push page browser history
-  window.history.pushState(stateObj, '', currentPage.route);
+  window.history.pushState(stateObj, '', currentPage.slug);
 
   // handle navigation items
   let links = document.querySelectorAll('a[data-link]');
@@ -81,15 +81,18 @@ function buildPage(stateObj) {
     link.removeAttribute("data-active");
 
   // set link for current page as active
-  document.querySelector('a[href="' + currentPage.route + '"]').setAttribute("data-active", "");
+  document.querySelector('a[href="' + currentPage.slug + '"]').setAttribute("data-active", "");
 
-  // build page contents
-  if (currentPage.title === "home") {
-    loadHome();
+  // load respective page contents
+  currentPage.loadContents();
+}
 
-  } else if (currentPage.title === "info") {
-    main.innerHTML = `<article class="info">` + contentInfo + `</article>`;
-  }
+function loadInfo() {
+  main.innerHTML = `<article class="info">` + contentInfo + `</article>`;
+}
+
+function loadWork() {
+  console.log("load work");
 }
 
 function loadHome() {
@@ -234,7 +237,7 @@ function loadHome() {
 
       if (deltaY > 0 || deltaY < 0) {
         reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
-        let stepSize = .5;
+        let stepSize = .25;
 
         if (deltaY > 0) deltaY -= stepSize;
         else if (deltaY < 0) deltaY += stepSize;
@@ -255,7 +258,7 @@ function loadHome() {
     let speed = Math.abs(deltaY);
     let max = 80;
     speed = Math.min(Math.max(speed, 0), max);
-    let fadeScroll = map(speed, 0, max, 1, .05);
+    let fadeScroll = map(speed, 0, max, 1, .1);
     let fadeStatic = map(speed, 20, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");
