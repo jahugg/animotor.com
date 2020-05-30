@@ -253,9 +253,9 @@ function loadHome() {
 
   function controlFade(deltaY) {
     let speed = Math.abs(deltaY);
-    let max = 70;
+    let max = 80;
     speed = Math.min(Math.max(speed, 0), max);
-    let fadeScroll = map(speed, 0, max, 1, .15);
+    let fadeScroll = map(speed, 0, max, 1, .05);
     let fadeStatic = map(speed, 20, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");
@@ -302,7 +302,10 @@ function loadHome() {
       else newId = prevId + 1;
     }
 
-    item.innerHTML = `<img src="` + animation[animKeys[newId]]["png"] + `">
+    let fileId = newId + 1;
+    let fileName = "Untitled_Artwork-" + fileId.toString();
+
+    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">
     <div>`+ newId + `</div>`;
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
@@ -320,7 +323,10 @@ function loadHome() {
     if (prevId === 0) newId = animKeys.length - 1;
     else newId = prevId - 1;
 
-    item.innerHTML = `<img src="` + animation[animKeys[newId]]["png"] + `">
+    let fileId = newId + 1;
+    let fileName = "Untitled_Artwork-" + fileId.toString();
+
+    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">
   <div>`+ newId + `</div>`;
     item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item);

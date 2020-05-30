@@ -342,9 +342,9 @@ function loadHome() {
 
   function controlFade(deltaY) {
     var speed = Math.abs(deltaY);
-    var max = 70;
+    var max = 80;
     speed = Math.min(Math.max(speed, 0), max);
-    var fadeScroll = map(speed, 0, max, 1, .15);
+    var fadeScroll = map(speed, 0, max, 1, .05);
     var fadeStatic = map(speed, 20, max, 0, 1);
     var staticAnim = document.querySelector(".static-anim");
     var infiniteScroll = document.querySelector(".infinite-scroll");
@@ -386,7 +386,9 @@ function loadHome() {
       if (prevId === animKeys.length - 1) newId = 0;else newId = prevId + 1;
     }
 
-    item.innerHTML = "<img src=\"" + _2["default"][animKeys[newId]]["png"] + "\">\n    <div>" + newId + "</div>";
+    var fileId = newId + 1;
+    var fileName = "Untitled_Artwork-" + fileId.toString();
+    item.innerHTML = "<img src=\"" + _2["default"][fileName]["png"] + "\">\n    <div>" + newId + "</div>";
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
   }
@@ -399,7 +401,9 @@ function loadHome() {
     var animKeys = Object.keys(_2["default"]);
     var prevId = parseInt(infiniteScroll.firstChild.getAttribute("data-id"), 10);
     if (prevId === 0) newId = animKeys.length - 1;else newId = prevId - 1;
-    item.innerHTML = "<img src=\"" + _2["default"][animKeys[newId]]["png"] + "\">\n  <div>" + newId + "</div>";
+    var fileId = newId + 1;
+    var fileName = "Untitled_Artwork-" + fileId.toString();
+    item.innerHTML = "<img src=\"" + _2["default"][fileName]["png"] + "\">\n  <div>" + newId + "</div>";
     item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item); // correct scroll position for new item
 
