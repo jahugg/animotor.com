@@ -253,10 +253,10 @@ function loadHome() {
 
   function controlFade(deltaY) {
     let speed = Math.abs(deltaY);
-    let max = 50;
+    let max = 70;
     speed = Math.min(Math.max(speed, 0), max);
-    let fadeScroll = map(speed, 0, max, 1, .1);
-    let fadeStatic = map(speed, 10, max, 0, 1);
+    let fadeScroll = map(speed, 0, max, 1, .15);
+    let fadeStatic = map(speed, 20, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");
     let infiniteScroll = document.querySelector(".infinite-scroll");
