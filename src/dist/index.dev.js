@@ -344,7 +344,7 @@ function loadHome() {
     var speed = Math.abs(deltaY);
     var max = 50;
     speed = Math.min(Math.max(speed, 0), max);
-    var fadeScroll = map(speed, 0, max, 1, .2);
+    var fadeScroll = map(speed, 0, max, 1, .1);
     var fadeStatic = map(speed, 10, max, 0, 1);
     var staticAnim = document.querySelector(".static-anim");
     var infiniteScroll = document.querySelector(".infinite-scroll");
