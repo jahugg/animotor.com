@@ -1,12 +1,11 @@
 {
-  "projectName": [
-    {
-      "png": "hklsdfn"
-    }
+  "project Name": [
+    "file1",
+    "file2",
+    "file3"
   ],
-  "someotherproject": [
-    {
-      "png": "hklsdfn"
-    }
+  "some other project": [
+    "file1",
+    "file2"
   ]
 }

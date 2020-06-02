@@ -29,7 +29,6 @@ function initApp() {
   navigateToCurrentURL();
 
   window.addEventListener('popstate', (event) => {
-    console.log("pop state");
     let stateObj = { slug: event.state.slug };
     buildPage(stateObj, false);
   });
@@ -67,9 +66,10 @@ function buildNavigation() {
     link.href = pages[key].slug;
     link.setAttribute("data-link", "");
     link.innerHTML = pages[key].title;
-    link.addEventListener("click", handlePageLink);
     item.appendChild(link);
     list.appendChild(item);
+
+    link.addEventListener("click", handlePageLink);
   }
 }
 
@@ -94,18 +94,18 @@ function buildPage(stateObj, addToHistory) {
 
   // set page title
   let title = "Animotor";
-  if (currentPage !== defaultPage) title += " - "+currentPage.title;
+  if (currentPage !== defaultPage) title += " - " + currentPage.title;
   document.title = title;
 
   // push page into browser history
   if (addToHistory)
     window.history.pushState(stateObj, currentPage.title, currentPage.slug);
 
-  // load page contents
-  currentPage.loadContents();
-
   // update navigation
   updateNavigation(currentPage.slug);
+
+  // load page contents
+  currentPage.loadContents();
 }
 
 function updateNavigation(currentSlug) {
@@ -132,7 +132,19 @@ function loadInfo() {
 
 function loadWork() {
   let main = document.getElementById("main");
-  main.innerHTML = `some project stuff goes here`;
+
+  for (let key in projects) {
+    let projectContainer = document.createElement("div");
+    projectContainer.classList.add("project");
+    main.appendChild(projectContainer);
+
+    for (let mediaPath of projects[key]){
+      let mediaContainer = document.createElement("div");
+      mediaContainer.classList.add("project__wrapper");
+      mediaContainer.innerHTML = mediaPath;
+      projectContainer.appendChild(mediaContainer);
+    }
+  }
 }
 
 function loadHome() {
