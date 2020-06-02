@@ -14,10 +14,9 @@ var _contentInfo = _interopRequireDefault(require("./content-info.md"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var defaultRoute = "/";
 var pages = {
   home: {
-    title: "Home",
+    title: "Animotor",
     slug: "/",
     loadContents: function loadContents() {
       loadHome();
@@ -38,11 +37,90 @@ var pages = {
     }
   }
 };
+var defaultPage = pages.home;
 
 function initApp() {
-  navigateToCurrentURL(); // add custom link functionality
+  buildNavigation();
+  navigateToCurrentURL();
+  window.addEventListener('popstate', function (event) {
+    console.log("pop state");
+    var stateObj = {
+      slug: event.state.slug
+    };
+    buildPage(stateObj, false);
+  });
+}
 
-  var links = document.querySelectorAll('a[data-link]');
+function navigateToCurrentURL() {
+  // read slug from url
+  var urlPath = window.location.pathname; // check slug for validity
+
+  var currentPage = defaultPage;
+
+  for (var key in pages) {
+    if (pages[key].slug === urlPath) currentPage = pages[key];
+  } // create state object
+
+
+  var stateObj = {
+    slug: currentPage.slug
+  }; // build page
+
+  buildPage(stateObj, true);
+}
+
+function buildNavigation() {
+  var app = document.getElementById("app");
+  var nav = document.createElement("nav");
+  nav.id = "nav";
+  app.appendChild(nav);
+  var list = document.createElement("ul");
+  nav.appendChild(list);
+
+  for (var key in pages) {
+    var item = document.createElement("li");
+    var link = document.createElement("a");
+    link.href = pages[key].slug;
+    link.setAttribute("data-link", "");
+    link.innerHTML = pages[key].title;
+    link.addEventListener("click", handlePageLink);
+    item.appendChild(link);
+    list.appendChild(item);
+  }
+}
+
+function buildPage(stateObj, addToHistory) {
+  // check if main exists
+  var main = document.getElementById("main");
+  if (main) // empty main
+    main.innerHTML = "";else {
+    // create main
+    main = document.createElement("main");
+    main.id = "main";
+    app.appendChild(main);
+  } // fetch matching page object
+
+  var currentPage;
+
+  for (var key in pages) {
+    if (pages[key].slug === stateObj.slug) currentPage = pages[key];
+  } // set page title
+
+
+  var title = "Animotor";
+  if (currentPage !== defaultPage) title += " - " + currentPage.title;
+  document.title = title; // push page into browser history
+
+  if (addToHistory) window.history.pushState(stateObj, currentPage.title, currentPage.slug); // load page contents
+
+  currentPage.loadContents(); // update navigation
+
+  updateNavigation(currentPage.slug);
+}
+
+function updateNavigation(currentSlug) {
+  // handle navigation items
+  var links = document.querySelectorAll('nav a');
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -50,8 +128,9 @@ function initApp() {
   try {
     for (var _iterator = links[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var link = _step.value;
-      link.addEventListener("click", handlePageLink);
-    }
+      link.removeAttribute("data-active");
+    } // set link for current page as active
+
   } catch (err) {
     _didIteratorError = true;
     _iteratorError = err;
@@ -66,6 +145,8 @@ function initApp() {
       }
     }
   }
+
+  document.querySelector('a[href="' + currentSlug + '"]').setAttribute("data-active", "");
 }
 
 function handlePageLink(event) {
@@ -75,80 +156,17 @@ function handlePageLink(event) {
     slug: target.getAttribute("href")
   }; // create state object
 
-  buildPage(stateObj);
-} // navigate to current url
-
-
-function navigateToCurrentURL() {
-  // read slug from url
-  var urlPath = window.location.pathname; // check slug for validity
-
-  var pageRoute = defaultRoute;
-
-  for (var key in pages) {
-    if (pages[key].slug === urlPath) pageRoute = pages[key].slug;
-  } // create state object
-
-
-  var stateObj = {
-    slug: pageRoute
-  }; // build page
-
-  buildPage(stateObj);
-} // build new page
-
-
-function buildPage(stateObj) {
-  // clear page
-  var main = document.getElementById("main");
-  main.innerHTML = ""; // fetch matching page object
-
-  var currentPage;
-
-  for (var key in pages) {
-    if (pages[key].slug === stateObj.slug) currentPage = pages[key];
-  } // push page browser history
-
-
-  window.history.pushState(stateObj, '', currentPage.slug); // handle navigation items
-
-  var links = document.querySelectorAll('a[data-link]');
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
-
-  try {
-    for (var _iterator2 = links[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var link = _step2.value;
-      link.removeAttribute("data-active");
-    } // set link for current page as active
-
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-        _iterator2["return"]();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
-  }
-
-  document.querySelector('a[href="' + currentPage.slug + '"]').setAttribute("data-active", ""); // load respective page contents
-
-  currentPage.loadContents();
+  buildPage(stateObj, true);
 }
 
 function loadInfo() {
+  var main = document.getElementById("main");
   main.innerHTML = "<article class=\"info\">" + _contentInfo["default"] + "</article>";
 }
 
 function loadWork() {
-  console.log("load work");
+  var main = document.getElementById("main");
+  main.innerHTML = "some project stuff goes here";
 }
 
 function loadHome() {
@@ -182,13 +200,13 @@ function loadHome() {
   container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
   var onScrollChange = function onScrollChange(mutationsList, observer) {
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
 
     try {
-      for (var _iterator3 = mutationsList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var mutation = _step3.value;
+      for (var _iterator2 = mutationsList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var mutation = _step2.value;
 
         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
           var _infiniteScroll = document.querySelector(".infinite-scroll");
@@ -214,13 +232,13 @@ function loadHome() {
           var closestItem = void 0;
           var lastDist = 9999; // find closest item
 
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
 
           try {
-            for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var item = _step4.value;
+            for (var _iterator3 = items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var item = _step3.value;
               var itemRect = item.getBoundingClientRect();
               var dist = Math.abs(itemRect.top - staticRect.top);
 
@@ -231,16 +249,16 @@ function loadHome() {
             } // if closest item is above static apply image
 
           } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-                _iterator4["return"]();
+              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                _iterator3["return"]();
               }
             } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
+              if (_didIteratorError3) {
+                throw _iteratorError3;
               }
             }
           }
@@ -256,16 +274,16 @@ function loadHome() {
         }
       }
     } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-          _iterator3["return"]();
+        if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+          _iterator2["return"]();
         }
       } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
+        if (_didIteratorError2) {
+          throw _iteratorError2;
         }
       }
     }
@@ -400,8 +418,7 @@ function loadHome() {
 
     infiniteScroll.style.transform = "translateY(" + -item.offsetHeight + "px)";
   }
-} // event throttling
-
+}
 
 function throttledEvent(listener, delay) {
   var timeout;

@@ -1,70 +1,90 @@
 import "./fonts.less";
 import "./styles.less";
-import data from "./projects.json";
+import projects from "./projects.json";
 import mediaFiles from "./media/*.*";
 import animation from "./animation/*.*";
 import contentInfo from "./content-info.md";
 
-let defaultRoute = "/";
 let pages = {
   home: {
-    title: "Home",
+    title: "Animotor",
     slug: "/",
-    loadContents: function(){ loadHome() }
+    loadContents: function () { loadHome() }
   },
   work: {
     title: "Work",
     slug: "/work",
-    loadContents: function(){ loadWork() }
+    loadContents: function () { loadWork() }
   },
   info: {
     title: "Info",
     slug: "/info",
-    loadContents: function(){ loadInfo() }
+    loadContents: function () { loadInfo() }
   }
 };
+let defaultPage = pages.home;
 
 function initApp() {
+  buildNavigation();
   navigateToCurrentURL();
 
-  // add custom link functionality
-  let links = document.querySelectorAll('a[data-link]');
-  for (let link of links)
-    link.addEventListener("click", handlePageLink);
+  window.addEventListener('popstate', (event) => {
+    console.log("pop state");
+    let stateObj = { slug: event.state.slug };
+    buildPage(stateObj, false);
+  });
 }
 
-function handlePageLink(event) {
-  event.preventDefault();
-  let target = event.target;
-  let stateObj = { slug: target.getAttribute("href") }; // create state object
-  buildPage(stateObj);
-}
-
-// navigate to current url
 function navigateToCurrentURL() {
 
   // read slug from url
   var urlPath = window.location.pathname;
 
   // check slug for validity
-  let pageRoute = defaultRoute;
+  let currentPage = defaultPage;
   for (let key in pages)
     if (pages[key].slug === urlPath)
-    pageRoute = pages[key].slug;
+      currentPage = pages[key];
 
   // create state object
-  let stateObj = { slug: pageRoute };
+  let stateObj = { slug: currentPage.slug };
 
   // build page
-  buildPage(stateObj);
+  buildPage(stateObj, true);
 }
 
-// build new page
-function buildPage(stateObj) {
+function buildNavigation() {
+  let app = document.getElementById("app");
+  let nav = document.createElement("nav");
+  nav.id = "nav";
+  app.appendChild(nav);
+  let list = document.createElement("ul");
+  nav.appendChild(list);
 
-  // clear page
+  for (let key in pages) {
+    let item = document.createElement("li");
+    let link = document.createElement("a");
+    link.href = pages[key].slug;
+    link.setAttribute("data-link", "");
+    link.innerHTML = pages[key].title;
+    link.addEventListener("click", handlePageLink);
+    item.appendChild(link);
+    list.appendChild(item);
+  }
+}
+
+function buildPage(stateObj, addToHistory) {
+
+  // check if main exists
   let main = document.getElementById("main");
-  main.innerHTML = "";
+  if (main) // empty main
+    main.innerHTML = "";
+
+  else { // create main
+    main = document.createElement("main");
+    main.id = "main";
+    app.appendChild(main);
+  }
 
   // fetch matching page object
   let currentPage;
@@ -72,27 +92,47 @@ function buildPage(stateObj) {
     if (pages[key].slug === stateObj.slug)
       currentPage = pages[key];
 
-  // push page browser history
-  window.history.pushState(stateObj, '', currentPage.slug);
+  // set page title
+  let title = "Animotor";
+  if (currentPage !== defaultPage) title += " - "+currentPage.title;
+  document.title = title;
 
+  // push page into browser history
+  if (addToHistory)
+    window.history.pushState(stateObj, currentPage.title, currentPage.slug);
+
+  // load page contents
+  currentPage.loadContents();
+
+  // update navigation
+  updateNavigation(currentPage.slug);
+}
+
+function updateNavigation(currentSlug) {
   // handle navigation items
-  let links = document.querySelectorAll('a[data-link]');
+  let links = document.querySelectorAll('nav a');
   for (let link of links)
     link.removeAttribute("data-active");
 
   // set link for current page as active
-  document.querySelector('a[href="' + currentPage.slug + '"]').setAttribute("data-active", "");
+  document.querySelector('a[href="' + currentSlug + '"]').setAttribute("data-active", "");
+}
 
-  // load respective page contents
-  currentPage.loadContents();
+function handlePageLink(event) {
+  event.preventDefault();
+  let target = event.target;
+  let stateObj = { slug: target.getAttribute("href") }; // create state object
+  buildPage(stateObj, true);
 }
 
 function loadInfo() {
+  let main = document.getElementById("main");
   main.innerHTML = `<article class="info">` + contentInfo + `</article>`;
 }
 
 function loadWork() {
-  console.log("load work");
+  let main = document.getElementById("main");
+  main.innerHTML = `some project stuff goes here`;
 }
 
 function loadHome() {
@@ -339,7 +379,6 @@ function loadHome() {
   }
 }
 
-// event throttling
 function throttledEvent(listener, delay) {
   let timeout;
   return function (event) {

@@ -1,10 +1,12 @@
 {
-  "projects": [
+  "projectName": [
     {
-      "title": "001"
-    },
+      "png": "hklsdfn"
+    }
+  ],
+  "someotherproject": [
     {
-      "title": "002"
+      "png": "hklsdfn"
     }
   ]
 }
