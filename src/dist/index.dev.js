@@ -39,7 +39,8 @@ var defaultPage = pages.home;
 
 function initApp() {
   buildNavigation();
-  navigateToCurrentURL();
+  navigateToCurrentURL(); // handle history pop state events
+
   window.addEventListener('popstate', function (event) {
     var stateObj = {
       slug: event.state.slug
@@ -167,24 +168,95 @@ function loadWork() {
 
   for (var projectName in _["default"]) {
     var projectContainer = document.createElement("div");
-    projectContainer.classList.add("project");
-    main.appendChild(projectContainer); // iterate over project files
+    projectContainer.classList.add("slideshow");
+    main.appendChild(projectContainer);
+    var navigation = document.createElement("div");
+    navigation.classList.add("slideshow__nav");
+    projectContainer.appendChild(navigation);
+    var prevButton = document.createElement("button");
+    prevButton.classList.add("slideshow__nav__button");
+    navigation.appendChild(prevButton);
+    prevButton.addEventListener("click", previousSlide);
+    var nextButton = document.createElement("button");
+    nextButton.classList.add("slideshow__nav__button");
+    navigation.appendChild(nextButton);
+    nextButton.addEventListener("click", nextSlide);
+    var indicator = document.createElement("div");
+    indicator.classList.add("slideshow__indicator");
+    projectContainer.appendChild(indicator); // iterate over project files
 
     for (var fileName in _["default"][projectName]) {
       for (var fileType in _["default"][projectName][fileName]) {
         var filepath = _["default"][projectName][fileName][fileType];
         var mediaContainer = document.createElement("div");
-        mediaContainer.classList.add("project__wrapper");
+        mediaContainer.classList.add("slideshow__item");
         projectContainer.appendChild(mediaContainer);
+        var indicatorItem = document.createElement("div");
+        indicatorItem.classList.add("slideshow__indicator__item");
+        indicator.appendChild(indicatorItem);
+        indicator.addEventListener("click", jumpToSlide);
 
         if (fileType === "jpg" || fileType === "png") {
           var media = document.createElement("img");
           media.src = filepath;
-          media.classList.add("project__media");
+          media.classList.add("project__item__media");
           mediaContainer.appendChild(media);
         }
       }
+    } // set first indicator active
+
+
+    indicator.querySelector(".slideshow__indicator__item").setAttribute("data-active", "");
+  }
+
+  function jumpToSlide(event) {
+    var indicatorContainer = event.target.closest(".slideshow__indicator"); // remove active attribute
+
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
+
+    try {
+      for (var _iterator2 = indicatorContainer.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var child = _step2.value;
+        child.removeAttribute("data-active");
+      } // set active attribute
+
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+          _iterator2["return"]();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
+      }
     }
+
+    event.target.setAttribute("data-active", ""); // scroll to slide
+    //...
+  }
+
+  ;
+
+  function previousSlide(event) {
+    var slideshow = event.target.closest(".slideshow");
+    slideshow.scrollTo({
+      left: slideshow.scrollLeft - slideshow.offsetWidth,
+      behavior: 'smooth'
+    });
+  }
+
+  function nextSlide(event) {
+    var slideshow = event.target.closest(".slideshow");
+    slideshow.scrollTo({
+      left: slideshow.scrollLeft + slideshow.offsetWidth,
+      behavior: 'smooth'
+    });
   }
 }
 
@@ -219,13 +291,13 @@ function loadHome() {
   container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
   var onScrollChange = function onScrollChange(mutationsList, observer) {
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
+    var _iteratorNormalCompletion3 = true;
+    var _didIteratorError3 = false;
+    var _iteratorError3 = undefined;
 
     try {
-      for (var _iterator2 = mutationsList[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var mutation = _step2.value;
+      for (var _iterator3 = mutationsList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        var mutation = _step3.value;
 
         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
           var _infiniteScroll = document.querySelector(".infinite-scroll");
@@ -251,13 +323,13 @@ function loadHome() {
           var closestItem = void 0;
           var lastDist = 9999; // find closest item
 
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
 
           try {
-            for (var _iterator3 = items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var item = _step3.value;
+            for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var item = _step4.value;
               var itemRect = item.getBoundingClientRect();
               var dist = Math.abs(itemRect.top - staticRect.top);
 
@@ -268,16 +340,16 @@ function loadHome() {
             } // if closest item is above static apply image
 
           } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-                _iterator3["return"]();
+              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                _iterator4["return"]();
               }
             } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
+              if (_didIteratorError4) {
+                throw _iteratorError4;
               }
             }
           }
@@ -293,16 +365,16 @@ function loadHome() {
         }
       }
     } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
+      _didIteratorError3 = true;
+      _iteratorError3 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-          _iterator2["return"]();
+        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+          _iterator3["return"]();
         }
       } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
+        if (_didIteratorError3) {
+          throw _iteratorError3;
         }
       }
     }

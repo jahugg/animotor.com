@@ -27,6 +27,7 @@ function initApp() {
   buildNavigation();
   navigateToCurrentURL();
 
+  // handle history pop state events
   window.addEventListener('popstate', (event) => {
     let stateObj = { slug: event.state.slug };
     buildPage(stateObj, false);
@@ -136,25 +137,82 @@ function loadWork() {
   // iterate over projects
   for (let projectName in projects) {
     let projectContainer = document.createElement("div");
-    projectContainer.classList.add("project");
+    projectContainer.classList.add("slideshow");
     main.appendChild(projectContainer);
+
+    let navigation = document.createElement("div");
+    navigation.classList.add("slideshow__nav");
+    projectContainer.appendChild(navigation);
+
+    let prevButton = document.createElement("button");
+    prevButton.classList.add("slideshow__nav__button");
+    navigation.appendChild(prevButton);
+    prevButton.addEventListener("click", previousSlide);
+
+    let nextButton = document.createElement("button");
+    nextButton.classList.add("slideshow__nav__button");
+    navigation.appendChild(nextButton);
+    nextButton.addEventListener("click", nextSlide);
+
+    let indicator = document.createElement("div");
+    indicator.classList.add("slideshow__indicator");
+    projectContainer.appendChild(indicator);
+
 
     // iterate over project files
     for (let fileName in projects[projectName]) {
       for (let fileType in projects[projectName][fileName]) {
         let filepath = projects[projectName][fileName][fileType];
         let mediaContainer = document.createElement("div");
-        mediaContainer.classList.add("project__wrapper");
+        mediaContainer.classList.add("slideshow__item");
         projectContainer.appendChild(mediaContainer);
+
+        let indicatorItem = document.createElement("div");
+        indicatorItem.classList.add("slideshow__indicator__item");
+        indicator.appendChild(indicatorItem);
+        indicator.addEventListener("click", jumpToSlide);
 
         if (fileType === "jpg" || fileType === "png") {
           let media = document.createElement("img");
           media.src = filepath;
-          media.classList.add("project__media");
+          media.classList.add("project__item__media");
           mediaContainer.appendChild(media);
         }
       }
     }
+
+    // set first indicator active
+    indicator.querySelector(".slideshow__indicator__item").setAttribute("data-active", "");
+  }
+
+  function jumpToSlide(event) {
+    let indicatorContainer = event.target.closest(".slideshow__indicator");
+
+    // remove active attribute
+    for (let child of indicatorContainer.children)
+      child.removeAttribute("data-active");
+
+    // set active attribute
+    event.target.setAttribute("data-active", "");
+
+    // scroll to slide
+    //...
+  };
+
+  function previousSlide(event) {
+    let slideshow = event.target.closest(".slideshow");
+    slideshow.scrollTo({
+      left: slideshow.scrollLeft - slideshow.offsetWidth,
+      behavior: 'smooth'
+    });
+  }
+
+  function nextSlide(event) {
+    let slideshow = event.target.closest(".slideshow");
+    slideshow.scrollTo({
+      left: slideshow.scrollLeft + slideshow.offsetWidth,
+      behavior: 'smooth'
+    });
   }
 }
 
