@@ -1,11 +1,10 @@
 import "./fonts.less";
 import "./styles.less";
-import projects from "./projects.json";
-import mediaFiles from "./media/*.*";
+import projects from "./media/*/*.*";
 import animation from "./animation/*.*";
 import contentInfo from "./content-info.md";
 
-let pages = {
+const pages = {
   home: {
     title: "Animotor",
     slug: "/",
@@ -22,7 +21,7 @@ let pages = {
     loadContents: function () { loadInfo() }
   }
 };
-let defaultPage = pages.home;
+const defaultPage = pages.home;
 
 function initApp() {
   buildNavigation();
@@ -37,7 +36,7 @@ function initApp() {
 function navigateToCurrentURL() {
 
   // read slug from url
-  var urlPath = window.location.pathname;
+  let urlPath = window.location.pathname;
 
   // check slug for validity
   let currentPage = defaultPage;
@@ -105,6 +104,7 @@ function buildPage(stateObj, addToHistory) {
   updateNavigation(currentPage.slug);
 
   // load page contents
+  // consider this workflow https://parceljs.org/code_splitting.html
   currentPage.loadContents();
 }
 
@@ -133,16 +133,27 @@ function loadInfo() {
 function loadWork() {
   let main = document.getElementById("main");
 
-  for (let key in projects) {
+  // iterate over projects
+  for (let projectName in projects) {
     let projectContainer = document.createElement("div");
     projectContainer.classList.add("project");
     main.appendChild(projectContainer);
 
-    for (let mediaPath of projects[key]){
-      let mediaContainer = document.createElement("div");
-      mediaContainer.classList.add("project__wrapper");
-      mediaContainer.innerHTML = mediaPath;
-      projectContainer.appendChild(mediaContainer);
+    // iterate over project files
+    for (let fileName in projects[projectName]) {
+      for (let fileType in projects[projectName][fileName]) {
+        let filepath = projects[projectName][fileName][fileType];
+        let mediaContainer = document.createElement("div");
+        mediaContainer.classList.add("project__wrapper");
+        projectContainer.appendChild(mediaContainer);
+
+        if (fileType === "jpg" || fileType === "png") {
+          let media = document.createElement("img");
+          media.src = filepath;
+          media.classList.add("project__media");
+          mediaContainer.appendChild(media);
+        }
+      }
     }
   }
 }

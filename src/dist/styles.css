@@ -140,14 +140,17 @@ video {
   text-decoration: underline !important;
 }
 .project {
-  height: 200px;
-  width: 200px;
-  border: solid 1px red;
+  height: 100vw;
+  width: 100vw;
   overflow: scroll;
   display: flex;
 }
 .project__wrapper {
   width: 100%;
   flex: 0 0 auto;
-  border: solid 1px blue;
+}
+.project__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
