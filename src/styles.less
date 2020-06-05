@@ -54,7 +54,7 @@ video {
 }
 
 // ================
-// Animotor styles
+// General Page styles
 
 #app {
   font      : normal 1rem/normal "GTAmerica", Helvetica, Arial, sans-serif;
@@ -140,6 +140,9 @@ video {
   }
 }
 
+// ================
+// Home Page Styles
+
 .static-anim {
   position : absolute;
   top      : 50%;
@@ -156,6 +159,9 @@ video {
     object-fit: scale-down;
   }
 }
+
+// ================
+// Info Page Styles
 
 .info {
   padding  : 0 30px;
@@ -179,13 +185,18 @@ video {
   }
 }
 
+// ================
+// Work Page Styles
+
 .slideshow {
-  position: relative;
+  height         : 100vw;
+  width          : 100vw;
+  position       : relative;
+  display        : flex;
+  justify-content: center;
 }
 
 .slideshow__slides-wrapper {
-  height          : 100vw;
-  width           : 100vw;
   overflow        : scroll;
   display         : flex;
   scroll-snap-type: x mandatory;

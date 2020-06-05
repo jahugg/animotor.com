@@ -148,7 +148,27 @@ function loadWork() {
     let slidesWrapper = document.createElement("div");
     slidesWrapper.classList.add("slideshow__slides-wrapper");
     slideshow.appendChild(slidesWrapper);
-    
+
+    // add event to handle end of scrolling
+    let isScrolling;
+    slidesWrapper.addEventListener("scroll", function (event) {
+
+      // Clear our timeout throughout the scroll
+      window.clearTimeout(isScrolling);
+
+      // Set a timeout to run after scrolling ends
+      isScrolling = setTimeout(function () {
+
+        // Run the callback
+        let index = Math.round(event.target.scrollLeft / event.target.offsetWidth);
+        let slideshow = event.target.closest(".slideshow");
+        let indicator = slideshow.querySelector(".slideshow__indicators-wrapper").children[index];
+        updateIndicators(indicator);
+
+      }, 10);
+
+    }, false);
+
     let indicatorsWrapper;
     if (multipleImages) {
 
@@ -206,21 +226,32 @@ function loadWork() {
   }
 
   function jumpToSlide(event) {
-    let indicatorContainer = event.target.closest(".slideshow__indicators-wrapper");
+    let target = event.target;
+    let parent = target.closest(".slideshow__indicators-wrapper");
+    let slideshow = target.closest(".slideshow");
+    let slidesWrapper = slideshow.querySelector(".slideshow__slides-wrapper");
 
-    // remove active attribute
-    for (let child of indicatorContainer.children)
-      child.removeAttribute("data-active");
-
-    // set active attribute
-    event.target.setAttribute("data-active", "");
-
-    // scroll to slide
-    //...
+    // get index of child
+    let targetIndex = Array.from(parent.children).indexOf(target);
+    slidesWrapper.scrollTo({
+      left: targetIndex * slideshow.offsetWidth,
+      behavior: 'smooth'
+    });
   };
 
+  function updateIndicators(indicator) {
+    let indicatorsWrapper = indicator.parentNode;
+
+    // remove active attribute
+    for (let indicator of indicatorsWrapper.children)
+      indicator.removeAttribute("data-active");
+
+    // indicatorsWrapper.children[index].setAttribute("data-active", "");
+    indicator.setAttribute("data-active", "");
+  }
+
   function previousSlide(event) {
-    let slideshow = event.target.closest(".slideshow");
+    let slideshow = event.target.closest(".slideshow__slides-wrapper");
     slideshow.scrollTo({
       left: slideshow.scrollLeft - slideshow.offsetWidth,
       behavior: 'smooth'
@@ -228,7 +259,7 @@ function loadWork() {
   }
 
   function nextSlide(event) {
-    let slideshow = event.target.closest(".slideshow");
+    let slideshow = event.target.closest(".slideshow__slides-wrapper");
     slideshow.scrollTo({
       left: slideshow.scrollLeft + slideshow.offsetWidth,
       behavior: 'smooth'

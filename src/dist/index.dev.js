@@ -166,7 +166,7 @@ function loadInfo() {
 function loadWork() {
   var main = document.getElementById("main"); // iterate over projects
 
-  for (var projectName in _["default"]) {
+  var _loop = function _loop(projectName) {
     // check if multiple images
     var multipleImages = Object.keys(_["default"][projectName]).length > 1 ? true : false; // create slideshow
 
@@ -175,7 +175,21 @@ function loadWork() {
     main.appendChild(slideshow);
     var slidesWrapper = document.createElement("div");
     slidesWrapper.classList.add("slideshow__slides-wrapper");
-    slideshow.appendChild(slidesWrapper);
+    slideshow.appendChild(slidesWrapper); // add event to handle end of scrolling
+
+    var isScrolling = void 0;
+    slidesWrapper.addEventListener("scroll", function (event) {
+      // Clear our timeout throughout the scroll
+      window.clearTimeout(isScrolling); // Set a timeout to run after scrolling ends
+
+      isScrolling = setTimeout(function () {
+        // Run the callback
+        var index = Math.round(event.target.scrollLeft / event.target.offsetWidth);
+        var slideshow = event.target.closest(".slideshow");
+        var indicator = slideshow.querySelector(".slideshow__indicators-wrapper").children[index];
+        updateIndicators(indicator);
+      }, 10);
+    }, false);
     var indicatorsWrapper = void 0;
 
     if (multipleImages) {
@@ -224,20 +238,40 @@ function loadWork() {
 
 
     if (multipleImages) indicatorsWrapper.querySelector(".slideshow__indicator").setAttribute("data-active", "");
+  };
+
+  for (var projectName in _["default"]) {
+    _loop(projectName);
   }
 
   function jumpToSlide(event) {
-    var indicatorContainer = event.target.closest(".slideshow__indicators-wrapper"); // remove active attribute
+    var target = event.target;
+    var parent = target.closest(".slideshow__indicators-wrapper");
+    var slideshow = target.closest(".slideshow");
+    var slidesWrapper = slideshow.querySelector(".slideshow__slides-wrapper"); // get index of child
+
+    var targetIndex = Array.from(parent.children).indexOf(target);
+    slidesWrapper.scrollTo({
+      left: targetIndex * slideshow.offsetWidth,
+      behavior: 'smooth'
+    });
+  }
+
+  ;
+
+  function updateIndicators(indicator) {
+    var indicatorsWrapper = indicator.parentNode; // remove active attribute
 
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
     var _iteratorError2 = undefined;
 
     try {
-      for (var _iterator2 = indicatorContainer.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var child = _step2.value;
-        child.removeAttribute("data-active");
-      } // set active attribute
+      for (var _iterator2 = indicatorsWrapper.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var _indicator = _step2.value;
+
+        _indicator.removeAttribute("data-active");
+      } // indicatorsWrapper.children[index].setAttribute("data-active", "");
 
     } catch (err) {
       _didIteratorError2 = true;
@@ -254,14 +288,11 @@ function loadWork() {
       }
     }
 
-    event.target.setAttribute("data-active", ""); // scroll to slide
-    //...
+    indicator.setAttribute("data-active", "");
   }
 
-  ;
-
   function previousSlide(event) {
-    var slideshow = event.target.closest(".slideshow");
+    var slideshow = event.target.closest(".slideshow__slides-wrapper");
     slideshow.scrollTo({
       left: slideshow.scrollLeft - slideshow.offsetWidth,
       behavior: 'smooth'
@@ -269,7 +300,7 @@ function loadWork() {
   }
 
   function nextSlide(event) {
-    var slideshow = event.target.closest(".slideshow");
+    var slideshow = event.target.closest(".slideshow__slides-wrapper");
     slideshow.scrollTo({
       left: slideshow.scrollLeft + slideshow.offsetWidth,
       behavior: 'smooth'

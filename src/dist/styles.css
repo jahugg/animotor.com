@@ -140,11 +140,13 @@ video {
   text-decoration: underline !important;
 }
 .slideshow {
-  position: relative;
-}
-.slideshow__slides-wrapper {
   height: 100vw;
   width: 100vw;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.slideshow__slides-wrapper {
   overflow: scroll;
   display: flex;
   scroll-snap-type: x mandatory;
