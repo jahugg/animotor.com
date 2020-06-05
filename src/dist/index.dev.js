@@ -219,7 +219,7 @@ function loadWork() {
         mediaContainer.classList.add("slideshow__slide");
         slidesWrapper.appendChild(mediaContainer); // add media item
 
-        if (fileType === "jpg" || fileType === "png") {
+        if (fileType === "jpg" || fileType === "png" || fileType === "gif") {
           var media = document.createElement("img");
           media.src = filepath;
           media.classList.add("slideshow__slide__media");
