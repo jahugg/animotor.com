@@ -136,27 +136,42 @@ function loadWork() {
 
   // iterate over projects
   for (let projectName in projects) {
-    let projectContainer = document.createElement("div");
-    projectContainer.classList.add("slideshow");
-    main.appendChild(projectContainer);
 
-    let navigation = document.createElement("div");
-    navigation.classList.add("slideshow__nav");
-    projectContainer.appendChild(navigation);
+    // check if multiple images
+    let multipleImages = (Object.keys(projects[projectName]).length > 1) ? true : false;
 
-    let prevButton = document.createElement("button");
-    prevButton.classList.add("slideshow__nav__button");
-    navigation.appendChild(prevButton);
-    prevButton.addEventListener("click", previousSlide);
+    // create slideshow
+    let slideshow = document.createElement("div");
+    slideshow.classList.add("slideshow");
+    main.appendChild(slideshow);
 
-    let nextButton = document.createElement("button");
-    nextButton.classList.add("slideshow__nav__button");
-    navigation.appendChild(nextButton);
-    nextButton.addEventListener("click", nextSlide);
+    let slidesWrapper = document.createElement("div");
+    slidesWrapper.classList.add("slideshow__slides-wrapper");
+    slideshow.appendChild(slidesWrapper);
+    
+    let indicatorsWrapper;
+    if (multipleImages) {
 
-    let indicator = document.createElement("div");
-    indicator.classList.add("slideshow__indicator");
-    projectContainer.appendChild(indicator);
+      // create navigation items
+      let navigation = document.createElement("div");
+      navigation.classList.add("slideshow__nav");
+      slideshow.appendChild(navigation);
+
+      let prevButton = document.createElement("button");
+      prevButton.classList.add("slideshow__nav__btn");
+      navigation.appendChild(prevButton);
+      prevButton.addEventListener("click", previousSlide);
+
+      let nextButton = document.createElement("button");
+      nextButton.classList.add("slideshow__nav__btn");
+      navigation.appendChild(nextButton);
+      nextButton.addEventListener("click", nextSlide);
+
+      // create indicators wrapper
+      indicatorsWrapper = document.createElement("div");
+      indicatorsWrapper.classList.add("slideshow__indicators-wrapper");
+      slideshow.appendChild(indicatorsWrapper);
+    }
 
 
     // iterate over project files
@@ -164,29 +179,34 @@ function loadWork() {
       for (let fileType in projects[projectName][fileName]) {
         let filepath = projects[projectName][fileName][fileType];
         let mediaContainer = document.createElement("div");
-        mediaContainer.classList.add("slideshow__item");
-        projectContainer.appendChild(mediaContainer);
+        mediaContainer.classList.add("slideshow__slide");
+        slidesWrapper.appendChild(mediaContainer);
 
-        let indicatorItem = document.createElement("div");
-        indicatorItem.classList.add("slideshow__indicator__item");
-        indicator.appendChild(indicatorItem);
-        indicator.addEventListener("click", jumpToSlide);
-
+        // add media item
         if (fileType === "jpg" || fileType === "png") {
           let media = document.createElement("img");
           media.src = filepath;
-          media.classList.add("project__item__media");
+          media.classList.add("slideshow__slide__media");
           mediaContainer.appendChild(media);
+        }
+
+        // add indicator
+        if (multipleImages) {
+          let indicatorItem = document.createElement("div");
+          indicatorItem.classList.add("slideshow__indicator");
+          indicatorItem.addEventListener("click", jumpToSlide);
+          indicatorsWrapper.appendChild(indicatorItem);
         }
       }
     }
 
     // set first indicator active
-    indicator.querySelector(".slideshow__indicator__item").setAttribute("data-active", "");
+    if (multipleImages)
+      indicatorsWrapper.querySelector(".slideshow__indicator").setAttribute("data-active", "");
   }
 
   function jumpToSlide(event) {
-    let indicatorContainer = event.target.closest(".slideshow__indicator");
+    let indicatorContainer = event.target.closest(".slideshow__indicators-wrapper");
 
     // remove active attribute
     for (let child of indicatorContainer.children)

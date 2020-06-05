@@ -167,50 +167,67 @@ function loadWork() {
   var main = document.getElementById("main"); // iterate over projects
 
   for (var projectName in _["default"]) {
-    var projectContainer = document.createElement("div");
-    projectContainer.classList.add("slideshow");
-    main.appendChild(projectContainer);
-    var navigation = document.createElement("div");
-    navigation.classList.add("slideshow__nav");
-    projectContainer.appendChild(navigation);
-    var prevButton = document.createElement("button");
-    prevButton.classList.add("slideshow__nav__button");
-    navigation.appendChild(prevButton);
-    prevButton.addEventListener("click", previousSlide);
-    var nextButton = document.createElement("button");
-    nextButton.classList.add("slideshow__nav__button");
-    navigation.appendChild(nextButton);
-    nextButton.addEventListener("click", nextSlide);
-    var indicator = document.createElement("div");
-    indicator.classList.add("slideshow__indicator");
-    projectContainer.appendChild(indicator); // iterate over project files
+    // check if multiple images
+    var multipleImages = Object.keys(_["default"][projectName]).length > 1 ? true : false; // create slideshow
+
+    var slideshow = document.createElement("div");
+    slideshow.classList.add("slideshow");
+    main.appendChild(slideshow);
+    var slidesWrapper = document.createElement("div");
+    slidesWrapper.classList.add("slideshow__slides-wrapper");
+    slideshow.appendChild(slidesWrapper);
+    var indicatorsWrapper = void 0;
+
+    if (multipleImages) {
+      // create navigation items
+      var navigation = document.createElement("div");
+      navigation.classList.add("slideshow__nav");
+      slideshow.appendChild(navigation);
+      var prevButton = document.createElement("button");
+      prevButton.classList.add("slideshow__nav__btn");
+      navigation.appendChild(prevButton);
+      prevButton.addEventListener("click", previousSlide);
+      var nextButton = document.createElement("button");
+      nextButton.classList.add("slideshow__nav__btn");
+      navigation.appendChild(nextButton);
+      nextButton.addEventListener("click", nextSlide); // create indicators wrapper
+
+      indicatorsWrapper = document.createElement("div");
+      indicatorsWrapper.classList.add("slideshow__indicators-wrapper");
+      slideshow.appendChild(indicatorsWrapper);
+    } // iterate over project files
+
 
     for (var fileName in _["default"][projectName]) {
       for (var fileType in _["default"][projectName][fileName]) {
         var filepath = _["default"][projectName][fileName][fileType];
         var mediaContainer = document.createElement("div");
-        mediaContainer.classList.add("slideshow__item");
-        projectContainer.appendChild(mediaContainer);
-        var indicatorItem = document.createElement("div");
-        indicatorItem.classList.add("slideshow__indicator__item");
-        indicator.appendChild(indicatorItem);
-        indicator.addEventListener("click", jumpToSlide);
+        mediaContainer.classList.add("slideshow__slide");
+        slidesWrapper.appendChild(mediaContainer); // add media item
 
         if (fileType === "jpg" || fileType === "png") {
           var media = document.createElement("img");
           media.src = filepath;
-          media.classList.add("project__item__media");
+          media.classList.add("slideshow__slide__media");
           mediaContainer.appendChild(media);
+        } // add indicator
+
+
+        if (multipleImages) {
+          var indicatorItem = document.createElement("div");
+          indicatorItem.classList.add("slideshow__indicator");
+          indicatorItem.addEventListener("click", jumpToSlide);
+          indicatorsWrapper.appendChild(indicatorItem);
         }
       }
     } // set first indicator active
 
 
-    indicator.querySelector(".slideshow__indicator__item").setAttribute("data-active", "");
+    if (multipleImages) indicatorsWrapper.querySelector(".slideshow__indicator").setAttribute("data-active", "");
   }
 
   function jumpToSlide(event) {
-    var indicatorContainer = event.target.closest(".slideshow__indicator"); // remove active attribute
+    var indicatorContainer = event.target.closest(".slideshow__indicators-wrapper"); // remove active attribute
 
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
