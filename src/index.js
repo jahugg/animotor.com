@@ -402,19 +402,30 @@ function loadHome() {
 
     // gradually slow down scrolling
     function slowDownScrollStep(timestamp) {
-      // clamp delta
-      deltaY = Math.min(Math.max(deltaY, -80), 80);
+      // make sure infiniteScroll still exist (page change)
+      let infiniteScroll = !!document.querySelector(".infinite-scroll");
+      if (infiniteScroll) {
 
-      let translateY = getScrollPos() + deltaY;
-      setScrollPos(translateY);
-      controlFade(deltaY);
+        // clamp delta
+        deltaY = Math.min(Math.max(deltaY, -80), 80);
 
-      if (deltaY > 0 || deltaY < 0) {
-        reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+        let translateY = getScrollPos() + deltaY;
+        setScrollPos(translateY);
+        controlFade(deltaY);
+
         let stepSize = .25;
+        if (deltaY < stepSize) {
+          deltaY += stepSize;
+          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
 
-        if (deltaY > 0) deltaY -= stepSize;
-        else if (deltaY < 0) deltaY += stepSize;
+        } else if (deltaY > stepSize) {
+          deltaY -= stepSize
+          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+
+        } else {
+          deltaY = 0;
+          cancelAnimationFrame(reqAnimFrame);
+        }
       }
     }
   }

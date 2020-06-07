@@ -465,16 +465,27 @@ function loadHome() {
     reqAnimFrame = requestAnimationFrame(slowDownScrollStep); // gradually slow down scrolling
 
     function slowDownScrollStep(timestamp) {
-      // clamp delta
-      deltaY = Math.min(Math.max(deltaY, -80), 80);
-      var translateY = getScrollPos() + deltaY;
-      setScrollPos(translateY);
-      controlFade(deltaY);
+      // make sure infiniteScroll still exist (page change)
+      var infiniteScroll = !!document.querySelector(".infinite-scroll");
 
-      if (deltaY > 0 || deltaY < 0) {
-        reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+      if (infiniteScroll) {
+        // clamp delta
+        deltaY = Math.min(Math.max(deltaY, -80), 80);
+        var translateY = getScrollPos() + deltaY;
+        setScrollPos(translateY);
+        controlFade(deltaY);
         var stepSize = .25;
-        if (deltaY > 0) deltaY -= stepSize;else if (deltaY < 0) deltaY += stepSize;
+
+        if (deltaY < stepSize) {
+          deltaY += stepSize;
+          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+        } else if (deltaY > stepSize) {
+          deltaY -= stepSize;
+          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+        } else {
+          deltaY = 0;
+          cancelAnimationFrame(reqAnimFrame);
+        }
       }
     }
   } // handle wheel event
