@@ -309,7 +309,11 @@ function loadWork() {
 }
 
 function loadHome() {
-  // container
+  var lastTouchPosY;
+  var endTouchPosY;
+  var slowdownAnim;
+  var scrollingAnim; // container
+
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   container.innerHTML = "loading";
@@ -347,6 +351,13 @@ function loadHome() {
 
     while (infiniteScroll.scrollHeight <= window.innerHeight) {
       appendItem();
+    }
+
+    scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
+
+    function scrollingAnimation() {
+      setScrollPos(getScrollPos() + 1);
+      scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
     } // register event listeners
 
 
@@ -453,18 +464,14 @@ function loadHome() {
     observer.observe(infiniteScroll, {
       attributes: true
     });
-  } // handle touch events
-
-
-  var lastTouchPosY;
-  var endTouchPosY;
-  var reqAnimFrame;
+  }
 
   function handleTouchStart(event) {
     event.preventDefault();
     var touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
-    cancelAnimationFrame(reqAnimFrame);
+    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(scrollingAnim);
   }
 
   function handleTouchMove(event) {
@@ -483,7 +490,7 @@ function loadHome() {
     event.preventDefault();
     var touches = event.changedTouches;
     var deltaY = (endTouchPosY - touches[0].pageY) * -1;
-    reqAnimFrame = requestAnimationFrame(slowDownScrollStep); // gradually slow down scrolling
+    slowdownAnim = window.requestAnimationFrame(slowDownScrollStep); // gradually slow down scrolling
 
     function slowDownScrollStep(timestamp) {
       // make sure infiniteScroll element still exist (page change)
@@ -499,13 +506,13 @@ function loadHome() {
 
         if (deltaY < stepSize) {
           deltaY += stepSize;
-          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
         } else if (deltaY > stepSize) {
           deltaY -= stepSize;
-          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
         } else {
           deltaY = 0;
-          cancelAnimationFrame(reqAnimFrame);
+          cancelAnimationFrame(slowdownAnim);
         }
       }
     }
@@ -517,6 +524,8 @@ function loadHome() {
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
     controlFade(deltaY);
+    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(scrollingAnim);
   }
 
   function controlFade(deltaY) {

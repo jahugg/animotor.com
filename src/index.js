@@ -270,6 +270,11 @@ function loadWork() {
 }
 
 function loadHome() {
+  
+  let lastTouchPosY;
+  let endTouchPosY;
+  let slowdownAnim;
+  let scrollingAnim;
 
   // container
   let container = document.createElement("div");
@@ -312,90 +317,93 @@ function loadHome() {
     while (infiniteScroll.scrollHeight <= window.innerHeight)
       appendItem();
 
-      // register event listeners
-      container.addEventListener("wheel", throttledEvent(handleWheel, 5));
-      container.addEventListener("touchstart", handleTouchStart, false);
-      container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
-      container.addEventListener("touchend", handleTouchEnd, false);
-      container.addEventListener("touchcancel", handleTouchEnd, false);
-    
-      // callback function to execute when mutations are observed
-      const onScrollChange = function (mutationsList, observer) {
-        for (let mutation of mutationsList) {
-          if (mutation.type === 'attributes' &&
-            mutation.attributeName === 'style') {
-    
-            let infiniteScroll = document.querySelector(".infinite-scroll");
-            let translateY = getScrollPos();
-            let firstChild = infiniteScroll.firstChild;
-            let lastChild = infiniteScroll.lastChild;
-    
-            // remove first child if out of bounds
-            if (Math.abs(translateY) > firstChild.offsetHeight) {
-              firstChild.remove();
-              infiniteScroll.style.transform = "translateY(0)";
-            }
-            // remove last child out of bounds
-            else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY)
-              > window.innerHeight)
-              lastChild.remove();
-    
-            // prepend new child if top reached
-            if (translateY > 0)
-              prependItem();
-    
-            // append new child if bottom reached
-            else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight)
-              appendItem();
-    
-            // ----------
-            // handle static animation frame
-            let items = document.getElementsByClassName("infinite-scroll__item");
-            let staticContainer = document.querySelector(".static-anim");
-            let staticRect = staticContainer.getBoundingClientRect();
-            let closestItem;
-            let lastDist = 9999;
-    
-            // find closest item
-            for (let item of items) {
-              let itemRect = item.getBoundingClientRect();
-              let dist = Math.abs(itemRect.top - staticRect.top);
-    
-              if (dist < lastDist) {
-                lastDist = dist;
-                closestItem = item;
-              }
-            }
-    
-            // if closest item is above static apply image
-            let closestRect = closestItem.getBoundingClientRect();
-    
-            if (closestRect.top <= staticRect.top) {
-              let animKeys = Object.keys(animation);
-              let staticImage = staticContainer.querySelector("img");
-              let id = closestItem.getAttribute("data-id");
-              staticImage.src = animation[animKeys[id]]["png"];
-              staticImage.setAttribute("data-id", id);
+    scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
+
+    function scrollingAnimation() { 
+      setScrollPos(getScrollPos() + 1);
+      scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
+    }
+
+    // register event listeners
+    container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+    container.addEventListener("touchstart", handleTouchStart, false);
+    container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+    container.addEventListener("touchend", handleTouchEnd, false);
+    container.addEventListener("touchcancel", handleTouchEnd, false);
+
+    // callback function to execute when mutations are observed
+    const onScrollChange = function (mutationsList, observer) {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'attributes' &&
+          mutation.attributeName === 'style') {
+
+          let infiniteScroll = document.querySelector(".infinite-scroll");
+          let translateY = getScrollPos();
+          let firstChild = infiniteScroll.firstChild;
+          let lastChild = infiniteScroll.lastChild;
+
+          // remove first child if out of bounds
+          if (Math.abs(translateY) > firstChild.offsetHeight) {
+            firstChild.remove();
+            infiniteScroll.style.transform = "translateY(0)";
+          }
+          // remove last child out of bounds
+          else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY)
+            > window.innerHeight)
+            lastChild.remove();
+
+          // prepend new child if top reached
+          if (translateY > 0)
+            prependItem();
+
+          // append new child if bottom reached
+          else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight)
+            appendItem();
+
+          // ----------
+          // handle static animation frame
+          let items = document.getElementsByClassName("infinite-scroll__item");
+          let staticContainer = document.querySelector(".static-anim");
+          let staticRect = staticContainer.getBoundingClientRect();
+          let closestItem;
+          let lastDist = 9999;
+
+          // find closest item
+          for (let item of items) {
+            let itemRect = item.getBoundingClientRect();
+            let dist = Math.abs(itemRect.top - staticRect.top);
+
+            if (dist < lastDist) {
+              lastDist = dist;
+              closestItem = item;
             }
           }
-        }
-      };
-    
-      // create mutation obsever to handle translateY changes
-      const observer = new MutationObserver(onScrollChange);
-      observer.observe(infiniteScroll, { attributes: true });
-  }
 
-  // handle touch events
-  let lastTouchPosY;
-  let endTouchPosY;
-  let reqAnimFrame;
+          // if closest item is above static apply image
+          let closestRect = closestItem.getBoundingClientRect();
+
+          if (closestRect.top <= staticRect.top) {
+            let animKeys = Object.keys(animation);
+            let staticImage = staticContainer.querySelector("img");
+            let id = closestItem.getAttribute("data-id");
+            staticImage.src = animation[animKeys[id]]["png"];
+            staticImage.setAttribute("data-id", id);
+          }
+        }
+      }
+    };
+
+    // create mutation obsever to handle translateY changes
+    const observer = new MutationObserver(onScrollChange);
+    observer.observe(infiniteScroll, { attributes: true });
+  }
 
   function handleTouchStart(event) {
     event.preventDefault();
     let touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
-    cancelAnimationFrame(reqAnimFrame);
+    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(scrollingAnim);
   }
 
   function handleTouchMove(event) {
@@ -415,7 +423,7 @@ function loadHome() {
     let touches = event.changedTouches;
     let deltaY = (endTouchPosY - touches[0].pageY) * -1;
 
-    reqAnimFrame = requestAnimationFrame(slowDownScrollStep);
+    slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
 
     // gradually slow down scrolling
     function slowDownScrollStep(timestamp) {
@@ -433,15 +441,15 @@ function loadHome() {
         let stepSize = .25;
         if (deltaY < stepSize) {
           deltaY += stepSize;
-          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
 
         } else if (deltaY > stepSize) {
           deltaY -= stepSize
-          reqAnimFrame = window.requestAnimationFrame(slowDownScrollStep);
+          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
 
         } else {
           deltaY = 0;
-          cancelAnimationFrame(reqAnimFrame);
+          cancelAnimationFrame(slowdownAnim);
         }
       }
     }
@@ -453,6 +461,8 @@ function loadHome() {
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
     controlFade(deltaY);
+    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(scrollingAnim);
   }
 
   function controlFade(deltaY) {
