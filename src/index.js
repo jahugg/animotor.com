@@ -274,105 +274,122 @@ function loadHome() {
   // container
   let container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
+  container.innerHTML = "loading";
   main.appendChild(container);
 
-  // static animation frame
-  let animKeys = Object.keys(animation);
-  let staticAnim = document.createElement("div");
-  staticAnim.classList.add("static-anim");
-  container.appendChild(staticAnim);
-  let frame = document.createElement("img");
-  frame.src = animation[animKeys[0]]["png"];
-  frame.setAttribute("data-id", 0);
-  staticAnim.appendChild(frame);
+  // preload all images
+  let promises = [];
+  for (let image in animation)
+    for (let type in animation[image])
+      promises.push(loadImage(animation[image][type]));
 
-  // infinite scroll
-  let infiniteScroll = document.createElement("div");
-  infiniteScroll.classList.add("infinite-scroll");
-  container.appendChild(infiniteScroll);
+  // add animation scroller after images have been loaded
+  Promise.all(promises)
+    .then(initAnimationScroller)
+    .catch(err => console.error(err));
 
-  // fill screen with tiles
-  while (infiniteScroll.scrollHeight <= window.innerHeight)
-    appendItem();
+  function initAnimationScroller(images) {
 
-  // register event listeners
-  container.addEventListener("wheel", throttledEvent(handleWheel, 5));
-  container.addEventListener("touchstart", handleTouchStart, false);
-  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
-  container.addEventListener("touchend", handleTouchEnd, false);
-  container.addEventListener("touchcancel", handleTouchEnd, false);
+    // remove loading message
+    container.innerHTML = "";
 
-  // callback function to execute when mutations are observed
-  const onScrollChange = function (mutationsList, observer) {
-    for (let mutation of mutationsList) {
-      if (mutation.type === 'attributes' &&
-        mutation.attributeName === 'style') {
+    // static animation frame
+    let animKeys = Object.keys(animation);
+    let staticAnim = document.createElement("div");
+    staticAnim.classList.add("static-anim");
+    container.appendChild(staticAnim);
+    let frame = document.createElement("img");
+    frame.src = animation[animKeys[0]]["png"];
+    frame.setAttribute("data-id", 0);
+    staticAnim.appendChild(frame);
 
-        let infiniteScroll = document.querySelector(".infinite-scroll");
-        let translateY = getScrollPos();
-        let firstChild = infiniteScroll.firstChild;
-        let lastChild = infiniteScroll.lastChild;
+    // infinite scroll
+    let infiniteScroll = document.createElement("div");
+    infiniteScroll.classList.add("infinite-scroll");
+    container.appendChild(infiniteScroll);
 
-        // remove first child if out of bounds
-        if (Math.abs(translateY) > firstChild.offsetHeight) {
-          firstChild.remove();
-          infiniteScroll.style.transform = "translateY(0)";
-        }
-        // remove last child out of bounds
-        else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY)
-          > window.innerHeight)
-          lastChild.remove();
+    // fill screen with tiles
+    while (infiniteScroll.scrollHeight <= window.innerHeight)
+      appendItem();
 
-        // prepend new child if top reached
-        if (translateY > 0)
-          prependItem();
-
-        // append new child if bottom reached
-        else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight)
-          appendItem();
-
-        // ----------
-        // handle static animation frame
-        let items = document.getElementsByClassName("infinite-scroll__item");
-        let staticContainer = document.querySelector(".static-anim");
-        let staticRect = staticContainer.getBoundingClientRect();
-        let closestItem;
-        let lastDist = 9999;
-
-        // find closest item
-        for (let item of items) {
-          let itemRect = item.getBoundingClientRect();
-          let dist = Math.abs(itemRect.top - staticRect.top);
-
-          if (dist < lastDist) {
-            lastDist = dist;
-            closestItem = item;
+      // register event listeners
+      container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+      container.addEventListener("touchstart", handleTouchStart, false);
+      container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+      container.addEventListener("touchend", handleTouchEnd, false);
+      container.addEventListener("touchcancel", handleTouchEnd, false);
+    
+      // callback function to execute when mutations are observed
+      const onScrollChange = function (mutationsList, observer) {
+        for (let mutation of mutationsList) {
+          if (mutation.type === 'attributes' &&
+            mutation.attributeName === 'style') {
+    
+            let infiniteScroll = document.querySelector(".infinite-scroll");
+            let translateY = getScrollPos();
+            let firstChild = infiniteScroll.firstChild;
+            let lastChild = infiniteScroll.lastChild;
+    
+            // remove first child if out of bounds
+            if (Math.abs(translateY) > firstChild.offsetHeight) {
+              firstChild.remove();
+              infiniteScroll.style.transform = "translateY(0)";
+            }
+            // remove last child out of bounds
+            else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY)
+              > window.innerHeight)
+              lastChild.remove();
+    
+            // prepend new child if top reached
+            if (translateY > 0)
+              prependItem();
+    
+            // append new child if bottom reached
+            else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight)
+              appendItem();
+    
+            // ----------
+            // handle static animation frame
+            let items = document.getElementsByClassName("infinite-scroll__item");
+            let staticContainer = document.querySelector(".static-anim");
+            let staticRect = staticContainer.getBoundingClientRect();
+            let closestItem;
+            let lastDist = 9999;
+    
+            // find closest item
+            for (let item of items) {
+              let itemRect = item.getBoundingClientRect();
+              let dist = Math.abs(itemRect.top - staticRect.top);
+    
+              if (dist < lastDist) {
+                lastDist = dist;
+                closestItem = item;
+              }
+            }
+    
+            // if closest item is above static apply image
+            let closestRect = closestItem.getBoundingClientRect();
+    
+            if (closestRect.top <= staticRect.top) {
+              let animKeys = Object.keys(animation);
+              let staticImage = staticContainer.querySelector("img");
+              let id = closestItem.getAttribute("data-id");
+              staticImage.src = animation[animKeys[id]]["png"];
+              staticImage.setAttribute("data-id", id);
+            }
           }
         }
-
-        // if closest item is above static apply image
-        let closestRect = closestItem.getBoundingClientRect();
-
-        if (closestRect.top <= staticRect.top) {
-          let staticImage = staticContainer.querySelector("img");
-          let id = closestItem.getAttribute("data-id");
-          staticImage.src = animation[animKeys[id]]["png"];
-          staticImage.setAttribute("data-id", id);
-        }
-      }
-    }
-  };
-
-  // create mutation obsever to handle translateY changes
-  const observer = new MutationObserver(onScrollChange);
-  observer.observe(infiniteScroll, { attributes: true });
+      };
+    
+      // create mutation obsever to handle translateY changes
+      const observer = new MutationObserver(onScrollChange);
+      observer.observe(infiniteScroll, { attributes: true });
+  }
 
   // handle touch events
   let lastTouchPosY;
   let endTouchPosY;
   let reqAnimFrame;
-
-  let moveTracker = 0;
 
   function handleTouchStart(event) {
     event.preventDefault();
@@ -402,7 +419,7 @@ function loadHome() {
 
     // gradually slow down scrolling
     function slowDownScrollStep(timestamp) {
-      // make sure infiniteScroll still exist (page change)
+      // make sure infiniteScroll element still exist (page change)
       let infiniteScroll = !!document.querySelector(".infinite-scroll");
       if (infiniteScroll) {
 
@@ -430,7 +447,6 @@ function loadHome() {
     }
   }
 
-  // handle wheel event
   function handleWheel(event) {
     event.preventDefault();
     let deltaY = event.deltaY * -1
@@ -543,5 +559,14 @@ function map(num, in_min, in_max, out_min, out_max) {
   // (https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers/23202637)
   return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.addEventListener("load", () => resolve(img));
+    img.addEventListener("error", reject);
+    img.src = src;
+  });
+};
 
 initApp();

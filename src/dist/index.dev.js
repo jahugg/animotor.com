@@ -312,132 +312,153 @@ function loadHome() {
   // container
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
-  main.appendChild(container); // static animation frame
+  container.innerHTML = "loading";
+  main.appendChild(container); // preload all images
 
-  var animKeys = Object.keys(_2["default"]);
-  var staticAnim = document.createElement("div");
-  staticAnim.classList.add("static-anim");
-  container.appendChild(staticAnim);
-  var frame = document.createElement("img");
-  frame.src = _2["default"][animKeys[0]]["png"];
-  frame.setAttribute("data-id", 0);
-  staticAnim.appendChild(frame); // infinite scroll
+  var promises = [];
 
-  var infiniteScroll = document.createElement("div");
-  infiniteScroll.classList.add("infinite-scroll");
-  container.appendChild(infiniteScroll); // fill screen with tiles
-
-  while (infiniteScroll.scrollHeight <= window.innerHeight) {
-    appendItem();
-  } // register event listeners
+  for (var image in _2["default"]) {
+    for (var type in _2["default"][image]) {
+      promises.push(loadImage(_2["default"][image][type]));
+    }
+  } // add animation scroller after images have been loaded
 
 
-  container.addEventListener("wheel", throttledEvent(handleWheel, 5));
-  container.addEventListener("touchstart", handleTouchStart, false);
-  container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
-  container.addEventListener("touchend", handleTouchEnd, false);
-  container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
+  Promise.all(promises).then(initAnimationScroller)["catch"](function (err) {
+    return console.error(err);
+  });
 
-  var onScrollChange = function onScrollChange(mutationsList, observer) {
-    var _iteratorNormalCompletion3 = true;
-    var _didIteratorError3 = false;
-    var _iteratorError3 = undefined;
+  function initAnimationScroller(images) {
+    // remove loading message
+    container.innerHTML = ""; // static animation frame
 
-    try {
-      for (var _iterator3 = mutationsList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-        var mutation = _step3.value;
+    var animKeys = Object.keys(_2["default"]);
+    var staticAnim = document.createElement("div");
+    staticAnim.classList.add("static-anim");
+    container.appendChild(staticAnim);
+    var frame = document.createElement("img");
+    frame.src = _2["default"][animKeys[0]]["png"];
+    frame.setAttribute("data-id", 0);
+    staticAnim.appendChild(frame); // infinite scroll
 
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-          var _infiniteScroll = document.querySelector(".infinite-scroll");
+    var infiniteScroll = document.createElement("div");
+    infiniteScroll.classList.add("infinite-scroll");
+    container.appendChild(infiniteScroll); // fill screen with tiles
 
-          var translateY = getScrollPos();
-          var firstChild = _infiniteScroll.firstChild;
-          var lastChild = _infiniteScroll.lastChild; // remove first child if out of bounds
-
-          if (Math.abs(translateY) > firstChild.offsetHeight) {
-            firstChild.remove();
-            _infiniteScroll.style.transform = "translateY(0)";
-          } // remove last child out of bounds
-          else if (_infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY) > window.innerHeight) lastChild.remove(); // prepend new child if top reached
+    while (infiniteScroll.scrollHeight <= window.innerHeight) {
+      appendItem();
+    } // register event listeners
 
 
-          if (translateY > 0) prependItem(); // append new child if bottom reached
-          else if (window.innerHeight + Math.abs(translateY) > _infiniteScroll.offsetHeight) appendItem(); // ----------
-          // handle static animation frame
+    container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+    container.addEventListener("touchstart", handleTouchStart, false);
+    container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+    container.addEventListener("touchend", handleTouchEnd, false);
+    container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
-          var items = document.getElementsByClassName("infinite-scroll__item");
-          var staticContainer = document.querySelector(".static-anim");
-          var staticRect = staticContainer.getBoundingClientRect();
-          var closestItem = void 0;
-          var lastDist = 9999; // find closest item
+    var onScrollChange = function onScrollChange(mutationsList, observer) {
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+      try {
+        for (var _iterator3 = mutationsList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var mutation = _step3.value;
 
-          try {
-            for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var item = _step4.value;
-              var itemRect = item.getBoundingClientRect();
-              var dist = Math.abs(itemRect.top - staticRect.top);
+          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            var _infiniteScroll = document.querySelector(".infinite-scroll");
 
-              if (dist < lastDist) {
-                lastDist = dist;
-                closestItem = item;
-              }
-            } // if closest item is above static apply image
+            var translateY = getScrollPos();
+            var firstChild = _infiniteScroll.firstChild;
+            var lastChild = _infiniteScroll.lastChild; // remove first child if out of bounds
 
-          } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
-          } finally {
+            if (Math.abs(translateY) > firstChild.offsetHeight) {
+              firstChild.remove();
+              _infiniteScroll.style.transform = "translateY(0)";
+            } // remove last child out of bounds
+            else if (_infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY) > window.innerHeight) lastChild.remove(); // prepend new child if top reached
+
+
+            if (translateY > 0) prependItem(); // append new child if bottom reached
+            else if (window.innerHeight + Math.abs(translateY) > _infiniteScroll.offsetHeight) appendItem(); // ----------
+            // handle static animation frame
+
+            var items = document.getElementsByClassName("infinite-scroll__item");
+            var staticContainer = document.querySelector(".static-anim");
+            var staticRect = staticContainer.getBoundingClientRect();
+            var closestItem = void 0;
+            var lastDist = 9999; // find closest item
+
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
+
             try {
-              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-                _iterator4["return"]();
-              }
+              for (var _iterator4 = items[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                var item = _step4.value;
+                var itemRect = item.getBoundingClientRect();
+                var dist = Math.abs(itemRect.top - staticRect.top);
+
+                if (dist < lastDist) {
+                  lastDist = dist;
+                  closestItem = item;
+                }
+              } // if closest item is above static apply image
+
+            } catch (err) {
+              _didIteratorError4 = true;
+              _iteratorError4 = err;
             } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
+              try {
+                if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                  _iterator4["return"]();
+                }
+              } finally {
+                if (_didIteratorError4) {
+                  throw _iteratorError4;
+                }
               }
             }
-          }
 
-          var closestRect = closestItem.getBoundingClientRect();
+            var closestRect = closestItem.getBoundingClientRect();
 
-          if (closestRect.top <= staticRect.top) {
-            var staticImage = staticContainer.querySelector("img");
-            var id = closestItem.getAttribute("data-id");
-            staticImage.src = _2["default"][animKeys[id]]["png"];
-            staticImage.setAttribute("data-id", id);
+            if (closestRect.top <= staticRect.top) {
+              var _animKeys = Object.keys(_2["default"]);
+
+              var staticImage = staticContainer.querySelector("img");
+              var id = closestItem.getAttribute("data-id");
+              staticImage.src = _2["default"][_animKeys[id]]["png"];
+              staticImage.setAttribute("data-id", id);
+            }
           }
         }
-      }
-    } catch (err) {
-      _didIteratorError3 = true;
-      _iteratorError3 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-          _iterator3["return"]();
-        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
       } finally {
-        if (_didIteratorError3) {
-          throw _iteratorError3;
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
         }
       }
-    }
-  }; // create mutation obsever to handle translateY changes
+    }; // create mutation obsever to handle translateY changes
 
 
-  var observer = new MutationObserver(onScrollChange);
-  observer.observe(infiniteScroll, {
-    attributes: true
-  }); // handle touch events
+    var observer = new MutationObserver(onScrollChange);
+    observer.observe(infiniteScroll, {
+      attributes: true
+    });
+  } // handle touch events
+
 
   var lastTouchPosY;
   var endTouchPosY;
   var reqAnimFrame;
-  var moveTracker = 0;
 
   function handleTouchStart(event) {
     event.preventDefault();
@@ -465,7 +486,7 @@ function loadHome() {
     reqAnimFrame = requestAnimationFrame(slowDownScrollStep); // gradually slow down scrolling
 
     function slowDownScrollStep(timestamp) {
-      // make sure infiniteScroll still exist (page change)
+      // make sure infiniteScroll element still exist (page change)
       var infiniteScroll = !!document.querySelector(".infinite-scroll");
 
       if (infiniteScroll) {
@@ -488,8 +509,7 @@ function loadHome() {
         }
       }
     }
-  } // handle wheel event
-
+  }
 
   function handleWheel(event) {
     event.preventDefault();
@@ -591,4 +611,16 @@ function map(num, in_min, in_max, out_min, out_max) {
   return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+function loadImage(src) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image();
+    img.addEventListener("load", function () {
+      return resolve(img);
+    });
+    img.addEventListener("error", reject);
+    img.src = src;
+  });
+}
+
+;
 initApp();
