@@ -14,7 +14,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 var pages = {
   home: {
-    title: "Animotor",
+    title: "○",
     slug: "/",
     loadContents: function loadContents() {
       loadHome();
@@ -164,7 +164,10 @@ function loadInfo() {
 }
 
 function loadWork() {
-  var main = document.getElementById("main"); // iterate over projects
+  var main = document.getElementById("main");
+  var container = document.createElement("div");
+  container.classList.add("slideshow-container");
+  main.appendChild(container); // iterate over projects
 
   var _loop = function _loop(projectName) {
     // check if multiple images
@@ -172,7 +175,7 @@ function loadWork() {
 
     var slideshow = document.createElement("div");
     slideshow.classList.add("slideshow");
-    main.appendChild(slideshow);
+    container.appendChild(slideshow);
     var slidesWrapper = document.createElement("div");
     slidesWrapper.classList.add("slideshow__slides-wrapper");
     slideshow.appendChild(slidesWrapper); // add event to handle end of scrolling
@@ -312,7 +315,10 @@ function loadHome() {
   var lastTouchPosY;
   var endTouchPosY;
   var slowdownAnim;
-  var scrollingAnim; // container
+  var scrollingAnim;
+  var customSlowDownFlag = false;
+  var lastWheelDeltaY = 0;
+  var wheelRetriggerred = false; // container
 
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
@@ -351,13 +357,19 @@ function loadHome() {
 
     while (infiniteScroll.scrollHeight <= window.innerHeight) {
       appendItem();
-    }
+    } // start automatic scrolling animation
+
 
     scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
 
     function scrollingAnimation() {
-      setScrollPos(getScrollPos() + 1);
-      scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
+      // make sure infiniteScroll element still exist (page change)
+      var infiniteScroll = !!document.querySelector(".infinite-scroll");
+
+      if (infiniteScroll) {
+        setScrollPos(getScrollPos() + 1);
+        scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
+      }
     } // register event listeners
 
 
@@ -523,7 +535,25 @@ function loadHome() {
     var deltaY = event.deltaY * -1;
     var translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
-    controlFade(deltaY);
+    controlFade(deltaY); // check if wheel has been re-triggered
+
+    console.log(lastWheelDeltaY, deltaY);
+
+    if (Math.abs(lastWheelDeltaY) <= Math.abs(deltaY) && !wheelRetriggerred) {
+      wheelRetriggerred = true;
+      console.log("wheel retriggered");
+    } else {
+      wheelRetriggerred = false;
+      console.log("wheel slowing down");
+    }
+
+    lastWheelDeltaY = deltaY; // start custom slow down animation
+
+    if (Math.abs(deltaY) > 150) {
+      customSlowDownFlag = true;
+      console.log("trigger custom animation now: " + deltaY);
+    }
+
     cancelAnimationFrame(slowdownAnim);
     cancelAnimationFrame(scrollingAnim);
   }
