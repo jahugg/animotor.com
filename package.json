@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "animotor company website",
   "main": "index.html",
-  "author": "",
+  "author": "Jan Huggenberg",
   "license": "ISC",
   "scripts": {
     "start": "parcel src/index.html --open",

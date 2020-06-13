@@ -45,6 +45,15 @@ export function render() {
         let indicatorsWrapper;
         if (multipleImages) {
 
+            // fade in indicators animation
+            slideshow.addEventListener("mouseover", function (event) {
+                slideshow.querySelector(".slideshow__indicators-wrapper").setAttribute("data-active", "");
+            }, true);
+            slideshow.addEventListener("mouseout", function (event) {
+                console.log("mouse over");
+                slideshow.querySelector(".slideshow__indicators-wrapper").removeAttribute("data-active");
+            }, true);
+
             // create navigation items
             let navigation = document.createElement("div");
             navigation.classList.add("slideshow__nav");

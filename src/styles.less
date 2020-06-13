@@ -39,15 +39,17 @@ video {
 }
 
 .text-h2 {
-  font-size : 1.2em;
-  text-align: center;
-  margin-top: 4em;
+  font-size  : 1.2em;
+  margin-top : 1em;
+  font-weight: normal;
+}
+
+img {
+  display: block;
 }
 
 //media query breakpoints
-@bp-small: ~"screen and (min-width: 28em)";
-
-@media @bp-small {}
+@bp-small: ~"screen and (min-width: 40em)";
 
 :root {
   --app-header-height: 0;
@@ -83,7 +85,7 @@ video {
   }
 
   li:nth-child(1) {
-    order: 2;
+    order     : 2;
     text-align: center;
   }
 
@@ -92,7 +94,7 @@ video {
   }
 
   li:nth-child(3) {
-    order: 3;
+    order     : 3;
     text-align: right;
   }
 
@@ -187,11 +189,17 @@ video {
 
 .info {
   padding  : 0 30px;
-  max-width: 600px;
-  margin   : 0 auto;
+  max-width: 1000px;
+  margin   : 100px auto;
 
-  p:first-of-type {
-    text-align: center;
+  @media @bp-small {
+    column-count: 2;
+    column-gap  : 40px;
+  }
+
+  img {
+    width      : 100%;
+    break-after: always;
   }
 
   h1 {
@@ -224,6 +232,8 @@ video {
   position       : relative;
   display        : flex;
   justify-content: center;
+  margin         : 5px 0;
+  overflow: hidden;
 }
 
 .slideshow__slides-wrapper {
@@ -268,7 +278,15 @@ video {
 .slideshow__indicators-wrapper {
   position: absolute;
   bottom  : 10px;
+  opacity: 0;
+  transform: scale(.9);
   display : flex;
+  transition: all .1s ease-out;
+
+  &[data-active] {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .slideshow__indicator {
