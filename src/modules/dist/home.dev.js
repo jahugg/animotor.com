@@ -1,11 +1,19 @@
 "use strict";
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.render = render;
 
 var _ = _interopRequireDefault(require("./../media/animation/*.*"));
+
+var helpers = _interopRequireWildcard(require("./helpers.js"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -27,7 +35,7 @@ function render() {
 
   for (var image in _["default"]) {
     for (var type in _["default"][image]) {
-      promises.push(loadImage(_["default"][image][type]));
+      promises.push(helpers.loadImage(_["default"][image][type]));
     }
   } // add animation scroller after images have been loaded
 
@@ -71,9 +79,9 @@ function render() {
     } // register event listeners
 
 
-    container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+    container.addEventListener("wheel", helpers.throttledEvent(handleWheel, 5));
     container.addEventListener("touchstart", handleTouchStart, false);
-    container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+    container.addEventListener("touchmove", helpers.throttledEvent(handleTouchMove, 5), false);
     container.addEventListener("touchend", handleTouchEnd, false);
     container.addEventListener("touchcancel", handleTouchEnd, false); // callback function to execute when mutations are observed
 
@@ -260,8 +268,8 @@ function render() {
     var speed = Math.abs(deltaY);
     var max = 80;
     speed = Math.min(Math.max(speed, 0), max);
-    var fadeScroll = map(speed, 0, max, 1, .1);
-    var fadeStatic = map(speed, 20, max, 0, 1);
+    var fadeScroll = helpers.map(speed, 0, max, 1, .1);
+    var fadeStatic = helpers.map(speed, 20, max, 0, 1);
     var staticAnim = document.querySelector(".static-anim");
     var infiniteScroll = document.querySelector(".infinite-scroll");
     staticAnim.style.opacity = fadeStatic;
@@ -326,37 +334,3 @@ function render() {
     infiniteScroll.style.transform = "translateY(" + -item.offsetHeight + "px)";
   }
 }
-
-function throttledEvent(listener, delay) {
-  var timeout;
-  return function (event) {
-    if (!timeout) {
-      // no timer running
-      listener(event); // run the function
-
-      timeout = setTimeout(function () {
-        timeout = null;
-      }, delay); // start a timer that turns itself off when it's done
-    } // else, do nothing (throttling)
-
-  };
-}
-
-function map(num, in_min, in_max, out_min, out_max) {
-  // taken from
-  // (https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers/23202637)
-  return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-function loadImage(src) {
-  return new Promise(function (resolve, reject) {
-    var img = new Image();
-    img.addEventListener("load", function () {
-      return resolve(img);
-    });
-    img.addEventListener("error", reject);
-    img.src = src;
-  });
-}
-
-;

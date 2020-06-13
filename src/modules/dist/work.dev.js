@@ -1,11 +1,19 @@
 "use strict";
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.render = render;
 
 var _ = _interopRequireDefault(require("./../media/projects/*/*.*"));
+
+var helpers = _interopRequireWildcard(require("./helpers.js"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -43,30 +51,18 @@ function render() {
     var indicatorsWrapper = void 0;
 
     if (multipleImages) {
-      // fade in indicators animation
-      slideshow.addEventListener("mouseover", function (event) {
-        slideshow.querySelector(".slideshow__indicators-wrapper").setAttribute("data-active", "");
-      }, true);
-      slideshow.addEventListener("mouseout", function (event) {
-        console.log("mouse over");
-        slideshow.querySelector(".slideshow__indicators-wrapper").removeAttribute("data-active");
-      }, true); // create navigation items
-
-      var navigation = document.createElement("div");
-      navigation.classList.add("slideshow__nav");
-      slideshow.appendChild(navigation);
-      var prevButton = document.createElement("button");
-      prevButton.classList.add("slideshow__nav__btn");
-      navigation.appendChild(prevButton);
-      prevButton.addEventListener("click", previousSlide);
-      var nextButton = document.createElement("button");
-      nextButton.classList.add("slideshow__nav__btn");
-      navigation.appendChild(nextButton);
-      nextButton.addEventListener("click", nextSlide); // create indicators wrapper
-
+      // create indicators wrapper
       indicatorsWrapper = document.createElement("div");
       indicatorsWrapper.classList.add("slideshow__indicators-wrapper");
-      slideshow.appendChild(indicatorsWrapper);
+      slideshow.appendChild(indicatorsWrapper); // add slideshow listeners
+
+      slideshow.addEventListener("click", nextSlide);
+      slideshow.addEventListener("mouseover", function () {
+        return indicatorsWrapper.setAttribute("data-active", "");
+      });
+      slideshow.addEventListener("mouseout", function () {
+        return indicatorsWrapper.removeAttribute("data-active");
+      });
     } // iterate over project files
 
 
@@ -103,6 +99,7 @@ function render() {
   }
 
   function jumpToSlide(event) {
+    event.stopPropagation();
     var target = event.target;
     var parent = target.closest(".slideshow__indicators-wrapper");
     var slideshow = target.closest(".slideshow");
@@ -149,19 +146,13 @@ function render() {
     indicator.setAttribute("data-active", "");
   }
 
-  function previousSlide(event) {
-    var slideshow = event.target.closest(".slideshow__slides-wrapper");
-    slideshow.scrollTo({
-      left: slideshow.scrollLeft - slideshow.offsetWidth,
-      behavior: 'smooth'
-    });
-  }
-
   function nextSlide(event) {
-    var slideshow = event.target.closest(".slideshow__slides-wrapper");
-    slideshow.scrollTo({
+    var slideshow = event.target.closest(".slideshow__slides-wrapper"); // scroll to next slide
+
+    if (slideshow.scrollLeft < slideshow.scrollWidth - slideshow.offsetWidth) slideshow.scrollTo({
       left: slideshow.scrollLeft + slideshow.offsetWidth,
       behavior: 'smooth'
-    });
+    }); // scroll to start
+    else slideshow.scrollTo(0, 0);
   }
 }

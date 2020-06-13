@@ -1,4 +1,5 @@
 import animation from "./../media/animation/*.*";
+import * as helpers from "./helpers.js";
 
 export function render() {
 
@@ -20,7 +21,7 @@ export function render() {
   let promises = [];
   for (let image in animation)
     for (let type in animation[image])
-      promises.push(loadImage(animation[image][type]));
+      promises.push(helpers.loadImage(animation[image][type]));
 
   // add animation scroller after images have been loaded
   Promise.all(promises)
@@ -63,9 +64,9 @@ export function render() {
     }
 
     // register event listeners
-    container.addEventListener("wheel", throttledEvent(handleWheel, 5));
+    container.addEventListener("wheel", helpers.throttledEvent(handleWheel, 5));
     container.addEventListener("touchstart", handleTouchStart, false);
-    container.addEventListener("touchmove", throttledEvent(handleTouchMove, 5), false);
+    container.addEventListener("touchmove", helpers.throttledEvent(handleTouchMove, 5), false);
     container.addEventListener("touchend", handleTouchEnd, false);
     container.addEventListener("touchcancel", handleTouchEnd, false);
 
@@ -224,8 +225,8 @@ export function render() {
     let speed = Math.abs(deltaY);
     let max = 80;
     speed = Math.min(Math.max(speed, 0), max);
-    let fadeScroll = map(speed, 0, max, 1, .1);
-    let fadeStatic = map(speed, 20, max, 0, 1);
+    let fadeScroll = helpers.map(speed, 0, max, 1, .1);
+    let fadeStatic = helpers.map(speed, 20, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");
     let infiniteScroll = document.querySelector(".infinite-scroll");
@@ -304,32 +305,3 @@ export function render() {
     infiniteScroll.style.transform = "translateY(" + (-item.offsetHeight) + "px)";
   }
 }
-
-function throttledEvent(listener, delay) {
-  let timeout;
-  return function (event) {
-    if (!timeout) {
-      // no timer running
-      listener(event); // run the function
-      timeout = setTimeout(function () {
-        timeout = null;
-      }, delay); // start a timer that turns itself off when it's done
-    }
-    // else, do nothing (throttling)
-  };
-}
-
-function map(num, in_min, in_max, out_min, out_max) {
-  // taken from
-  // (https://stackoverflow.com/questions/10756313/javascript-jquery-map-a-range-of-numbers-to-another-range-of-numbers/23202637)
-  return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.addEventListener("load", () => resolve(img));
-    img.addEventListener("error", reject);
-    img.src = src;
-  });
-};

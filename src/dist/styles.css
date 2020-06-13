@@ -184,6 +184,9 @@ img {
   margin: 5px 0;
   overflow: hidden;
 }
+.slideshow::-webkit-scrollbar {
+  background: red;
+}
 .slideshow__slides-wrapper {
   overflow: scroll;
   display: flex;
@@ -201,29 +204,17 @@ img {
   height: 100%;
   object-fit: cover;
 }
-.slideshow__nav {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  display: flex;
-  justify-content: space-between;
-  display: none;
-}
-.slideshow__nav__btn {
-  width: 40%;
-  height: 100%;
-  border: none;
-  background: none;
-  pointer-events: auto;
-}
 .slideshow__indicators-wrapper {
   position: absolute;
   bottom: 10px;
-  opacity: 0;
-  transform: scale(0.9);
   display: flex;
   transition: all 0.1s ease-out;
+}
+@media screen and (min-width: 40em) {
+  .slideshow__indicators-wrapper {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }
 .slideshow__indicators-wrapper[data-active] {
   opacity: 1;

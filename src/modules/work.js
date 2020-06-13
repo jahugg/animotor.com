@@ -1,4 +1,5 @@
 import projects from "./../media/projects/*/*.*";
+import * as helpers from "./helpers.js";
 
 export function render() {
     let main = document.getElementById("main");
@@ -37,42 +38,21 @@ export function render() {
                 let slideshow = event.target.closest(".slideshow");
                 let indicator = slideshow.querySelector(".slideshow__indicators-wrapper").children[index];
                 updateIndicators(indicator);
-
             }, 10);
-
         }, false);
 
         let indicatorsWrapper;
         if (multipleImages) {
 
-            // fade in indicators animation
-            slideshow.addEventListener("mouseover", function (event) {
-                slideshow.querySelector(".slideshow__indicators-wrapper").setAttribute("data-active", "");
-            }, true);
-            slideshow.addEventListener("mouseout", function (event) {
-                console.log("mouse over");
-                slideshow.querySelector(".slideshow__indicators-wrapper").removeAttribute("data-active");
-            }, true);
-
-            // create navigation items
-            let navigation = document.createElement("div");
-            navigation.classList.add("slideshow__nav");
-            slideshow.appendChild(navigation);
-
-            let prevButton = document.createElement("button");
-            prevButton.classList.add("slideshow__nav__btn");
-            navigation.appendChild(prevButton);
-            prevButton.addEventListener("click", previousSlide);
-
-            let nextButton = document.createElement("button");
-            nextButton.classList.add("slideshow__nav__btn");
-            navigation.appendChild(nextButton);
-            nextButton.addEventListener("click", nextSlide);
-
             // create indicators wrapper
             indicatorsWrapper = document.createElement("div");
             indicatorsWrapper.classList.add("slideshow__indicators-wrapper");
             slideshow.appendChild(indicatorsWrapper);
+
+            // add slideshow listeners
+            slideshow.addEventListener("click", nextSlide);
+            slideshow.addEventListener("mouseover", () => indicatorsWrapper.setAttribute("data-active", ""));
+            slideshow.addEventListener("mouseout", () => indicatorsWrapper.removeAttribute("data-active"));
         }
 
 
@@ -110,6 +90,8 @@ export function render() {
     }
 
     function jumpToSlide(event) {
+        event.stopPropagation();
+
         let target = event.target;
         let parent = target.closest(".slideshow__indicators-wrapper");
         let slideshow = target.closest(".slideshow");
@@ -134,19 +116,17 @@ export function render() {
         indicator.setAttribute("data-active", "");
     }
 
-    function previousSlide(event) {
-        let slideshow = event.target.closest(".slideshow__slides-wrapper");
-        slideshow.scrollTo({
-            left: slideshow.scrollLeft - slideshow.offsetWidth,
-            behavior: 'smooth'
-        });
-    }
-
     function nextSlide(event) {
         let slideshow = event.target.closest(".slideshow__slides-wrapper");
-        slideshow.scrollTo({
-            left: slideshow.scrollLeft + slideshow.offsetWidth,
-            behavior: 'smooth'
-        });
+        // scroll to next slide
+        if (slideshow.scrollLeft < slideshow.scrollWidth - slideshow.offsetWidth)
+            slideshow.scrollTo({
+                left: slideshow.scrollLeft + slideshow.offsetWidth,
+                behavior: 'smooth'
+            });
+
+        // scroll to start
+        else
+            slideshow.scrollTo(0, 0);
     }
 }
