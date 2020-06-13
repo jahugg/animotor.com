@@ -1,7 +1,6 @@
-import projects from "./../media/*/*.*";
+import projects from "./../media/projects/*/*.*";
 
 export function render() {
-    console.log(projects);
     let main = document.getElementById("main");
     let container = document.createElement("div");
     container.classList.add("slideshow-container");
@@ -16,6 +15,7 @@ export function render() {
         // create slideshow
         let slideshow = document.createElement("div");
         slideshow.classList.add("slideshow");
+        slideshow.id = projectName;
         container.appendChild(slideshow);
 
         let slidesWrapper = document.createElement("div");
