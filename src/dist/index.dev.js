@@ -9,16 +9,25 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 var defaultPage = "home";
 var pages = {
   home: {
-    title: "○",
-    slug: "/"
+    title: "Home",
+    slug: "/",
+    module: Promise.resolve().then(function () {
+      return _interopRequireWildcard(require('./modules/home.js'));
+    })
   },
   work: {
     title: "Work",
-    slug: "/work"
+    slug: "/work",
+    module: Promise.resolve().then(function () {
+      return _interopRequireWildcard(require('./modules/work.js'));
+    })
   },
   info: {
     title: "Info",
-    slug: "/info"
+    slug: "/info",
+    module: Promise.resolve().then(function () {
+      return _interopRequireWildcard(require('./modules/info.js'));
+    })
   }
 };
 
@@ -98,24 +107,9 @@ function buildPage(stateObj, addToHistory) {
 
   if (addToHistory) window.history.pushState(stateObj, page.title, page.slug); // update navigation
 
-  updateNavigation(page.slug); // clean this up and make it dynamic
-  // load page contents
+  updateNavigation(page.slug); // load page module
 
-  if (pageKey === "home") Promise.resolve().then(function () {
-    return _interopRequireWildcard(require('./modules/home.js'));
-  }).then(function (module) {
-    module.render();
-  })["catch"](function (err) {
-    console.log(err.message);
-  });else if (pageKey === "work") Promise.resolve().then(function () {
-    return _interopRequireWildcard(require('./modules/work.js'));
-  }).then(function (module) {
-    module.render();
-  })["catch"](function (err) {
-    console.log(err.message);
-  });else if (pageKey === "info") Promise.resolve().then(function () {
-    return _interopRequireWildcard(require('./modules/info.js'));
-  }).then(function (module) {
+  pages[pageKey].module.then(function (module) {
     module.render();
   })["catch"](function (err) {
     console.log(err.message);

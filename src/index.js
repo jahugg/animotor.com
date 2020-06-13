@@ -1,16 +1,19 @@
 const defaultPage = "home";
 const pages = {
   home: {
-    title: "○",
-    slug: "/"
+    title: "Home",
+    slug: "/",
+    module: import('./modules/home.js')
   },
   work: {
     title: "Work",
-    slug: "/work"
+    slug: "/work",
+    module: import('./modules/work.js')
   },
   info: {
     title: "Info",
     slug: "/info",
+    module: import('./modules/info.js')
   }
 };
 
@@ -100,35 +103,12 @@ function buildPage(stateObj, addToHistory) {
   // update navigation
   updateNavigation(page.slug);
 
-  // clean this up and make it dynamic
-  // load page contents
-
-  if (pageKey === "home")
-    import('./modules/home.js')
-      .then(module => {
-        module.render();
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
-
-  else if (pageKey === "work")
-    import('./modules/work.js')
-      .then(module => {
-        module.render();
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
-
-  else if (pageKey === "info")
-    import('./modules/info.js')
-      .then(module => {
-        module.render();
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
+  // load page module
+  pages[pageKey].module.then(module => {
+    module.render();
+  }).catch(err => {
+    console.log(err.message);
+  });
 }
 
 function updateNavigation(currentSlug) {
