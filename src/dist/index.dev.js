@@ -12,10 +12,17 @@ var _contentInfo = _interopRequireDefault(require("./content-info.md"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
 var pages = {
   home: {
     title: "○",
     slug: "/",
+    module: "home.js",
     loadContents: function loadContents() {
       loadHome();
     }
@@ -23,6 +30,7 @@ var pages = {
   work: {
     title: "Work",
     slug: "/work",
+    module: "work.js",
     loadContents: function loadContents() {
       loadWork();
     }
@@ -30,6 +38,7 @@ var pages = {
   info: {
     title: "Info",
     slug: "/info",
+    module: "info.js",
     loadContents: function loadContents() {
       loadInfo();
     }
@@ -113,8 +122,15 @@ function buildPage(stateObj, addToHistory) {
 
   updateNavigation(currentPage.slug); // load page contents
   // consider this workflow https://parceljs.org/code_splitting.html
+  // currentPage.loadContents();
 
-  currentPage.loadContents();
+  Promise.resolve().then(function () {
+    return _interopRequireWildcard(require('./pages/work.js'));
+  }).then(function (module) {
+    module.render();
+  })["catch"](function (err) {
+    console.log(err.message);
+  });
 }
 
 function updateNavigation(currentSlug) {

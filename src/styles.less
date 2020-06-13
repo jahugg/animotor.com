@@ -230,6 +230,7 @@ video {
   overflow        : scroll;
   display         : flex;
   scroll-snap-type: x mandatory;
+  scroll-snap-stop: always;
 }
 
 .slideshow__slide {
@@ -252,6 +253,8 @@ video {
   pointer-events : none;
   display        : flex;
   justify-content: space-between;
+
+  display: none;
 }
 
 .slideshow__nav__btn {

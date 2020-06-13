@@ -8,16 +8,19 @@ const pages = {
   home: {
     title: "○",
     slug: "/",
+    module: "home.js",
     loadContents: function () { loadHome() }
   },
   work: {
     title: "Work",
     slug: "/work",
-    loadContents: function () { loadWork() }
+    module: "work.js",
+    loadContents: function () { loadWork() },
   },
   info: {
     title: "Info",
     slug: "/info",
+    module: "info.js",
     loadContents: function () { loadInfo() }
   }
 };
@@ -105,7 +108,17 @@ function buildPage(stateObj, addToHistory) {
 
   // load page contents
   // consider this workflow https://parceljs.org/code_splitting.html
-  currentPage.loadContents();
+
+  // currentPage.loadContents();
+
+  import('./pages/work.js')
+    .then(module => {
+      module.render();
+    })
+    .catch(err => {
+      console.log(err.message);
+    });
+
 }
 
 function updateNavigation(currentSlug) {
@@ -470,7 +483,7 @@ function loadHome() {
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
     controlFade(deltaY);
-    
+
     // check if wheel has been re-triggered
     console.log(lastWheelDeltaY, deltaY)
     if (Math.abs(lastWheelDeltaY) <= Math.abs(deltaY) && !wheelRetriggerred) {
