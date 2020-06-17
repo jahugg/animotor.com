@@ -12,7 +12,9 @@ Pablo Hintermüller<br>
 [+41 76 463 66 95](tel:+41764636695)<br>
 [pablo@animotor.ch](mailto:pablo@animotor.ch)
 
-[Portfolio](https://www.disneyworld.com/)
+[Download Portfolio](portfolio.pdf)
+
+![Portrait Image](portrait.jpg)
 
 Who we are
 ===

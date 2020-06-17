@@ -11,7 +11,8 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "less": "^3.11.3"
+    "less": "^3.11.3",
+    "marked": "^1.1.0"
   },
   "keywords": [],
   "repository": "https://github.com/jahugg/animotor.com.git"
