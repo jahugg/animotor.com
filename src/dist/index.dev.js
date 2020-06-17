@@ -78,10 +78,10 @@ function buildNavigation() {
 
   for (var key in pages) {
     var item = document.createElement("li");
+    item.setAttribute("data-page", key);
     var link = document.createElement("a");
     link.href = pages[key].slug;
-    link.setAttribute("data-link", "");
-    link.innerHTML = pages[key].title;
+    if (key !== "home") link.innerHTML = pages[key].title;
     item.appendChild(link);
     list.appendChild(item);
     link.addEventListener("click", handlePageLink);

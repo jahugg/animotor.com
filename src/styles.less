@@ -65,11 +65,12 @@ img {
 }
 
 #nav {
-  width   : 100%;
-  position: fixed;
-  z-index : 100;
-  top     : 0;
-  padding : .5em 1em;
+  width     : 100%;
+  position  : fixed;
+  z-index   : 100;
+  top       : 0;
+  padding   : .5em 1em;
+  background: white;
 
   ul {
     width          : 100%;
@@ -84,16 +85,16 @@ img {
     width: 100% / 3;
   }
 
-  li:nth-child(1) {
+  li[data-page="home"] {
     order     : 2;
     text-align: center;
   }
 
-  li:nth-child(2) {
+  li[data-page="work"] {
     order: 1;
   }
 
-  li:nth-child(3) {
+  li[data-page="info"] {
     order     : 3;
     text-align: right;
   }
@@ -104,6 +105,26 @@ img {
     color          : black;
     line-height    : 1.4em;
     text-transform : lowercase;
+  }
+
+  // special home button styling
+  li[data-page="home"] a {
+    @size          : 1.4em;
+    display        : inline-block;
+    width          : @size;
+    height         : @size;
+    background     : url("./media/home-icon/state-inactive.svg") no-repeat center center;
+    background-size: cover;
+
+    &:hover,
+    &:focus,
+    &[data-active] {
+      background-image: url("./media/home-icon/state-active.svg");
+    }
+  }
+
+  // general link styling
+  li:not([data-page="home"]) a {
 
     &:after {
       content         : "";
@@ -127,6 +148,9 @@ img {
     }
   }
 }
+
+// ================
+// Home Page Styles
 
 .infinite-scroll-container {
   height         : 100vh;
@@ -154,18 +178,7 @@ img {
     height    : 100%;
     object-fit: scale-down;
   }
-
-  div {
-    position   : absolute;
-    top        : 0;
-    font-size  : 1em;
-    line-height: 1em;
-    color      : white;
-  }
 }
-
-// ================
-// Home Page Styles
 
 .static-anim {
   position : absolute;

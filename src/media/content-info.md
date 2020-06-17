@@ -15,7 +15,7 @@ Pablo Hintermüller<br>
 [Portfolio](https://www.disneyworld.com/)
 
 Who we are
-====
+===
 Animotor is a Schlufibetrieb founded by Pablo Hintermüller and Stephan Geiger in Winterthur, Switzerland. The studio works with a wide range of clients, mainly focused on projects within the cultural field. We like to work all the way through the spectrum of graphic design and enjoy working with people that are as passionate about what they do as we are.
 
 What we like

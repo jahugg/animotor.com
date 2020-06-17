@@ -1,0 +1,12 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.render = render;
+
+// import contentInfo from "./../media/content-info.md";
+function render() {
+  let main = document.getElementById("main");
+  main.innerHTML = `<article class="info">` + contentInfo + `</article>`;
+}

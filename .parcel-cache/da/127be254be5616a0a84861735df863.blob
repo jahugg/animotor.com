@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Animotor</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="710355b7bd6517e1491fd26938923095" rel="stylesheet">
+	<link href="1e1363af0ca4598859d2abf25949413a" rel="stylesheet">
+
+	<script defer="" src="00be0ce1a03e040f61b9bbd88d77ab1a"></script>
+</head>
+
+<body>
+	<div id="app"></div>
+</body>
+
+</html>

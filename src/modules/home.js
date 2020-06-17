@@ -202,20 +202,20 @@ export function render() {
     controlFade(deltaY);
 
     // check if wheel has been re-triggered
-    console.log(lastWheelDeltaY, deltaY)
+    // console.log(lastWheelDeltaY, deltaY)
     if (Math.abs(lastWheelDeltaY) <= Math.abs(deltaY) && !wheelRetriggerred) {
       wheelRetriggerred = true;
-      console.log("wheel retriggered");
+      // console.log("wheel retriggered");
     } else {
       wheelRetriggerred = false;
-      console.log("wheel slowing down")
+      // console.log("wheel slowing down")
     }
     lastWheelDeltaY = deltaY;
 
     // start custom slow down animation
     if (Math.abs(deltaY) > 150) {
       customSlowDownFlag = true;
-      console.log("trigger custom animation now: " + deltaY);
+      // console.log("trigger custom animation now: " + deltaY);
     }
     cancelAnimationFrame(slowdownAnim);
     cancelAnimationFrame(scrollingAnim);
@@ -275,8 +275,7 @@ export function render() {
     let fileId = newId + 1;
     let fileName = "Untitled_Artwork-" + fileId.toString();
 
-    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">
-    <div>`+ newId + `</div>`;
+    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">`;
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
   }
@@ -296,8 +295,7 @@ export function render() {
     let fileId = newId + 1;
     let fileName = "Untitled_Artwork-" + fileId.toString();
 
-    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">
-  <div>`+ newId + `</div>`;
+    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">`;
     item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item);
 
