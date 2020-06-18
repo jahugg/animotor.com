@@ -33,6 +33,11 @@ export function render() {
     // remove loading message
     container.innerHTML = "";
 
+    // mask
+    let mask = document.createElement("div");
+    mask.classList.add("infinite-scroll-mask");
+    container.appendChild(mask);
+
     // static animation frame
     let animKeys = Object.keys(animation);
     let staticAnim = document.createElement("div");
@@ -49,7 +54,8 @@ export function render() {
     container.appendChild(infiniteScroll);
 
     // fill screen with tiles
-    while (infiniteScroll.scrollHeight <= window.innerHeight)
+    let containerRect = container.getBoundingClientRect();
+    while (infiniteScroll.scrollHeight <= containerRect.height)
       appendItem();
 
     // start automatic scrolling animation
@@ -88,7 +94,7 @@ export function render() {
           }
           // remove last child out of bounds
           else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY)
-            > window.innerHeight)
+            > containerRect.height)
             lastChild.remove();
 
           // prepend new child if top reached
@@ -96,7 +102,7 @@ export function render() {
             prependItem();
 
           // append new child if bottom reached
-          else if (window.innerHeight + Math.abs(translateY) > infiniteScroll.offsetHeight)
+          else if (containerRect.height + Math.abs(translateY) > infiniteScroll.offsetHeight)
             appendItem();
 
           // ----------
