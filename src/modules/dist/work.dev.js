@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.render = render;
 
-var _ = _interopRequireDefault(require("./../media/projects/*/*.*"));
+var _ = _interopRequireDefault(require("./../media/work/*/*.*"));
 
 var helpers = _interopRequireWildcard(require("./helpers.js"));
 
@@ -29,7 +29,7 @@ function render() {
 
     var slideshow = document.createElement("div");
     slideshow.classList.add("slideshow");
-    slideshow.id = projectName;
+    slideshow.id = helpers.sanitizeString(projectName);
     container.appendChild(slideshow);
     var slidesWrapper = document.createElement("div");
     slidesWrapper.classList.add("slideshow__slides-wrapper");
@@ -51,7 +51,8 @@ function render() {
     var indicatorsWrapper = void 0;
 
     if (multipleImages) {
-      // create indicators wrapper
+      slideshow.classList.add("multiple"); // create indicators wrapper
+
       indicatorsWrapper = document.createElement("div");
       indicatorsWrapper.classList.add("slideshow__indicators-wrapper");
       slideshow.appendChild(indicatorsWrapper); // add slideshow listeners

@@ -1,4 +1,4 @@
-import projects from "./../media/projects/*/*.*";
+import projects from "./../media/work/*/*.*";
 import * as helpers from "./helpers.js";
 
 export function render() {
@@ -16,7 +16,7 @@ export function render() {
         // create slideshow
         let slideshow = document.createElement("div");
         slideshow.classList.add("slideshow");
-        slideshow.id = projectName;
+        slideshow.id = helpers.sanitizeString(projectName);
         container.appendChild(slideshow);
 
         let slidesWrapper = document.createElement("div");
@@ -43,6 +43,7 @@ export function render() {
 
         let indicatorsWrapper;
         if (multipleImages) {
+            slideshow.classList.add("multiple");
 
             // create indicators wrapper
             indicatorsWrapper = document.createElement("div");

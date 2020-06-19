@@ -34,6 +34,9 @@ video {
 img {
   display: block;
 }
+:root {
+  --side-padding: 10px;
+}
 @keyframes loading {
   0% {
     opacity: 1;
@@ -218,26 +221,30 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 10px;
 }
 .slideshow {
   height: 100vw;
   width: 100vw;
-  max-width: 350px;
-  max-height: 350px;
+  max-width: 500px;
+  max-height: 500px;
   position: relative;
   display: flex;
   justify-content: center;
-  margin: 5px 0;
+  margin-bottom: 10px;
   overflow: hidden;
 }
-.slideshow::-webkit-scrollbar {
-  background: red;
+.slideshow.multiple {
+  cursor: pointer;
 }
 .slideshow__slides-wrapper {
   overflow: scroll;
   display: flex;
   scroll-snap-type: x mandatory;
   scroll-snap-stop: always;
+}
+.slideshow__slides-wrapper::-webkit-scrollbar {
+  display: none;
 }
 .slideshow__slide {
   width: 100%;

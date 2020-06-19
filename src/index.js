@@ -1,3 +1,4 @@
+import homeIcon from "./media/home/home-icon.svg";
 const defaultPage = "home";
 const pages = {
   home: {
@@ -67,8 +68,11 @@ function buildNavigation() {
     item.setAttribute("data-page", key);
     let link = document.createElement("a");
     link.href = pages[key].slug;
-    if (key !== "home")
+    if (key === "home") {
+      link.innerHTML = '<img src="' + homeIcon + '" alt="' + pages[key].title + '">'
+    } else {
       link.innerHTML = pages[key].title;
+    }
     item.appendChild(link);
     list.appendChild(item);
     link.addEventListener("click", handlePageLink);
@@ -124,7 +128,7 @@ function updateNavigation(currentSlug) {
 
 function handlePageLink(event) {
   event.preventDefault();
-  let target = event.target;
+  let target = event.target.closest("a");
   let pageKey;
   for (let key in pages)
     if (pages[key].slug === target.getAttribute("href"))

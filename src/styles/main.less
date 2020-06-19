@@ -52,7 +52,36 @@ img {
 @bp-small: ~"screen and (min-width: 40em)";
 
 :root {
-  --header-height: 40px;
+  --side-padding: 10px;
+}
+
+@keyframes loading {
+  0% {
+    opacity  : 1;
+    transform: scale(.2);
+  }
+
+  60% {
+    opacity  : 0;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity  : 0;
+    transform: scale(1);
+  }
+}
+
+@keyframes appear {
+  0% {
+    opacity  : 0;
+    transform: scale(.9);
+  }
+
+  100% {
+    opacity  : 1;
+    transform: scale(1);
+  }
 }
 
 // ================
@@ -66,11 +95,11 @@ img {
 
 #nav {
   width      : 100%;
-  height     : var(--header-height);
   background : white;
   display    : flex;
   align-items: center;
   padding    : 0 1em;
+  background : red;
 
   ul {
     width          : 100%;
@@ -82,12 +111,14 @@ img {
   }
 
   li {
-    width: 100% / 3;
+    width      : 100% / 3;
+    display    : flex;
+    align-items: center;
   }
 
   li[data-page="home"] {
-    order     : 2;
-    text-align: center;
+    order          : 2;
+    justify-content: center;
   }
 
   li[data-page="work"] {
@@ -95,31 +126,32 @@ img {
   }
 
   li[data-page="info"] {
-    order     : 3;
-    text-align: right;
+    order          : 3;
+    justify-content: flex-end;
   }
 
   a {
     position       : relative;
     text-decoration: none;
     color          : black;
-    line-height    : 1.4em;
     text-transform : lowercase;
   }
 
   // special home button styling
   li[data-page="home"] a {
-    @size          : 1.4em;
-    display        : inline-block;
-    width          : @size;
-    height         : @size;
-    background     : url("./media/home-icon/state-inactive.svg") no-repeat center center;
-    background-size: cover;
+    display: block;
+    height : 40px;
+    width  : 40px;
 
-    &:hover,
-    &:focus,
+    img {
+      width     : 100%;
+      height    : 100%;
+      object-fit: contain;
+    }
+
     &[data-active] {
-      background-image: url("./media/home-icon/state-active.svg");
+      pointer-events: none;
+      opacity       : 0;
     }
   }
 
@@ -153,26 +185,28 @@ img {
 // Home Page Styles
 
 .infinite-scroll-container {
-  height         : ~"calc(100vh - var(--header-height))";
+  position       : absolute;
+  top            : 0;
+  left           : 0;
+  height         : 100vh;
+  width          : 100%;
   display        : flex;
   justify-content: center;
   align-items    : flex-start;
   overflow       : hidden;
-  position       : relative;
 }
 
-.infinite-scroll-mask {
-  position: absolute;
-  top     : 0;
-  left    : 0;
-  height  : 100%;
-  width   : 100%;
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 1) 0%,
-      rgba(255, 255, 255, 0) 10%,
-      rgba(255, 255, 255, 0) 90%,
-      rgba(255, 255, 255, 1) 100%);
-  z-index: 10;
+.infinite-scroll-loader {
+  @size        : 20px;
+  width        : @size;
+  height       : @size;
+  border-radius: @size;
+  background   : black;
+  position     : absolute;
+  opacity      : 0;
+  top          : 50%;
+  transform    : translateY(-50%);
+  animation    : loading 1s ease-in .5s infinite;
 }
 
 .infinite-scroll {
@@ -192,6 +226,7 @@ img {
     width     : 100%;
     height    : 100%;
     object-fit: scale-down;
+    animation : appear .2s ease-in;
   }
 }
 
@@ -250,21 +285,25 @@ img {
   display       : flex;
   flex-direction: column;
   align-items   : center;
+  margin-top    : 10px;
 }
 
 .slideshow {
-  height         : 100vw;
-  width          : 100vw;
-  max-width      : 350px;
-  max-height     : 350px;
+  @size   : 100vw;
+  @maxSize: 500px;
+
+  height         : @size;
+  width          : @size;
+  max-width      : @maxSize;
+  max-height     : @maxSize;
   position       : relative;
   display        : flex;
   justify-content: center;
-  margin         : 5px 0;
+  margin-bottom  : 10px;
   overflow       : hidden;
 
-  &::-webkit-scrollbar {
-    background: red;
+  &.multiple {
+    cursor: pointer;
   }
 }
 
@@ -273,6 +312,10 @@ img {
   display         : flex;
   scroll-snap-type: x mandatory;
   scroll-snap-stop: always;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .slideshow__slide {

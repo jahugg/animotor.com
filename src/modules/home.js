@@ -1,4 +1,4 @@
-import animation from "./../media/animation/*.*";
+import animation from "./../media/home/animation/*.*";
 import * as helpers from "./helpers.js";
 
 export function render() {
@@ -6,7 +6,6 @@ export function render() {
   let lastTouchPosY;
   let endTouchPosY;
   let slowdownAnim;
-  let scrollingAnim;
   let customSlowDownFlag = false;
   let lastWheelDeltaY = 0;
   let wheelRetriggerred = false;
@@ -14,7 +13,7 @@ export function render() {
   // container
   let container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
-  container.innerHTML = "loading";
+  container.innerHTML = '<div class="infinite-scroll-loader"><div>';
   main.appendChild(container);
 
   // preload all images
@@ -32,11 +31,6 @@ export function render() {
 
     // remove loading message
     container.innerHTML = "";
-
-    // mask
-    let mask = document.createElement("div");
-    mask.classList.add("infinite-scroll-mask");
-    container.appendChild(mask);
 
     // static animation frame
     let animKeys = Object.keys(animation);
@@ -57,17 +51,6 @@ export function render() {
     let containerRect = container.getBoundingClientRect();
     while (infiniteScroll.scrollHeight <= containerRect.height)
       appendItem();
-
-    // start automatic scrolling animation
-    scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
-    function scrollingAnimation() {
-      // make sure infiniteScroll element still exist (page change)
-      let infiniteScroll = !!document.querySelector(".infinite-scroll");
-      if (infiniteScroll) {
-        setScrollPos(getScrollPos() + 1);
-        scrollingAnim = window.requestAnimationFrame(scrollingAnimation);
-      }
-    }
 
     // register event listeners
     container.addEventListener("wheel", helpers.throttledEvent(handleWheel, 5));
@@ -148,7 +131,6 @@ export function render() {
     let touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
     cancelAnimationFrame(slowdownAnim);
-    cancelAnimationFrame(scrollingAnim);
   }
 
   function handleTouchMove(event) {
@@ -224,7 +206,6 @@ export function render() {
       // console.log("trigger custom animation now: " + deltaY);
     }
     cancelAnimationFrame(slowdownAnim);
-    cancelAnimationFrame(scrollingAnim);
   }
 
   function controlFade(deltaY) {

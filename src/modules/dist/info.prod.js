@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.render=render;var _article=_interopRequireDefault(require("./../media/info/article.md"));function _interopRequireDefault(e){return e&&e.__esModule?e:{default:e}}function render(){document.getElementById("main").innerHTML='<article class="info">'+_article.default+"</article>"}

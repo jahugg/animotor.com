@@ -1,4 +1,4 @@
-import contentInfo from "./../media/content-info.md";
+import contentInfo from "./../media/info/article.md";
 
 export function render() {
 
