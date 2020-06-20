@@ -23,12 +23,15 @@ function render() {
   var slowdownAnim;
   var customSlowDownFlag = false;
   var lastWheelDeltaY = 0;
-  var wheelRetriggerred = false; // container
+  var wheelRetriggerred = false; // change navigation to fixed
+
+  var nav = document.getElementById('main-nav');
+  nav.classList.add("fixed"); // container
 
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
-  main.appendChild(container); // preload all images
+  document.getElementById("main").appendChild(container); // preload all images
 
   var promises = [];
 

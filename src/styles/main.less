@@ -52,7 +52,7 @@ img {
 @bp-small: ~"screen and (min-width: 40em)";
 
 :root {
-  --side-padding: 10px;
+  --padding: 10px;
 }
 
 @keyframes loading {
@@ -93,22 +93,28 @@ img {
   min-height: 100vh;
 }
 
-#nav {
+#main-nav {
   width      : 100%;
   background : white;
   display    : flex;
   align-items: center;
-  padding    : 0 1em;
-  background : red;
+  padding    : 0 var(--padding);
 
-  ul {
-    width          : 100%;
-    margin         : 0;
-    padding        : 0;
-    list-style-type: none;
-    display        : flex;
-    justify-content: space-between;
+  &.fixed {
+    position  : absolute;
+    top       : 0;
+    z-index   : 100;
+    background: none;
   }
+}
+
+#main-nav__list {
+  width          : 100%;
+  margin         : 0;
+  padding        : 0;
+  list-style-type: none;
+  display        : flex;
+  justify-content: space-between;
 
   li {
     width      : 100% / 3;
@@ -139,9 +145,10 @@ img {
 
   // special home button styling
   li[data-page="home"] a {
+    @size: 40px;
     display: block;
-    height : 40px;
-    width  : 40px;
+    height : @size;
+    width  : @size;
 
     img {
       width     : 100%;
@@ -187,13 +194,11 @@ img {
 .infinite-scroll-container {
   position       : absolute;
   top            : 0;
-  left           : 0;
   height         : 100vh;
   width          : 100%;
   display        : flex;
   justify-content: center;
   align-items    : flex-start;
-  overflow       : hidden;
 }
 
 .infinite-scroll-loader {
@@ -226,7 +231,6 @@ img {
     width     : 100%;
     height    : 100%;
     object-fit: scale-down;
-    animation : appear .2s ease-in;
   }
 }
 
@@ -251,9 +255,9 @@ img {
 // Info Page Styles
 
 .info {
-  padding  : 0 30px;
+  padding  : 0 var(--padding);
   max-width: 1000px;
-  margin   : 100px auto;
+  margin   : 40px auto;
 
   @media @bp-small {
     column-count: 2;
@@ -289,7 +293,7 @@ img {
 }
 
 .slideshow {
-  @size   : 100vw;
+  @size   : ~"calc(100vw - var(--padding) * 2)";
   @maxSize: 500px;
 
   height         : @size;

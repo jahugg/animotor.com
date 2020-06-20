@@ -56,26 +56,29 @@ function navigateToCurrentURL() {
 }
 
 function buildNavigation() {
-  let app = document.getElementById("app");
   let nav = document.createElement("nav");
-  nav.id = "nav";
-  app.appendChild(nav);
+  nav.id = "main-nav";
   let list = document.createElement("ul");
+  list.id = "main-nav__list";
   nav.appendChild(list);
 
   for (let key in pages) {
     let item = document.createElement("li");
     item.setAttribute("data-page", key);
+    list.appendChild(item);
+
     let link = document.createElement("a");
     link.href = pages[key].slug;
-    if (key === "home") {
-      link.innerHTML = '<img src="' + homeIcon + '" alt="' + pages[key].title + '">'
-    } else {
-      link.innerHTML = pages[key].title;
-    }
-    item.appendChild(link);
-    list.appendChild(item);
     link.addEventListener("click", handlePageLink);
+    item.appendChild(link);
+
+    if (key === "home")
+      link.innerHTML = '<img src="' + homeIcon + '" alt="' + pages[key].title + '">'
+    else
+      link.innerHTML = pages[key].title;
+
+    let app = document.getElementById("app");
+    app.appendChild(nav);
   }
 }
 
@@ -85,10 +88,12 @@ function buildPage(stateObj, addToHistory) {
 
   // check if main exists
   let main = document.getElementById("main");
-  if (main) // empty main
+  if (main) {
+    // reset stuff
     main.innerHTML = "";
+    document.getElementById('main-nav').classList.remove("fixed");
 
-  else { // create main
+  } else { // create main
     main = document.createElement("main");
     main.id = "main";
     app.appendChild(main);
@@ -118,7 +123,7 @@ function buildPage(stateObj, addToHistory) {
 
 function updateNavigation(currentSlug) {
   // handle navigation items
-  let links = document.querySelectorAll('nav a');
+  let links = document.querySelectorAll('#main-nav a');
   for (let link of links)
     link.removeAttribute("data-active");
 

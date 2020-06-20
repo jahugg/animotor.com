@@ -35,7 +35,7 @@ img {
   display: block;
 }
 :root {
-  --side-padding: 10px;
+  --padding: 10px;
 }
 @keyframes loading {
   0% {
@@ -66,15 +66,20 @@ img {
   width: 100vw;
   min-height: 100vh;
 }
-#nav {
+#main-nav {
   width: 100%;
   background: white;
   display: flex;
   align-items: center;
-  padding: 0 1em;
-  background: red;
+  padding: 0 var(--padding);
 }
-#nav ul {
+#main-nav.fixed {
+  position: absolute;
+  top: 0;
+  z-index: 100;
+  background: none;
+}
+#main-nav__list {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -82,43 +87,43 @@ img {
   display: flex;
   justify-content: space-between;
 }
-#nav li {
+#main-nav__list li {
   width: 33.33333333%;
   display: flex;
   align-items: center;
 }
-#nav li[data-page="home"] {
+#main-nav__list li[data-page="home"] {
   order: 2;
   justify-content: center;
 }
-#nav li[data-page="work"] {
+#main-nav__list li[data-page="work"] {
   order: 1;
 }
-#nav li[data-page="info"] {
+#main-nav__list li[data-page="info"] {
   order: 3;
   justify-content: flex-end;
 }
-#nav a {
+#main-nav__list a {
   position: relative;
   text-decoration: none;
   color: black;
   text-transform: lowercase;
 }
-#nav li[data-page="home"] a {
+#main-nav__list li[data-page="home"] a {
   display: block;
   height: 40px;
   width: 40px;
 }
-#nav li[data-page="home"] a img {
+#main-nav__list li[data-page="home"] a img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
-#nav li[data-page="home"] a[data-active] {
+#main-nav__list li[data-page="home"] a[data-active] {
   pointer-events: none;
   opacity: 0;
 }
-#nav li:not([data-page="home"]) a:after {
+#main-nav__list li:not([data-page="home"]) a:after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -130,21 +135,19 @@ img {
   transform-origin: 0 50%;
   transition: transform 0.1s;
 }
-#nav li:not([data-page="home"]) a:hover:after,
-#nav li:not([data-page="home"]) a:focus:after,
-#nav li:not([data-page="home"]) a[data-active]:after {
+#main-nav__list li:not([data-page="home"]) a:hover:after,
+#main-nav__list li:not([data-page="home"]) a:focus:after,
+#main-nav__list li:not([data-page="home"]) a[data-active]:after {
   transform: scaleX(1);
 }
 .infinite-scroll-container {
   position: absolute;
   top: 0;
-  left: 0;
   height: 100vh;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  overflow: hidden;
 }
 .infinite-scroll-loader {
   width: 20px;
@@ -173,7 +176,6 @@ img {
   width: 100%;
   height: 100%;
   object-fit: scale-down;
-  animation: appear 0.2s ease-in;
 }
 .static-anim {
   position: absolute;
@@ -191,9 +193,9 @@ img {
   object-fit: scale-down;
 }
 .info {
-  padding: 0 30px;
+  padding: 0 var(--padding);
   max-width: 1000px;
-  margin: 100px auto;
+  margin: 40px auto;
 }
 @media screen and (min-width: 40em) {
   .info {
@@ -224,8 +226,8 @@ img {
   margin-top: 10px;
 }
 .slideshow {
-  height: 100vw;
-  width: 100vw;
+  height: calc(100vw - var(--padding) * 2);
+  width: calc(100vw - var(--padding) * 2);
   max-width: 500px;
   max-height: 500px;
   position: relative;

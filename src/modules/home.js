@@ -10,11 +10,15 @@ export function render() {
   let lastWheelDeltaY = 0;
   let wheelRetriggerred = false;
 
+  // change navigation to fixed
+  let nav = document.getElementById('main-nav');
+  nav.classList.add("fixed");
+
   // container
   let container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
-  main.appendChild(container);
+  document.getElementById("main").appendChild(container);
 
   // preload all images
   let promises = [];

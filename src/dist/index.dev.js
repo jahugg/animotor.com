@@ -73,28 +73,25 @@ function navigateToCurrentURL() {
 }
 
 function buildNavigation() {
-  var app = document.getElementById("app");
   var nav = document.createElement("nav");
-  nav.id = "nav";
-  app.appendChild(nav);
+  nav.id = "main-nav";
   var list = document.createElement("ul");
+  list.id = "main-nav__list";
   nav.appendChild(list);
 
   for (var key in pages) {
     var item = document.createElement("li");
     item.setAttribute("data-page", key);
+    list.appendChild(item);
     var link = document.createElement("a");
     link.href = pages[key].slug;
-
-    if (key === "home") {
-      link.innerHTML = '<img src="' + _homeIcon["default"] + '" alt="' + pages[key].title + '">';
-    } else {
-      link.innerHTML = pages[key].title;
-    }
-
-    item.appendChild(link);
-    list.appendChild(item);
     link.addEventListener("click", handlePageLink);
+    item.appendChild(link);
+    if (key === "home") link.innerHTML = '<img src="' + _homeIcon["default"] + '" alt="' + pages[key].title + '">';else link.innerHTML = pages[key].title;
+
+    var _app = document.getElementById("app");
+
+    _app.appendChild(nav);
   }
 }
 
@@ -102,13 +99,18 @@ function buildPage(stateObj, addToHistory) {
   var pageKey = stateObj.pageKey; // check if main exists
 
   var main = document.getElementById("main");
-  if (main) // empty main
-    main.innerHTML = "";else {
+
+  if (main) {
+    // reset stuff
+    main.innerHTML = "";
+    document.getElementById('main-nav').classList.remove("fixed");
+  } else {
     // create main
     main = document.createElement("main");
     main.id = "main";
     app.appendChild(main);
   }
+
   var page = pages[pageKey]; // set page title
 
   var title = "Animotor";
@@ -128,7 +130,7 @@ function buildPage(stateObj, addToHistory) {
 
 function updateNavigation(currentSlug) {
   // handle navigation items
-  var links = document.querySelectorAll('nav a');
+  var links = document.querySelectorAll('#main-nav a');
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
