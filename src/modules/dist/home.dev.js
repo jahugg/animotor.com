@@ -25,8 +25,8 @@ function render() {
   var lastWheelDeltaY = 0;
   var wheelRetriggerred = false; // change navigation to fixed
 
-  var nav = document.getElementById('main-nav');
-  nav.classList.add("fixed"); // container
+  var header = document.querySelector('header');
+  header.classList.replace("header--relative", "header--fixed"); // container
 
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");

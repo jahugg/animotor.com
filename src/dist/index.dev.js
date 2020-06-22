@@ -2,6 +2,8 @@
 
 var _homeIcon = _interopRequireDefault(require("./media/home/home-icon.svg"));
 
+var helpers = _interopRequireWildcard(require("./modules/helpers.js"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -73,10 +75,13 @@ function navigateToCurrentURL() {
 }
 
 function buildNavigation() {
+  var header = document.createElement("header");
+  header.classList.add("header--relative");
   var nav = document.createElement("nav");
-  nav.id = "main-nav";
+  nav.classList.add("main-nav");
+  header.appendChild(nav);
   var list = document.createElement("ul");
-  list.id = "main-nav__list";
+  list.classList.add("main-nav__list");
   nav.appendChild(list);
 
   for (var key in pages) {
@@ -88,10 +93,37 @@ function buildNavigation() {
     link.addEventListener("click", handlePageLink);
     item.appendChild(link);
     if (key === "home") link.innerHTML = '<img src="' + _homeIcon["default"] + '" alt="' + pages[key].title + '">';else link.innerHTML = pages[key].title;
+  } // add to DOM
 
-    var _app = document.getElementById("app");
 
-    _app.appendChild(nav);
+  var app = document.getElementById("app");
+  app.appendChild(header); // add navigation scroll behaviour
+
+  var lastScrollTop = 0;
+  window.addEventListener('scroll', helpers.throttledEvent(handleScroll, 20));
+
+  function handleScroll(event) {
+    var threshold = 200;
+    var scrollTop = event.target.scrollingElement.scrollTop;
+    var header = document.querySelector("header"); // don't start handling before threshold
+
+    if (scrollTop > threshold) {
+      // show navigation on scroll up
+      if (scrollTop > lastScrollTop && header.classList.contains("header--fixed-bg")) {
+        header.classList.replace("header--fixed-bg", "header--relative");
+        document.querySelector("main").style.paddingTop = 0; // hide navigation on scroll down
+      } else if (scrollTop < lastScrollTop && header.classList.contains("header--relative")) {
+        header.classList.replace("header--relative", "header--fixed-bg");
+        document.querySelector("main").style.paddingTop = header.offsetHeight + "px";
+      } // hide if top reached
+
+    } else if (scrollTop === 0) {
+      header.classList.replace("header--fixed-bg", "header--relative");
+      document.querySelector("main").style.paddingTop = 0;
+    } // save scroll position for comparison
+
+
+    lastScrollTop = scrollTop;
   }
 }
 
@@ -103,7 +135,9 @@ function buildPage(stateObj, addToHistory) {
   if (main) {
     // reset stuff
     main.innerHTML = "";
-    document.getElementById('main-nav').classList.remove("fixed");
+    var header = document.querySelector('header');
+    header.classList.remove("header--fixed", "header--fixed-bg");
+    header.classList.add("header--relative");
   } else {
     // create main
     main = document.createElement("main");
@@ -130,7 +164,7 @@ function buildPage(stateObj, addToHistory) {
 
 function updateNavigation(currentSlug) {
   // handle navigation items
-  var links = document.querySelectorAll('#main-nav a');
+  var links = document.querySelectorAll('.main-nav a');
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;

@@ -1,4 +1,6 @@
 import homeIcon from "./media/home/home-icon.svg";
+import * as helpers from "./modules/helpers.js";
+
 const defaultPage = "home";
 const pages = {
   home: {
@@ -56,10 +58,13 @@ function navigateToCurrentURL() {
 }
 
 function buildNavigation() {
+  let header = document.createElement("header");
+  header.classList.add("header--relative")
   let nav = document.createElement("nav");
-  nav.id = "main-nav";
+  nav.classList.add("main-nav");
+  header.appendChild(nav);
   let list = document.createElement("ul");
-  list.id = "main-nav__list";
+  list.classList.add("main-nav__list");
   nav.appendChild(list);
 
   for (let key in pages) {
@@ -76,9 +81,45 @@ function buildNavigation() {
       link.innerHTML = '<img src="' + homeIcon + '" alt="' + pages[key].title + '">'
     else
       link.innerHTML = pages[key].title;
+  }
 
-    let app = document.getElementById("app");
-    app.appendChild(nav);
+  // add to DOM
+  let app = document.getElementById("app");
+  app.appendChild(header);
+
+  // add navigation scroll behaviour
+  let lastScrollTop = 0;
+  window.addEventListener('scroll', helpers.throttledEvent(handleScroll, 20))
+
+  function handleScroll(event) {
+    let threshold = 200;
+    let scrollTop = event.target.scrollingElement.scrollTop;
+    let header = document.querySelector("header");
+
+    // don't start handling before threshold
+    if (scrollTop > threshold) {
+
+      // show navigation on scroll up
+      if (scrollTop > lastScrollTop &&
+        header.classList.contains("header--fixed-bg")) {
+        header.classList.replace("header--fixed-bg", "header--relative")
+        document.querySelector("main").style.paddingTop = 0;
+
+        // hide navigation on scroll down
+      } else if (scrollTop < lastScrollTop &&
+        header.classList.contains("header--relative")) {
+        header.classList.replace("header--relative", "header--fixed-bg")
+        document.querySelector("main").style.paddingTop = header.offsetHeight + "px";
+      }
+    
+    // hide if top reached
+    } else if (scrollTop === 0) {
+      header.classList.replace("header--fixed-bg", "header--relative")
+      document.querySelector("main").style.paddingTop = 0;
+    }
+
+    // save scroll position for comparison
+    lastScrollTop = scrollTop;
   }
 }
 
@@ -91,7 +132,10 @@ function buildPage(stateObj, addToHistory) {
   if (main) {
     // reset stuff
     main.innerHTML = "";
-    document.getElementById('main-nav').classList.remove("fixed");
+
+    let header = document.querySelector('header');
+    header.classList.remove("header--fixed", "header--fixed-bg");
+    header.classList.add("header--relative");
 
   } else { // create main
     main = document.createElement("main");
@@ -123,7 +167,7 @@ function buildPage(stateObj, addToHistory) {
 
 function updateNavigation(currentSlug) {
   // handle navigation items
-  let links = document.querySelectorAll('#main-nav a');
+  let links = document.querySelectorAll('.main-nav a');
   for (let link of links)
     link.removeAttribute("data-active");
 

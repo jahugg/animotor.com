@@ -7,17 +7,11 @@
 }
 
 html {
-  height    : 100%;
-  width     : 100%;
-  overflow  : hidden;
   box-sizing: border-box;
 }
 
 body {
-  height  : 100%;
-  width   : 100%;
-  overflow: scroll;
-  margin  : 0;
+  margin: 0;
 }
 
 img,
@@ -42,10 +36,6 @@ video {
   font-size  : 1.2em;
   margin-top : 1em;
   font-weight: normal;
-}
-
-img {
-  display: block;
 }
 
 //media query breakpoints
@@ -88,27 +78,41 @@ img {
 // General Page styles
 
 #app {
-  font      : normal 1rem/normal "GTAmerica", Helvetica, Arial, sans-serif;
-  width     : 100vw;
-  min-height: 100vh;
+  font: normal 1rem/normal "GTAmerica", Helvetica, Arial, sans-serif;
 }
 
-#main-nav {
+.header {
+  width     : 100%;
+  padding   : 0 var(--padding);
+}
+
+.header--relative {
+  .header;
+  position: relative;
+}
+
+.header--fixed {
+  .header;
+  position: fixed;
+  top     : 0;
+  z-index : 100;
+}
+
+.header--fixed-bg {
+  .header;
+  position  : fixed;
+  top       : 0;
+  z-index   : 100;
+  background: white;
+}
+
+.main-nav {
   width      : 100%;
-  background : white;
   display    : flex;
   align-items: center;
-  padding    : 0 var(--padding);
-
-  &.fixed {
-    position  : absolute;
-    top       : 0;
-    z-index   : 100;
-    background: none;
-  }
 }
 
-#main-nav__list {
+.main-nav__list {
   width          : 100%;
   margin         : 0;
   padding        : 0;
@@ -145,7 +149,7 @@ img {
 
   // special home button styling
   li[data-page="home"] a {
-    @size: 40px;
+    @size  : 40px;
     display: block;
     height : @size;
     width  : @size;
@@ -199,6 +203,7 @@ img {
   display        : flex;
   justify-content: center;
   align-items    : flex-start;
+  overflow       : hidden;
 }
 
 .infinite-scroll-loader {

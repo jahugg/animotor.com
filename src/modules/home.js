@@ -11,8 +11,8 @@ export function render() {
   let wheelRetriggerred = false;
 
   // change navigation to fixed
-  let nav = document.getElementById('main-nav');
-  nav.classList.add("fixed");
+  let header = document.querySelector('header');
+  header.classList.replace("header--relative", "header--fixed");
 
   // container
   let container = document.createElement("div");
