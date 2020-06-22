@@ -62,15 +62,13 @@ video {
   }
 }
 
-@keyframes appear {
+@keyframes slideDown {
   0% {
-    opacity  : 0;
-    transform: scale(.9);
+    transform: translateY(-100%);
   }
 
   100% {
-    opacity  : 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -82,8 +80,8 @@ video {
 }
 
 .header {
-  width     : 100%;
-  padding   : 0 var(--padding);
+  width  : 100%;
+  padding: 0 var(--padding);
 }
 
 .header--relative {
@@ -104,6 +102,7 @@ video {
   top       : 0;
   z-index   : 100;
   background: white;
+  animation : slideDown .2s ease-in;
 }
 
 .main-nav {
