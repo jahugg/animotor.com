@@ -113,7 +113,7 @@ function buildNavigation() {
       }
     
     // hide if top reached
-    } else if (scrollTop === 0) {
+    } else if (scrollTop <= 5) {
       header.classList.replace("header--fixed-bg", "header--relative")
       document.querySelector("main").style.paddingTop = 0;
     }
