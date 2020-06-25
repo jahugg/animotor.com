@@ -233,7 +233,6 @@ video {
 .slideshow {
   width: calc(100vw - var(--padding) * 2);
   max-width: 500px;
-  max-height: 500px;
   position: relative;
   display: flex;
   justify-content: center;
