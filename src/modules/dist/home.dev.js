@@ -31,18 +31,21 @@ function render() {
   var container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
-  document.getElementById("main").appendChild(container); // pick animation
+  document.getElementById("main").appendChild(container); // pick new animation
 
-  var animation = pickNextAnimation();
-  var animationFrames = Object.values(animation);
-  pickNextAnimation(); // preload all images
+  var keys = Object.keys(_["default"]);
+
+  var animationObject = _["default"][keys[keys.length * Math.random() << 0]];
+
+  var animation = Object.values(animationObject);
+  var arrayKeys = Object.keys(animation[0]);
+  var fileType = arrayKeys[0]; // preload all images
 
   var promises = [];
 
-  for (var image in animation) {
-    for (var type in animation[image]) {
-      promises.push(helpers.loadImage(animation[image][type]));
-    }
+  for (var _i = 0, _animation = animation; _i < _animation.length; _i++) {
+    var frame = _animation[_i];
+    promises.push(helpers.loadImage(frame[fileType]));
   } // add animation scroller after images have been loaded
 
 
@@ -54,12 +57,11 @@ function render() {
     // remove loading message
     container.innerHTML = ""; // static animation frame
 
-    var animKeys = Object.keys(animation);
     var staticAnim = document.createElement("div");
     staticAnim.classList.add("static-anim");
     container.appendChild(staticAnim);
     var frame = document.createElement("img");
-    frame.src = animation[animKeys[0]]["png"];
+    frame.src = animation[0][fileType];
     frame.setAttribute("data-id", 0);
     staticAnim.appendChild(frame); // infinite scroll
 
@@ -147,11 +149,9 @@ function render() {
             var closestRect = closestItem.getBoundingClientRect();
 
             if (closestRect.top <= staticRect.top) {
-              var _animKeys = Object.keys(animation);
-
               var staticImage = staticContainer.querySelector("img");
               var id = closestItem.getAttribute("data-id");
-              staticImage.src = animation[_animKeys[id]]["png"];
+              staticImage.src = animation[id][fileType];
               staticImage.setAttribute("data-id", id);
             }
           }
@@ -177,11 +177,6 @@ function render() {
     observer.observe(infiniteScroll, {
       attributes: true
     });
-  }
-
-  function pickNextAnimation() {
-    var keys = Object.keys(_["default"]);
-    return _["default"][keys[keys.length * Math.random() << 0]];
   }
 
   function handleTouchStart(event) {
@@ -296,15 +291,14 @@ function render() {
     var newId = 0;
     var infinteScroll = document.querySelector(".infinite-scroll");
     var item = document.createElement("div");
-    item.classList.add("infinite-scroll__item");
-    var animKeys = Object.keys(animation); // define new id if children exist
+    item.classList.add("infinite-scroll__item"); // define new id if children exist
 
     if (infinteScroll.hasChildNodes()) {
       var prevId = parseInt(infinteScroll.lastChild.getAttribute("data-id"), 10);
-      if (prevId === animKeys.length - 1) newId = 0;else newId = prevId + 1;
+      if (prevId === animation.length - 1) newId = 0;else newId = prevId + 1;
     }
 
-    item.innerHTML = "<img src=\"" + animationFrames[newId]["png"] + "\">";
+    item.innerHTML = "<img src=\"" + animation[newId][fileType] + "\">";
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
   }
@@ -314,10 +308,9 @@ function render() {
     var infiniteScroll = document.querySelector(".infinite-scroll");
     var item = document.createElement("div");
     item.classList.add("infinite-scroll__item");
-    var animKeys = Object.keys(animation);
     var prevId = parseInt(infiniteScroll.firstChild.getAttribute("data-id"), 10);
-    if (prevId === 0) newId = animKeys.length - 1;else newId = prevId - 1;
-    item.innerHTML = "<img src=\"" + animationFrames[newId]["png"] + "\">";
+    if (prevId === 0) newId = animation.length - 1;else newId = prevId - 1;
+    item.innerHTML = "<img src=\"" + animation[newId][fileType] + "\">";
     item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item); // correct scroll position for new item
 

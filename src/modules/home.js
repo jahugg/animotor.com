@@ -20,17 +20,17 @@ export function render() {
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
   document.getElementById("main").appendChild(container);
 
-  // pick animation
-  let animation = pickNextAnimation();
-  let animationFrames = Object.values(animation);
-
-  pickNextAnimation();
+  // pick new animation
+  let keys = Object.keys(animations);
+  let animationObject = animations[keys[keys.length * Math.random() << 0]];
+  let animation = Object.values(animationObject);
+  let arrayKeys = Object.keys(animation[0]);
+  let fileType = arrayKeys[0];
 
   // preload all images
   let promises = [];
-  for (let image in animation)
-    for (let type in animation[image])
-      promises.push(helpers.loadImage(animation[image][type]));
+  for (let frame of animation)
+    promises.push(helpers.loadImage(frame[fileType]))
 
   // add animation scroller after images have been loaded
   Promise.all(promises)
@@ -43,12 +43,11 @@ export function render() {
     container.innerHTML = "";
 
     // static animation frame
-    let animKeys = Object.keys(animation);
     let staticAnim = document.createElement("div");
     staticAnim.classList.add("static-anim");
     container.appendChild(staticAnim);
     let frame = document.createElement("img");
-    frame.src = animation[animKeys[0]]["png"];
+    frame.src = animation[0][fileType];
     frame.setAttribute("data-id", 0);
     staticAnim.appendChild(frame);
 
@@ -121,10 +120,9 @@ export function render() {
           let closestRect = closestItem.getBoundingClientRect();
 
           if (closestRect.top <= staticRect.top) {
-            let animKeys = Object.keys(animation);
             let staticImage = staticContainer.querySelector("img");
             let id = closestItem.getAttribute("data-id");
-            staticImage.src = animation[animKeys[id]]["png"];
+            staticImage.src = animation[id][fileType];
             staticImage.setAttribute("data-id", id);
           }
         }
@@ -134,11 +132,6 @@ export function render() {
     // create mutation obsever to handle translateY changes
     const observer = new MutationObserver(onScrollChange);
     observer.observe(infiniteScroll, { attributes: true });
-  }
-
-  function pickNextAnimation() {
-    let keys = Object.keys(animations);
-    return animations[keys[keys.length * Math.random() << 0]];
   }
 
   function handleTouchStart(event) {
@@ -265,16 +258,15 @@ export function render() {
     let infinteScroll = document.querySelector(".infinite-scroll");
     let item = document.createElement("div");
     item.classList.add("infinite-scroll__item");
-    let animKeys = Object.keys(animation);
 
     // define new id if children exist
     if (infinteScroll.hasChildNodes()) {
       let prevId = parseInt(infinteScroll.lastChild.getAttribute("data-id"), 10);
-      if (prevId === animKeys.length - 1) newId = 0;
+      if (prevId === animation.length - 1) newId = 0;
       else newId = prevId + 1;
     }
 
-    item.innerHTML = `<img src="` + animationFrames[newId]["png"] + `">`;
+    item.innerHTML = `<img src="` + animation[newId][fileType] + `">`;
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
   }
@@ -285,13 +277,12 @@ export function render() {
     let infiniteScroll = document.querySelector(".infinite-scroll");
     let item = document.createElement("div");
     item.classList.add("infinite-scroll__item");
-    let animKeys = Object.keys(animation);
 
     let prevId = parseInt(infiniteScroll.firstChild.getAttribute("data-id"), 10);
-    if (prevId === 0) newId = animKeys.length - 1;
+    if (prevId === 0) newId = animation.length - 1;
     else newId = prevId - 1;
 
-    item.innerHTML = `<img src="` + animationFrames[newId]["png"] + `">`;
+    item.innerHTML = `<img src="` + animation[newId][fileType] + `">`;
     item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item);
 
