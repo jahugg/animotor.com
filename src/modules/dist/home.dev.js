@@ -20,7 +20,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 function render() {
   var lastTouchPosY;
   var endTouchPosY;
-  var slowdownAnim;
+  var autoScrollAnim;
   var customSlowDownFlag = false;
   var lastWheelDeltaY = 0;
   var wheelRetriggerred = false; // change navigation to fixed
@@ -176,14 +176,46 @@ function render() {
     var observer = new MutationObserver(onScrollChange);
     observer.observe(infiniteScroll, {
       attributes: true
-    });
+    }); // start initial animation
+
+    startAutoScroll(-80);
+  }
+
+  function startAutoScroll(deltaY) {
+    autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+
+    function autoScrollStep(timestamp) {
+      // make sure infiniteScroll element still exist (page change)
+      var infiniteScroll = !!document.querySelector(".infinite-scroll");
+
+      if (infiniteScroll) {
+        // clamp delta
+        deltaY = Math.min(Math.max(deltaY, -80), 80);
+        var translateY = getScrollPos() + deltaY;
+        setScrollPos(translateY);
+        controlFade(deltaY); // let stepSize = .25 / (timestamp / 3000);
+
+        var stepSize = .25;
+
+        if (deltaY < stepSize) {
+          deltaY += stepSize;
+          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+        } else if (deltaY > stepSize) {
+          deltaY -= stepSize;
+          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+        } else {
+          deltaY = 0;
+          cancelAnimationFrame(autoScrollAnim);
+        }
+      }
+    }
   }
 
   function handleTouchStart(event) {
     event.preventDefault();
     var touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
-    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(autoScrollAnim);
   }
 
   function handleTouchMove(event) {
@@ -202,32 +234,7 @@ function render() {
     event.preventDefault();
     var touches = event.changedTouches;
     var deltaY = (endTouchPosY - touches[0].pageY) * -1;
-    slowdownAnim = window.requestAnimationFrame(slowDownScrollStep); // gradually slow down scrolling
-
-    function slowDownScrollStep(timestamp) {
-      // make sure infiniteScroll element still exist (page change)
-      var infiniteScroll = !!document.querySelector(".infinite-scroll");
-
-      if (infiniteScroll) {
-        // clamp delta
-        deltaY = Math.min(Math.max(deltaY, -80), 80);
-        var translateY = getScrollPos() + deltaY;
-        setScrollPos(translateY);
-        controlFade(deltaY);
-        var stepSize = .25;
-
-        if (deltaY < stepSize) {
-          deltaY += stepSize;
-          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
-        } else if (deltaY > stepSize) {
-          deltaY -= stepSize;
-          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
-        } else {
-          deltaY = 0;
-          cancelAnimationFrame(slowdownAnim);
-        }
-      }
-    }
+    startAutoScroll(deltaY);
   }
 
   function handleWheel(event) {
@@ -250,7 +257,7 @@ function render() {
       customSlowDownFlag = true; // console.log("trigger custom animation now: " + deltaY);
     }
 
-    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(autoScrollAnim);
   }
 
   function controlFade(deltaY) {

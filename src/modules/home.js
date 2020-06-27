@@ -5,7 +5,7 @@ export function render() {
 
   let lastTouchPosY;
   let endTouchPosY;
-  let slowdownAnim;
+  let autoScrollAnim;
   let customSlowDownFlag = false;
   let lastWheelDeltaY = 0;
   let wheelRetriggerred = false;
@@ -132,13 +132,49 @@ export function render() {
     // create mutation obsever to handle translateY changes
     const observer = new MutationObserver(onScrollChange);
     observer.observe(infiniteScroll, { attributes: true });
+
+    // start initial animation
+    startAutoScroll(-80);
+  }
+
+  function startAutoScroll(deltaY) {
+    autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+
+    function autoScrollStep(timestamp) {
+      // make sure infiniteScroll element still exist (page change)
+      let infiniteScroll = !!document.querySelector(".infinite-scroll");
+      if (infiniteScroll) {
+
+        // clamp delta
+        deltaY = Math.min(Math.max(deltaY, -80), 80);
+
+        let translateY = getScrollPos() + deltaY;
+        setScrollPos(translateY);
+        controlFade(deltaY);
+        // let stepSize = .25 / (timestamp / 3000);
+        let stepSize = .25;
+
+        if (deltaY < stepSize) {
+          deltaY += stepSize;
+          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+
+        } else if (deltaY > stepSize) {
+          deltaY -= stepSize
+          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+
+        } else {
+          deltaY = 0;
+          cancelAnimationFrame(autoScrollAnim);
+        }
+      }
+    }
   }
 
   function handleTouchStart(event) {
     event.preventDefault();
     let touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
-    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(autoScrollAnim);
   }
 
   function handleTouchMove(event) {
@@ -158,36 +194,7 @@ export function render() {
     let touches = event.changedTouches;
     let deltaY = (endTouchPosY - touches[0].pageY) * -1;
 
-    slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
-
-    // gradually slow down scrolling
-    function slowDownScrollStep(timestamp) {
-      // make sure infiniteScroll element still exist (page change)
-      let infiniteScroll = !!document.querySelector(".infinite-scroll");
-      if (infiniteScroll) {
-
-        // clamp delta
-        deltaY = Math.min(Math.max(deltaY, -80), 80);
-
-        let translateY = getScrollPos() + deltaY;
-        setScrollPos(translateY);
-        controlFade(deltaY);
-
-        let stepSize = .25;
-        if (deltaY < stepSize) {
-          deltaY += stepSize;
-          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
-
-        } else if (deltaY > stepSize) {
-          deltaY -= stepSize
-          slowdownAnim = window.requestAnimationFrame(slowDownScrollStep);
-
-        } else {
-          deltaY = 0;
-          cancelAnimationFrame(slowdownAnim);
-        }
-      }
-    }
+    startAutoScroll(deltaY);
   }
 
   function handleWheel(event) {
@@ -213,7 +220,7 @@ export function render() {
       customSlowDownFlag = true;
       // console.log("trigger custom animation now: " + deltaY);
     }
-    cancelAnimationFrame(slowdownAnim);
+    cancelAnimationFrame(autoScrollAnim);
   }
 
   function controlFade(deltaY) {
