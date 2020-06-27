@@ -1,4 +1,4 @@
-import animation from "./../media/home/animation/*.*";
+import animations from "./../media/home/animations/*/*.*";
 import * as helpers from "./helpers.js";
 
 export function render() {
@@ -19,6 +19,12 @@ export function render() {
   container.classList.add("infinite-scroll-container");
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
   document.getElementById("main").appendChild(container);
+
+  // pick animation
+  let animation = pickNextAnimation();
+  let animationFrames = Object.values(animation);
+
+  pickNextAnimation();
 
   // preload all images
   let promises = [];
@@ -128,6 +134,11 @@ export function render() {
     // create mutation obsever to handle translateY changes
     const observer = new MutationObserver(onScrollChange);
     observer.observe(infiniteScroll, { attributes: true });
+  }
+
+  function pickNextAnimation() {
+    let keys = Object.keys(animations);
+    return animations[keys[keys.length * Math.random() << 0]];
   }
 
   function handleTouchStart(event) {
@@ -263,10 +274,7 @@ export function render() {
       else newId = prevId + 1;
     }
 
-    let fileId = newId + 1;
-    let fileName = "Untitled_Artwork-" + fileId.toString();
-
-    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">`;
+    item.innerHTML = `<img src="` + animationFrames[newId]["png"] + `">`;
     item.setAttribute("data-id", newId);
     infinteScroll.appendChild(item);
   }
@@ -283,10 +291,7 @@ export function render() {
     if (prevId === 0) newId = animKeys.length - 1;
     else newId = prevId - 1;
 
-    let fileId = newId + 1;
-    let fileName = "Untitled_Artwork-" + fileId.toString();
-
-    item.innerHTML = `<img src="` + animation[fileName]["png"] + `">`;
+    item.innerHTML = `<img src="` + animationFrames[newId]["png"] + `">`;
     item.setAttribute("data-id", newId);
     infiniteScroll.prepend(item);
 

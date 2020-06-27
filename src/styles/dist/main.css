@@ -117,6 +117,7 @@ video {
   display: block;
   height: 40px;
   width: 40px;
+  padding: 6px;
 }
 .main-nav__list li[data-page="home"] a img {
   width: 100%;
@@ -219,9 +220,21 @@ video {
 }
 .info a {
   color: black;
+  text-decoration: none;
 }
 .info a:hover {
-  text-decoration: underline !important;
+  text-decoration: underline;
+}
+.info ul {
+  list-style-type: none;
+  padding: 0;
+}
+.info ul > li:before {
+  content: "→";
+  margin-right: 0.5em;
+}
+.info ol {
+  padding-left: calc(var(--padding) * 2);
 }
 .slideshow-container {
   width: 100%;
