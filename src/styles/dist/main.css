@@ -244,9 +244,11 @@ video {
 .info a {
   color: black;
   text-decoration: none;
+  transition: color 0.2s;
 }
 .info a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.6);
 }
 .info ul {
   list-style-type: none;

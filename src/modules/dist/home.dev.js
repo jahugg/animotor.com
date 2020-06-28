@@ -178,10 +178,12 @@ function render() {
       attributes: true
     }); // start initial animation
 
-    startAutoScroll(-80);
+    startAutoScroll(-80, 4000);
   }
 
-  function startAutoScroll(deltaY) {
+  function startAutoScroll(deltaY, duration) {
+    var startTime;
+    var stepSize = deltaY / duration;
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
 
     function autoScrollStep(timestamp) {
@@ -189,24 +191,13 @@ function render() {
       var infiniteScroll = !!document.querySelector(".infinite-scroll");
 
       if (infiniteScroll) {
-        // clamp delta
-        deltaY = Math.min(Math.max(deltaY, -80), 80);
-        var translateY = getScrollPos() + deltaY;
-        setScrollPos(translateY);
-        controlFade(deltaY); // let stepSize = .25 / (timestamp / 3000);
-
-        var stepSize = .25;
-
-        if (deltaY < stepSize) {
-          deltaY += stepSize;
-          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
-        } else if (deltaY > stepSize) {
-          deltaY -= stepSize;
-          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
-        } else {
-          deltaY = 0;
-          cancelAnimationFrame(autoScrollAnim);
-        }
+        if (startTime === undefined) startTime = timestamp;
+        var elapsedTime = timestamp - startTime;
+        var thisStep = elapsedTime * stepSize;
+        thisStep = helpers.map(thisStep, 0, deltaY, deltaY, 0);
+        setScrollPos(getScrollPos() + thisStep);
+        controlFade(thisStep);
+        if (elapsedTime < duration) autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
       }
     }
   }
@@ -234,7 +225,7 @@ function render() {
     event.preventDefault();
     var touches = event.changedTouches;
     var deltaY = (endTouchPosY - touches[0].pageY) * -1;
-    startAutoScroll(deltaY);
+    startAutoScroll(deltaY, 4000);
   }
 
   function handleWheel(event) {

@@ -134,38 +134,32 @@ export function render() {
     observer.observe(infiniteScroll, { attributes: true });
 
     // start initial animation
-    startAutoScroll(-80);
+    startAutoScroll(-80, 4000);
   }
 
-  function startAutoScroll(deltaY) {
+  function startAutoScroll(deltaY, duration) {
+    let startTime;
+    let stepSize = deltaY / duration;
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
 
     function autoScrollStep(timestamp) {
+
       // make sure infiniteScroll element still exist (page change)
       let infiniteScroll = !!document.querySelector(".infinite-scroll");
       if (infiniteScroll) {
 
-        // clamp delta
-        deltaY = Math.min(Math.max(deltaY, -80), 80);
+        if (startTime === undefined)
+          startTime = timestamp;
 
-        let translateY = getScrollPos() + deltaY;
-        setScrollPos(translateY);
-        controlFade(deltaY);
-        // let stepSize = .25 / (timestamp / 3000);
-        let stepSize = .25;
+        const elapsedTime = timestamp - startTime;
 
-        if (deltaY < stepSize) {
-          deltaY += stepSize;
+        let thisStep = elapsedTime * stepSize;
+        thisStep = helpers.map(thisStep, 0, deltaY, deltaY, 0);
+        setScrollPos(getScrollPos() + thisStep);
+        controlFade(thisStep);
+
+        if (elapsedTime < duration)
           autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
-
-        } else if (deltaY > stepSize) {
-          deltaY -= stepSize
-          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
-
-        } else {
-          deltaY = 0;
-          cancelAnimationFrame(autoScrollAnim);
-        }
       }
     }
   }
@@ -194,7 +188,7 @@ export function render() {
     let touches = event.changedTouches;
     let deltaY = (endTouchPosY - touches[0].pageY) * -1;
 
-    startAutoScroll(deltaY);
+    startAutoScroll(deltaY, 4000);
   }
 
   function handleWheel(event) {
