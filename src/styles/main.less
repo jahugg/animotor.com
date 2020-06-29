@@ -112,6 +112,8 @@ video {
 .header {
   width  : 100%;
   padding: 0 var(--padding);
+  top     : 0;
+  z-index : 100;
 }
 
 .header--relative {
@@ -122,17 +124,13 @@ video {
 .header--fixed {
   .header;
   position: fixed;
-  top     : 0;
-  z-index : 100;
 }
 
-.header--fixed-bg {
+.header--fixed-open {
   .header;
   position  : fixed;
-  top       : 0;
-  z-index   : 100;
   background: white;
-  animation : slideDown .2s ease-in;
+  animation : slideDown .2s forwards ease-in;
 }
 
 .main-nav {

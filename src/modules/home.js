@@ -6,6 +6,7 @@ export function render() {
   let lastTouchPosY;
   let endTouchPosY;
   let autoScrollAnim;
+
   let customSlowDownFlag = false;
   let lastWheelDeltaY = 0;
   let wheelRetriggerred = false;
@@ -22,7 +23,9 @@ export function render() {
 
   // pick new animation
   let keys = Object.keys(animations);
-  let animationObject = animations[keys[keys.length * Math.random() << 0]];
+  let animationKey = keys.length * Math.random() << 0;
+  let animationObject = animations[keys[animationKey]];
+  container.setAttribute("data-anim", animationKey);
   let animation = Object.values(animationObject);
   let arrayKeys = Object.keys(animation[0]);
   let fileType = arrayKeys[0];
@@ -138,6 +141,10 @@ export function render() {
   }
 
   function startAutoScroll(deltaY, duration) {
+
+    // clamp speed
+    deltaY = Math.min(Math.max(deltaY, -100), 100);
+
     let startTime;
     let stepSize = deltaY / duration;
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
@@ -185,8 +192,9 @@ export function render() {
 
   function handleTouchEnd(event) {
     event.preventDefault();
+    const multiplier = 2;
     let touches = event.changedTouches;
-    let deltaY = (endTouchPosY - touches[0].pageY) * -1;
+    let deltaY = (endTouchPosY - touches[0].pageY) * -1 * multiplier;
 
     startAutoScroll(deltaY, 4000);
   }
@@ -222,7 +230,7 @@ export function render() {
     let max = 80;
     speed = Math.min(Math.max(speed, 0), max);
     let fadeScroll = helpers.map(speed, 0, max, 1, .1);
-    let fadeStatic = helpers.map(speed, 20, max, 0, 1);
+    let fadeStatic = helpers.map(speed, 30, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");
     let infiniteScroll = document.querySelector(".infinite-scroll");

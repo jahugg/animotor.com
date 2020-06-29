@@ -99,22 +99,21 @@ function buildNavigation() {
     // don't start handling before threshold
     if (scrollTop > threshold) {
 
-      // show navigation on scroll up
+      // hide navigation on scroll down
       if (scrollTop > lastScrollTop &&
-        header.classList.contains("header--fixed-bg")) {
-        header.classList.replace("header--fixed-bg", "header--relative")
+        header.classList.contains("header--fixed-open")) {
+        header.classList.replace("header--fixed-open", "header--relative");
         document.querySelector("main").style.paddingTop = 0;
 
-        // hide navigation on scroll down
-      } else if (scrollTop < lastScrollTop &&
-        header.classList.contains("header--relative")) {
-        header.classList.replace("header--relative", "header--fixed-bg")
+        // show navigation on scroll up
+      } else if (scrollTop < lastScrollTop) {
+        header.classList.replace("header--relative", "header--fixed-open");
         document.querySelector("main").style.paddingTop = header.offsetHeight + "px";
       }
     
     // hide if top reached
     } else if (scrollTop <= 5) {
-      header.classList.replace("header--fixed-bg", "header--relative")
+      header.classList.replace("header--fixed-open", "header--relative")
       document.querySelector("main").style.paddingTop = 0;
     }
 
