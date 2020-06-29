@@ -1,1 +1,68 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="100%" height="100%" viewBox="0 0 82 88" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><use id="Background" xlink:href="#_Image1" x="0" y="0" width="339px" height="365px" transform="matrix(1.00444,0,0,0.995455,0,0)"/><defs><image id="_Image1" width="81px" height="88px" xlink:href="data:image/png;base64,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"/></defs></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 75 80" style="enable-background:new 0 0 75 80;" xml:space="preserve">
+<rect x="6.12" y="62.86" width="5.71" height="5.71"/>
+<rect x="11.84" y="62.86" width="5.71" height="5.71"/>
+<rect x="17.55" y="68.57" width="5.71" height="5.71"/>
+<rect x="23.26" y="68.57" width="5.71" height="5.71"/>
+<rect x="63.26" y="62.86" width="5.71" height="5.71"/>
+<rect x="57.55" y="62.86" width="5.71" height="5.71"/>
+<rect x="51.84" y="68.57" width="5.71" height="5.71"/>
+<rect x="46.12" y="68.57" width="5.71" height="5.71"/>
+<rect x="6.12" y="11.43" width="5.71" height="5.71"/>
+<rect x="11.84" y="11.43" width="5.71" height="5.71"/>
+<rect x="57.55" y="11.43" width="5.71" height="5.71"/>
+<rect x="63.26" y="11.43" width="5.71" height="5.71"/>
+<rect x="17.55" y="5.71" width="5.71" height="5.71"/>
+<rect x="23.26" y="5.71" width="5.71" height="5.71"/>
+<rect x="46.12" y="5.71" width="5.71" height="5.71"/>
+<rect x="51.83" y="5.71" width="5.71" height="5.71"/>
+<rect x="6.12" y="22.86" width="5.71" height="5.71"/>
+<rect x="11.84" y="22.86" width="5.71" height="5.71"/>
+<rect x="17.55" y="28.57" width="5.71" height="5.71"/>
+<rect x="23.26" y="28.57" width="5.71" height="5.71"/>
+<rect x="46.12" y="28.57" width="5.71" height="5.71"/>
+<rect x="51.83" y="28.57" width="5.71" height="5.71"/>
+<rect x="28.98" y="74.29" width="5.71" height="5.71"/>
+<rect x="34.69" y="74.29" width="5.71" height="5.71"/>
+<rect x="40.41" y="74.29" width="5.71" height="5.71"/>
+<rect x="28.98" y="34.29" width="5.71" height="5.71"/>
+<rect x="34.69" y="34.29" width="5.71" height="5.71"/>
+<rect x="40.41" y="34.29" width="5.71" height="5.71"/>
+<rect x="28.98" width="5.71" height="5.71"/>
+<rect x="34.69" width="5.71" height="5.71"/>
+<rect x="40.41" width="5.71" height="5.71"/>
+<rect x="0.41" y="57.14" width="5.71" height="5.71"/>
+<rect x="0.41" y="51.43" width="5.71" height="5.71"/>
+<rect x="0.41" y="45.71" width="5.71" height="5.71"/>
+<rect x="0.41" y="40" width="5.71" height="5.71"/>
+<rect x="0.41" y="34.29" width="5.71" height="5.71"/>
+<rect x="0.41" y="28.57" width="5.71" height="5.71"/>
+<rect x="68.98" y="57.14" width="5.71" height="5.71"/>
+<rect x="68.98" y="51.43" width="5.71" height="5.71"/>
+<rect x="68.98" y="45.71" width="5.71" height="5.71"/>
+<rect x="68.98" y="40" width="5.71" height="5.71"/>
+<rect x="68.98" y="34.29" width="5.71" height="5.71"/>
+<rect x="68.98" y="28.57" width="5.71" height="5.71"/>
+<rect x="0.41" y="22.86" width="5.71" height="5.71"/>
+<rect x="0.41" y="17.14" width="5.71" height="5.71"/>
+<rect x="63.26" y="22.86" width="5.71" height="5.71"/>
+<rect x="57.55" y="22.86" width="5.71" height="5.71"/>
+<rect x="68.98" y="22.86" width="5.71" height="5.71"/>
+<rect x="68.98" y="17.14" width="5.71" height="5.71"/>
+<rect x="34.69" y="68.57" width="5.71" height="5.71"/>
+<rect x="34.69" y="62.86" width="5.71" height="5.71"/>
+<rect x="34.69" y="62.86" width="5.71" height="5.71"/>
+<rect x="34.69" y="17.14" width="5.71" height="5.71"/>
+<rect x="34.69" y="57.14" width="5.71" height="5.71"/>
+<rect x="34.69" y="51.43" width="5.71" height="5.71"/>
+<rect x="34.69" y="45.72" width="5.71" height="5.71"/>
+<rect x="46.12" y="45.72" width="5.71" height="5.71"/>
+<rect x="57.55" y="40" width="5.71" height="5.71"/>
+<rect x="46.12" y="57.14" width="5.71" height="5.71"/>
+<rect x="23.26" y="57.14" width="5.71" height="5.71"/>
+<rect x="11.84" y="40" width="5.71" height="5.71"/>
+<rect x="57.55" y="51.43" width="5.71" height="5.71"/>
+<rect x="34.69" y="40" width="5.71" height="5.71"/>
+</svg>
