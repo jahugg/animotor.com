@@ -133,7 +133,7 @@ function buildPage(stateObj, addToHistory) {
     main.innerHTML = "";
 
     let header = document.querySelector('header');
-    header.classList.remove("header--fixed", "header--fixed-bg");
+    header.classList.remove(...header.classList);
     header.classList.add("header--relative");
 
   } else { // create main
@@ -165,6 +165,7 @@ function buildPage(stateObj, addToHistory) {
 }
 
 function updateNavigation(currentSlug) {
+
   // handle navigation items
   let links = document.querySelectorAll('.main-nav a');
   for (let link of links)

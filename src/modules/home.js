@@ -6,6 +6,7 @@ export function render() {
   let lastTouchPosY;
   let endTouchPosY;
   let autoScrollAnim;
+  let ignoreWheel;
 
   let customSlowDownFlag = false;
   let lastWheelDeltaY = 0;
@@ -194,7 +195,7 @@ export function render() {
     event.preventDefault();
     const multiplier = 2;
     let touches = event.changedTouches;
-    let deltaY = (endTouchPosY - touches[0].pageY) * -1 * multiplier;
+    let deltaY = (endTouchPosY - touches[0].pageY) * -multiplier;
 
     startAutoScroll(deltaY, 4000);
   }
@@ -202,34 +203,40 @@ export function render() {
   function handleWheel(event) {
     event.preventDefault();
     let deltaY = event.deltaY * -1
-    let translateY = getScrollPos() + deltaY;
-    setScrollPos(translateY);
-    controlFade(deltaY);
 
-    // check if wheel has been re-triggered
-    // console.log(lastWheelDeltaY, deltaY)
-    if (Math.abs(lastWheelDeltaY) <= Math.abs(deltaY) && !wheelRetriggerred) {
-      wheelRetriggerred = true;
-      // console.log("wheel retriggered");
-    } else {
-      wheelRetriggerred = false;
-      // console.log("wheel slowing down")
-    }
-    lastWheelDeltaY = deltaY;
+    const maxScrollSpeed = 100;
 
-    // start custom slow down animation
-    if (Math.abs(deltaY) > 150) {
-      customSlowDownFlag = true;
-      // console.log("trigger custom animation now: " + deltaY);
+    // trigger auto animation if max speed reached
+    if (Math.abs(deltaY) > maxScrollSpeed && !ignoreWheel) {
+      console.log("start auto anim");
+      startAutoScroll(deltaY, 4000);
+      ignoreWheel = true;
     }
-    cancelAnimationFrame(autoScrollAnim);
+    console.log(deltaY);
+
+    // use wheel event to scroll
+    if (!ignoreWheel) {
+      cancelAnimationFrame(autoScrollAnim);
+
+      let translateY = getScrollPos() + deltaY;
+
+      setScrollPos(translateY);
+      controlFade(deltaY);
+    }
+
+    // start listening to wheel event again
+    if (Math.abs(deltaY) < 2 && ignoreWheel) {
+      console.log("start listenting to wheel again");
+      ignoreWheel = false;
+    }
+
   }
 
   function controlFade(deltaY) {
     let speed = Math.abs(deltaY);
     let max = 80;
     speed = Math.min(Math.max(speed, 0), max);
-    let fadeScroll = helpers.map(speed, 0, max, 1, .1);
+    let fadeScroll = helpers.map(speed, 30, max, 1, .07);
     let fadeStatic = helpers.map(speed, 30, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");

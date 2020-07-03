@@ -92,6 +92,7 @@ export function render() {
 
     function jumpToSlide(event) {
         event.stopPropagation();
+        console.log("hit");
 
         let target = event.target;
         let parent = target.closest(".slideshow__indicators-wrapper");
@@ -118,7 +119,7 @@ export function render() {
     }
 
     function nextSlide(event) {
-        let slideshow = event.target.closest(".slideshow__slides-wrapper");
+        let slideshow = event.target.closest(".slideshow").querySelector(".slideshow__slides-wrapper");
         // scroll to next slide
         if (slideshow.scrollLeft < slideshow.scrollWidth - slideshow.offsetWidth)
             slideshow.scrollTo({
