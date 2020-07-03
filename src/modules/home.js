@@ -8,10 +8,6 @@ export function render() {
   let autoScrollAnim;
   let ignoreWheel;
 
-  let customSlowDownFlag = false;
-  let lastWheelDeltaY = 0;
-  let wheelRetriggerred = false;
-
   // change navigation to fixed
   let header = document.querySelector('header');
   header.classList.replace("header--relative", "header--fixed");
@@ -203,33 +199,29 @@ export function render() {
   function handleWheel(event) {
     event.preventDefault();
     let deltaY = event.deltaY * -1
-
     const maxScrollSpeed = 100;
 
-    // trigger auto animation if max speed reached
-    if (Math.abs(deltaY) > maxScrollSpeed && !ignoreWheel) {
-      console.log("start auto anim");
-      startAutoScroll(deltaY, 4000);
-      ignoreWheel = true;
-    }
-    console.log(deltaY);
-
-    // use wheel event to scroll
     if (!ignoreWheel) {
-      cancelAnimationFrame(autoScrollAnim);
 
-      let translateY = getScrollPos() + deltaY;
+      // start auto anmiation when max speed reached
+      if (Math.abs(deltaY) > maxScrollSpeed) {
+        startAutoScroll(deltaY, 8000);
+        ignoreWheel = true;
 
-      setScrollPos(translateY);
-      controlFade(deltaY);
-    }
+      // set deltaY as default scrolling
+      // this should be done in a more consistant way without using a threshold of 2
+      // detecting direction via array of deltaY values?
+      } else if (Math.abs(deltaY) > 2) {
+        cancelAnimationFrame(autoScrollAnim);
+        let translateY = getScrollPos() + deltaY;
+        setScrollPos(translateY);
+        controlFade(deltaY);
+      }
 
-    // start listening to wheel event again
-    if (Math.abs(deltaY) < 2 && ignoreWheel) {
-      console.log("start listenting to wheel again");
+    // set ingore wheel to false when deltaY reaches 1
+    } else if (ignoreWheel && Math.abs(deltaY) === 1) {
       ignoreWheel = false;
     }
-
   }
 
   function controlFade(deltaY) {
