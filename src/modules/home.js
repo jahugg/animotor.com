@@ -7,12 +7,13 @@ export function render() {
   let endTouchPosY;
   let autoScrollAnim;
   let ignoreWheel;
+  let autoScrollDuration = 7000;
 
   // change navigation to fixed
   let header = document.querySelector('header');
   header.classList.replace("header--relative", "header--fixed");
 
-  // container
+  // add container
   let container = document.createElement("div");
   container.classList.add("infinite-scroll-container");
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
@@ -20,7 +21,23 @@ export function render() {
 
   // pick new animation
   let keys = Object.keys(animations);
-  let animationKey = keys.length * Math.random() << 0;
+  let animationKey;
+  let lastAnimKey = sessionStorage.getItem('animKey');
+
+  // pick random animation the first time
+  if (lastAnimKey == null)
+    animationKey = keys.length * Math.random() << 0;
+
+  // else pick next animation
+  else {
+    lastAnimKey = parseInt(lastAnimKey);
+    if (lastAnimKey === keys.length - 1) animationKey = 0
+    else animationKey = lastAnimKey + 1
+  }
+
+  // save animation key to session
+  sessionStorage.setItem('animKey', animationKey);
+  
   let animationObject = animations[keys[animationKey]];
   container.setAttribute("data-anim", animationKey);
   let animation = Object.values(animationObject);
@@ -56,7 +73,7 @@ export function render() {
     infiniteScroll.classList.add("infinite-scroll");
     container.appendChild(infiniteScroll);
 
-    // fill screen with tiles
+    // fill screen height with tiles
     let containerRect = container.getBoundingClientRect();
     while (infiniteScroll.scrollHeight <= containerRect.height)
       appendItem();
@@ -69,6 +86,7 @@ export function render() {
     container.addEventListener("touchcancel", handleTouchEnd, false);
 
     // callback function to execute when mutations are observed
+    // animation frame handling
     const onScrollChange = function (mutationsList, observer) {
       for (let mutation of mutationsList) {
         if (mutation.type === 'attributes' &&
@@ -134,13 +152,13 @@ export function render() {
     observer.observe(infiniteScroll, { attributes: true });
 
     // start initial animation
-    startAutoScroll(-80, 4000);
+    startAutoScroll(-120, autoScrollDuration);
   }
 
   function startAutoScroll(deltaY, duration) {
 
     // clamp speed
-    deltaY = Math.min(Math.max(deltaY, -100), 100);
+    deltaY = helpers.clamp(deltaY, -120, 120);
 
     let startTime;
     let stepSize = deltaY / duration;
@@ -192,20 +210,21 @@ export function render() {
     const multiplier = 2;
     let touches = event.changedTouches;
     let deltaY = (endTouchPosY - touches[0].pageY) * -multiplier;
-
+    console.log(deltaY);
+    
     startAutoScroll(deltaY, 4000);
   }
 
   function handleWheel(event) {
     event.preventDefault();
     let deltaY = event.deltaY * -1
-    const maxScrollSpeed = 100;
+    const maxScrollSpeed = 180;
 
     if (!ignoreWheel) {
 
       // start auto anmiation when max speed reached
       if (Math.abs(deltaY) > maxScrollSpeed) {
-        startAutoScroll(deltaY, 8000);
+        startAutoScroll(deltaY, autoScrollDuration);
         ignoreWheel = true;
 
       // set deltaY as default scrolling
@@ -226,10 +245,12 @@ export function render() {
 
   function controlFade(deltaY) {
     let speed = Math.abs(deltaY);
+    let min = 30;
     let max = 80;
-    speed = Math.min(Math.max(speed, 0), max);
-    let fadeScroll = helpers.map(speed, 30, max, 1, .07);
-    let fadeStatic = helpers.map(speed, 30, max, 0, 1);
+    speed = helpers.clamp(speed, min, max);
+
+    let fadeScroll = helpers.map(speed, min, max, 1, .2);
+    let fadeStatic = helpers.map(speed, min, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");
     let infiniteScroll = document.querySelector(".infinite-scroll");

@@ -2,6 +2,8 @@ import projects from "./../media/work/*/*.*";
 import * as helpers from "./helpers.js";
 
 export function render() {
+    sessionStorage.clear();
+
     let main = document.getElementById("main");
     let container = document.createElement("div");
     container.classList.add("slideshow-container");

@@ -125,6 +125,7 @@ function buildNavigation() {
 function buildPage(stateObj, addToHistory) {
 
   let pageKey = stateObj.pageKey;
+  let page = pages[pageKey];
 
   // check if main exists
   let main = document.getElementById("main");
@@ -142,8 +143,6 @@ function buildPage(stateObj, addToHistory) {
     app.appendChild(main);
   }
 
-  let page = pages[pageKey];
-
   // set page title
   let title = "Animotor";
   if (stateObj.page !== defaultPage) title += " - " + page.title;
@@ -157,7 +156,7 @@ function buildPage(stateObj, addToHistory) {
   updateNavigation(page.slug);
 
   // load page module
-  pages[pageKey].module.then(module => {
+  page.module.then(module => {
     module.render();
   }).catch(err => {
     console.log(err.message);
