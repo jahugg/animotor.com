@@ -7,7 +7,7 @@ export function render() {
   let endTouchPosY;
   let autoScrollAnim;
   let ignoreWheel;
-  let autoScrollDuration = 7000;
+  let maxDeltaY = 120;
 
   // change navigation to fixed
   let header = document.querySelector('header');
@@ -152,13 +152,18 @@ export function render() {
     observer.observe(infiniteScroll, { attributes: true });
 
     // start initial animation
-    startAutoScroll(-120, autoScrollDuration);
+    startAutoScroll(-maxDeltaY);
   }
 
-  function startAutoScroll(deltaY, duration) {
+  function startAutoScroll(deltaY) {
 
-    // clamp speed
-    deltaY = helpers.clamp(deltaY, -120, 120);
+    let maxDuration = 7000;
+
+    // clamp delta
+    deltaY = helpers.clamp(deltaY, -maxDeltaY, maxDeltaY);
+
+    // define duration depending on deltaY
+    let duration = Math.round(helpers.map(Math.abs(deltaY), 0, maxDeltaY, 0, maxDuration));
 
     let startTime;
     let stepSize = deltaY / duration;
@@ -212,19 +217,18 @@ export function render() {
     let deltaY = (endTouchPosY - touches[0].pageY) * -multiplier;
     console.log(deltaY);
     
-    startAutoScroll(deltaY, 4000);
+    startAutoScroll(deltaY);
   }
 
   function handleWheel(event) {
     event.preventDefault();
     let deltaY = event.deltaY * -1
-    const maxScrollSpeed = 180;
 
     if (!ignoreWheel) {
 
       // start auto anmiation when max speed reached
-      if (Math.abs(deltaY) > maxScrollSpeed) {
-        startAutoScroll(deltaY, autoScrollDuration);
+      if (Math.abs(deltaY) > maxDeltaY) {
+        startAutoScroll(deltaY);
         ignoreWheel = true;
 
       // set deltaY as default scrolling
@@ -249,7 +253,7 @@ export function render() {
     let max = 80;
     speed = helpers.clamp(speed, min, max);
 
-    let fadeScroll = helpers.map(speed, min, max, 1, .2);
+    let fadeScroll = helpers.map(speed, min, max, 1, .15);
     let fadeStatic = helpers.map(speed, min, max, 0, 1);
 
     let staticAnim = document.querySelector(".static-anim");
