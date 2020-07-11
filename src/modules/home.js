@@ -167,6 +167,7 @@ export function render() {
     let startTime;
     let stepSize = deltaY / duration;
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+    console.log(autoScrollAnim);
 
     function autoScrollStep(timestamp) {
 
@@ -195,7 +196,7 @@ export function render() {
     let touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
     endTouchPosY = lastTouchPosY;  // reset
-    cancelAnimationFrame(autoScrollAnim);
+    window.cancelAnimationFrame(autoScrollAnim);
   }
 
   function handleTouchMove(event) {
@@ -233,7 +234,7 @@ export function render() {
       // this should be done in a more consistant way without using a threshold of 2
       // detecting direction via array of deltaY values?
       } else if (Math.abs(deltaY) > 2) {
-        cancelAnimationFrame(autoScrollAnim);
+        window.cancelAnimationFrame(autoScrollAnim);
         let translateY = getScrollPos() + deltaY;
         setScrollPos(translateY);
         controlFade(deltaY);
