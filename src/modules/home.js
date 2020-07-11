@@ -164,7 +164,6 @@ export function render() {
 
     // define duration depending on deltaY
     let duration = Math.round(helpers.map(Math.abs(deltaY), 0, maxDeltaY, 0, maxDuration));
-
     let startTime;
     let stepSize = deltaY / duration;
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
@@ -195,6 +194,7 @@ export function render() {
     event.preventDefault();
     let touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
+    endTouchPosY = lastTouchPosY;  // reset
     cancelAnimationFrame(autoScrollAnim);
   }
 
@@ -212,11 +212,9 @@ export function render() {
 
   function handleTouchEnd(event) {
     event.preventDefault();
-    const multiplier = 2;
+    const multiplier = 1.7;
     let touches = event.changedTouches;
     let deltaY = (endTouchPosY - touches[0].pageY) * -multiplier;
-    console.log(deltaY);
-    
     startAutoScroll(deltaY);
   }
 

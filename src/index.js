@@ -34,12 +34,12 @@ function initApp() {
 function navigateToCurrentURL() {
 
   // read slug from url
-  let urlPath = window.location.pathname;
+  let urlSlug = window.location.pathname;
 
   // check slug for validity
   let pageKey = defaultPage;
   for (let key in pages)
-    if (pages[key].slug === urlPath)
+    if (pages[key].slug === urlSlug)
       pageKey = key;
 
   // create state object
