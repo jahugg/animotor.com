@@ -26,15 +26,7 @@ function initApp() {
 
   // handle history pop state events
   window.addEventListener('popstate', (event) => {
-    let slug = event.state.slug;
-    let pageKey;
-    for (let key in pages)
-      if (pages[key].slug === slug)
-        pageKey = key;
-
-
-    let stateObj = { pageKey: pageKey };
-
+    let stateObj = { pageKey: event.state.pageKey };
     buildPage(stateObj, false);
   });
 }
@@ -145,7 +137,7 @@ function buildPage(stateObj, addToHistory) {
 
   // set page title
   let title = "Animotor";
-  if (stateObj.page !== defaultPage) title += " - " + page.title;
+  if (stateObj.pageKey !== defaultPage) title += " - " + page.title;
   document.title = title;
 
   // push page into browser history
