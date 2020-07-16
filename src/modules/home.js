@@ -1,5 +1,5 @@
-import animations from "./../media/home/animations/*/*.*";
-import * as helpers from "./helpers.js";
+import animations from './../media/home/animations/*/*.*';
+import * as helpers from './helpers.js';
 
 export function render() {
   let lastTouchPosY;
@@ -9,20 +9,20 @@ export function render() {
   let maxDeltaY = 120;
 
   // change navigation to fixed
-  let header = document.querySelector("header");
-  header.classList.replace("header--relative", "header--fixed");
+  let header = document.querySelector('header');
+  header.classList.replace('header--relative', 'header--fixed');
 
   // add container
-  let container = document.createElement("div");
-  container.classList.add("infinite-scroll-container");
+  let container = document.createElement('div');
+  container.classList.add('infinite-scroll-container');
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
-  document.getElementById("main").appendChild(container);
+  document.getElementById('main').appendChild(container);
 
   // pick new animation
   let keys = Object.keys(animations);
   let animationKey;
-  let lastAnimKey = sessionStorage.getItem("animKey");
-  
+  let lastAnimKey = sessionStorage.getItem('animKey');
+
   // pick random animation the first time
   if (lastAnimKey == null) animationKey = (keys.length * Math.random()) << 0;
   // else pick next animation
@@ -33,18 +33,17 @@ export function render() {
   }
 
   // save animation key to session
-  sessionStorage.setItem("animKey", animationKey);
+  sessionStorage.setItem('animKey', animationKey);
 
   let animationObject = animations[keys[animationKey]];
-  container.setAttribute("data-anim", animationKey);
+  container.setAttribute('data-anim', animationKey);
   let animation = Object.values(animationObject);
   let arrayKeys = Object.keys(animation[0]);
   let fileType = arrayKeys[0];
 
   // preload all images
   let promises = [];
-  for (let frame of animation)
-    promises.push(helpers.loadImage(frame[fileType]));
+  for (let frame of animation) promises.push(helpers.loadImage(frame[fileType]));
 
   // add animation scroller after images have been loaded
   Promise.all(promises)
@@ -53,20 +52,20 @@ export function render() {
 
   function initAnimationScroller(images) {
     // remove loading message
-    container.innerHTML = "";
+    container.innerHTML = '';
 
     // static animation frame
-    let staticAnim = document.createElement("div");
-    staticAnim.classList.add("static-anim");
+    let staticAnim = document.createElement('div');
+    staticAnim.classList.add('static-anim');
     container.appendChild(staticAnim);
-    let frame = document.createElement("img");
+    let frame = document.createElement('img');
     frame.src = animation[0][fileType];
-    frame.setAttribute("data-id", 0);
+    frame.setAttribute('data-id', 0);
     staticAnim.appendChild(frame);
 
     // infinite scroll
-    let infiniteScroll = document.createElement("div");
-    infiniteScroll.classList.add("infinite-scroll");
+    let infiniteScroll = document.createElement('div');
+    infiniteScroll.classList.add('infinite-scroll');
     container.appendChild(infiniteScroll);
 
     // fill screen height with tiles
@@ -74,25 +73,18 @@ export function render() {
     while (infiniteScroll.scrollHeight <= containerRect.height) appendItem();
 
     // register event listeners
-    container.addEventListener("wheel", helpers.throttledEvent(handleWheel, 5));
-    container.addEventListener("touchstart", handleTouchStart, false);
-    container.addEventListener(
-      "touchmove",
-      helpers.throttledEvent(handleTouchMove, 5),
-      false
-    );
-    container.addEventListener("touchend", handleTouchEnd, false);
-    container.addEventListener("touchcancel", handleTouchEnd, false);
+    container.addEventListener('wheel', helpers.throttledEvent(handleWheel, 5));
+    container.addEventListener('touchstart', handleTouchStart, false);
+    container.addEventListener('touchmove', helpers.throttledEvent(handleTouchMove, 5), false);
+    container.addEventListener('touchend', handleTouchEnd, false);
+    container.addEventListener('touchcancel', handleTouchEnd, false);
 
     // callback function to execute when mutations are observed
     // animation frame handling
     const onScrollChange = function (mutationsList, observer) {
       for (let mutation of mutationsList) {
-        if (
-          mutation.type === "attributes" &&
-          mutation.attributeName === "style"
-        ) {
-          let infiniteScroll = document.querySelector(".infinite-scroll");
+        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+          let infiniteScroll = document.querySelector('.infinite-scroll');
           let translateY = getScrollPos();
           let firstChild = infiniteScroll.firstChild;
           let lastChild = infiniteScroll.lastChild;
@@ -100,30 +92,20 @@ export function render() {
           // remove first child if out of bounds
           if (Math.abs(translateY) > firstChild.offsetHeight) {
             firstChild.remove();
-            infiniteScroll.style.transform = "translateY(0)";
+            infiniteScroll.style.transform = 'translateY(0)';
           }
           // remove last child out of bounds
-          else if (
-            infiniteScroll.offsetHeight -
-              lastChild.offsetHeight -
-              Math.abs(translateY) >
-            containerRect.height
-          )
-            lastChild.remove();
+          else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY) > containerRect.height) lastChild.remove();
 
           // prepend new child if top reached
           if (translateY > 0) prependItem();
           // append new child if bottom reached
-          else if (
-            containerRect.height + Math.abs(translateY) >
-            infiniteScroll.offsetHeight
-          )
-            appendItem();
+          else if (containerRect.height + Math.abs(translateY) > infiniteScroll.offsetHeight) appendItem();
 
           // ----------
           // handle static animation frame
-          let items = document.getElementsByClassName("infinite-scroll__item");
-          let staticContainer = document.querySelector(".static-anim");
+          let items = document.getElementsByClassName('infinite-scroll__item');
+          let staticContainer = document.querySelector('.static-anim');
           let staticRect = staticContainer.getBoundingClientRect();
           let closestItem;
           let lastDist = 9999;
@@ -143,10 +125,10 @@ export function render() {
           let closestRect = closestItem.getBoundingClientRect();
 
           if (closestRect.top <= staticRect.top) {
-            let staticImage = staticContainer.querySelector("img");
-            let id = closestItem.getAttribute("data-id");
+            let staticImage = staticContainer.querySelector('img');
+            let id = closestItem.getAttribute('data-id');
             staticImage.src = animation[id][fileType];
-            staticImage.setAttribute("data-id", id);
+            staticImage.setAttribute('data-id', id);
           }
         }
       }
@@ -167,9 +149,7 @@ export function render() {
     deltaY = helpers.clamp(deltaY, -maxDeltaY, maxDeltaY);
 
     // define duration depending on deltaY
-    let duration = Math.round(
-      helpers.map(Math.abs(deltaY), 0, maxDeltaY, 0, maxDuration)
-    );
+    let duration = Math.round(helpers.map(Math.abs(deltaY), 0, maxDeltaY, 0, maxDuration));
     let startTime;
     let stepSize = deltaY / duration;
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
@@ -177,7 +157,7 @@ export function render() {
 
     function autoScrollStep(timestamp) {
       // make sure infiniteScroll element still exist (page change)
-      let infiniteScroll = !!document.querySelector(".infinite-scroll");
+      let infiniteScroll = !!document.querySelector('.infinite-scroll');
       if (infiniteScroll) {
         if (startTime === undefined) startTime = timestamp;
 
@@ -188,8 +168,7 @@ export function render() {
         setScrollPos(getScrollPos() + thisStep);
         controlFade(thisStep);
 
-        if (elapsedTime < duration)
-          autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
+        if (elapsedTime < duration) autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
       }
     }
   }
@@ -257,26 +236,24 @@ export function render() {
     let fadeScroll = helpers.map(speed, min, max, 1, 0.15);
     let fadeStatic = helpers.map(speed, min, max, 0, 1);
 
-    let staticAnim = document.querySelector(".static-anim");
-    let infiniteScroll = document.querySelector(".infinite-scroll");
+    let staticAnim = document.querySelector('.static-anim');
+    let infiniteScroll = document.querySelector('.infinite-scroll');
     staticAnim.style.opacity = fadeStatic;
     infiniteScroll.style.opacity = fadeScroll;
   }
 
   function getScrollPos() {
-    let infiniteScroll = document.querySelector(".infinite-scroll");
-    let matrix = window
-      .getComputedStyle(infiniteScroll)
-      .getPropertyValue("transform");
+    let infiniteScroll = document.querySelector('.infinite-scroll');
+    let matrix = window.getComputedStyle(infiniteScroll).getPropertyValue('transform');
     let translateY;
 
     // set to 0 if transform not yet set
-    if (matrix === "none") {
-      infiniteScroll.style.transform = "translateY(0)";
+    if (matrix === 'none') {
+      infiniteScroll.style.transform = 'translateY(0)';
       translateY = 0;
     } else {
       // get value from css
-      let matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(", ");
+      let matrixValues = matrix.match(/matrix.*\((.+)\)/)[1].split(', ');
       translateY = parseInt(matrixValues[5], 10);
     }
 
@@ -284,49 +261,43 @@ export function render() {
   }
 
   function setScrollPos(pos) {
-    let infiniteScroll = document.querySelector(".infinite-scroll");
-    infiniteScroll.style.transform = "translateY(" + pos + "px)";
+    let infiniteScroll = document.querySelector('.infinite-scroll');
+    infiniteScroll.style.transform = 'translateY(' + pos + 'px)';
   }
 
   function appendItem() {
     let newId = 0;
-    let infinteScroll = document.querySelector(".infinite-scroll");
-    let item = document.createElement("div");
-    item.classList.add("infinite-scroll__item");
+    let infinteScroll = document.querySelector('.infinite-scroll');
+    let item = document.createElement('div');
+    item.classList.add('infinite-scroll__item');
 
     // define new id if children exist
     if (infinteScroll.hasChildNodes()) {
-      let prevId = parseInt(
-        infinteScroll.lastChild.getAttribute("data-id"),
-        10
-      );
+      let prevId = parseInt(infinteScroll.lastChild.getAttribute('data-id'), 10);
       if (prevId === animation.length - 1) newId = 0;
       else newId = prevId + 1;
     }
 
     item.innerHTML = `<img src="` + animation[newId][fileType] + `">`;
-    item.setAttribute("data-id", newId);
+    item.setAttribute('data-id', newId);
     infinteScroll.appendChild(item);
   }
 
   function prependItem() {
     let newId = 0;
-    let infiniteScroll = document.querySelector(".infinite-scroll");
-    let item = document.createElement("div");
-    item.classList.add("infinite-scroll__item");
+    let infiniteScroll = document.querySelector('.infinite-scroll');
+    let item = document.createElement('div');
+    item.classList.add('infinite-scroll__item');
 
-    let prevId = parseInt(
-      infiniteScroll.firstChild.getAttribute("data-id"),
-      10
-    );
+    let prevId = parseInt(infiniteScroll.firstChild.getAttribute('data-id'), 10);
     if (prevId === 0) newId = animation.length - 1;
     else newId = prevId - 1;
 
     item.innerHTML = `<img src="` + animation[newId][fileType] + `">`;
-    item.setAttribute("data-id", newId);
+    item.setAttribute('data-id', newId);
     infiniteScroll.prepend(item);
 
     // correct scroll position for new item
-    infiniteScroll.style.transform = "translateY(" + -item.offsetHeight + "px)";
+    infiniteScroll.style.transform = 'translateY(' + -item.offsetHeight + 'px)';
   }
 }
