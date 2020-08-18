@@ -153,7 +153,6 @@ export function render() {
     let startTime;
     let stepSize = deltaY / duration;
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
-    console.log(autoScrollAnim);
 
     function autoScrollStep(timestamp) {
       // make sure infiniteScroll element still exist (page change)

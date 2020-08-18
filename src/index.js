@@ -21,7 +21,6 @@ const pages = {
 };
 
 function initApp() {
-  console.log('test');
   buildNavigation();
   navigateToCurrentURL();
 
@@ -35,7 +34,6 @@ function initApp() {
 function navigateToCurrentURL() {
   // read slug from url
   let urlSlug = window.location.pathname;
-  console.log(urlSlug);
 
   // check slug for validity
   let pageKey = defaultPage;
