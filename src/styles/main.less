@@ -257,8 +257,8 @@ video {
 .infinite-scroll__item {
   box-sizing: content-box;
   position: relative;
-  width: 400px;
-  height: 400px;
+  width: 200px;
+  height: 200px;
   padding: 3px 0;
 
   img {
@@ -274,8 +274,8 @@ video {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-  width: 400px;
-  height: 400px;
+  width: 200px;
+  height: 200px;
   opacity: 0;
 
   img {
@@ -290,12 +290,15 @@ video {
 
 .info {
   padding: 0 var(--padding);
-  max-width: 1000px;
   margin: 40px auto;
 
   @media @bp-small {
     column-count: 2;
     column-gap: 40px;
+  }
+
+  > * {
+    max-width: 700px;
   }
 
   img {
@@ -340,19 +343,17 @@ video {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
 }
 
 .slideshow {
   @size: ~'calc(100vw - var(--padding) * 2)';
-  @maxSize: 500px;
+  @maxSize: 600px;
 
   width: @size;
   max-width: @maxSize;
   position: relative;
   display: flex;
   justify-content: center;
-  margin-bottom: 10px;
   overflow: hidden;
 
   &.multiple {
@@ -387,7 +388,7 @@ video {
 
 .slideshow__indicators-wrapper {
   position: absolute;
-  bottom: 10px;
+  bottom: 15px;
   display: flex;
   transition: all 0.1s ease-out;
 
@@ -403,22 +404,20 @@ video {
 }
 
 .slideshow__indicator {
-  @size: 12px;
+  @size: 4px;
   width: @size;
   height: @size;
-  margin: 2px;
+  margin: 4px;
   border-radius: @size;
   background: white;
-  border: solid 3px white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
   cursor: pointer;
   transition: all 0.2s;
 
   &[data-active] {
-    background: lighten(black, 20%);
+    transform: scale(2);
   }
 
   &:not([data-active]):hover {
-    background: lighten(black, 80%);
+    transform: scale(2);
   }
 }
