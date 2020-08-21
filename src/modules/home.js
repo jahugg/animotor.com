@@ -239,6 +239,9 @@ export function render() {
     let infiniteScroll = document.querySelector('.infinite-scroll');
     staticAnim.style.opacity = fadeStatic;
     infiniteScroll.style.opacity = fadeScroll;
+
+    staticAnim.style.opacity = 1;
+    infiniteScroll.style.opacity = 0;
   }
 
   function getScrollPos() {

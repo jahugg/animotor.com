@@ -39,7 +39,7 @@ video {
 }
 
 //media query breakpoints
-@bp-small: ~"screen and (min-width: 40em)";
+@bp-small: ~'screen and (min-width: 40em)';
 
 :root {
   --padding: 10px;
@@ -153,16 +153,16 @@ video {
     align-items: center;
   }
 
-  li[data-page="home"] {
+  li[data-page='home'] {
     order: 2;
     justify-content: center;
   }
 
-  li[data-page="work"] {
+  li[data-page='work'] {
     order: 1;
   }
 
-  li[data-page="info"] {
+  li[data-page='info'] {
     order: 3;
     justify-content: flex-end;
   }
@@ -175,7 +175,7 @@ video {
   }
 
   // special home button styling
-  li[data-page="home"] a {
+  li[data-page='home'] a {
     @size: 40px;
     display: block;
     height: @size;
@@ -195,9 +195,9 @@ video {
   }
 
   // general link styling
-  li:not([data-page="home"]) a {
+  li:not([data-page='home']) a {
     &:after {
-      content: "";
+      content: '';
       position: absolute;
       bottom: 0;
       left: 0;
@@ -322,12 +322,12 @@ video {
   }
 
   ul > li:before {
-    content: "→";
+    content: '→';
     margin-right: 0.5em;
   }
 
   ol {
-    padding-left: ~"calc(var(--padding) * 2)";
+    padding-left: ~'calc(var(--padding) * 2)';
   }
 }
 
@@ -342,7 +342,7 @@ video {
 }
 
 .slideshow {
-  @size: ~"calc(100vw - var(--padding) * 2)";
+  @size: ~'calc(100vw - var(--padding) * 2)';
   @maxSize: 500px;
 
   width: @size;

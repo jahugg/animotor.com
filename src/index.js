@@ -49,9 +49,11 @@ function navigateToCurrentURL() {
 function buildNavigation() {
   let header = document.createElement('header');
   header.classList.add('header--relative');
+
   let nav = document.createElement('nav');
   nav.classList.add('main-nav');
   header.appendChild(nav);
+
   let list = document.createElement('ul');
   list.classList.add('main-nav__list');
   nav.appendChild(list);
@@ -66,7 +68,9 @@ function buildNavigation() {
     link.addEventListener('click', handlePageLink);
     item.appendChild(link);
 
-    if (key === 'home') link.innerHTML = '<img src="' + homeIcon + '" alt="' + pages[key].title + '">';
+    if (key === 'home')
+      link.innerHTML =
+        '<img src="' + homeIcon + '" alt="' + pages[key].title + '">';
     else link.innerHTML = pages[key].title;
   }
 
@@ -86,14 +90,18 @@ function buildNavigation() {
     // don't start handling before threshold
     if (scrollTop > threshold) {
       // hide navigation on scroll down
-      if (scrollTop > lastScrollTop && header.classList.contains('header--fixed-open')) {
+      if (
+        scrollTop > lastScrollTop &&
+        header.classList.contains('header--fixed-open')
+      ) {
         header.classList.replace('header--fixed-open', 'header--relative');
         document.querySelector('main').style.paddingTop = 0;
 
         // show navigation on scroll up
       } else if (scrollTop < lastScrollTop) {
         header.classList.replace('header--relative', 'header--fixed-open');
-        document.querySelector('main').style.paddingTop = header.offsetHeight + 'px';
+        document.querySelector('main').style.paddingTop =
+          header.offsetHeight + 'px';
       }
 
       // hide if top reached
@@ -154,14 +162,17 @@ function updateNavigation(currentSlug) {
   for (let link of links) link.removeAttribute('data-active');
 
   // set link for current page as active
-  document.querySelector('a[href="' + currentSlug + '"]').setAttribute('data-active', '');
+  document
+    .querySelector('a[href="' + currentSlug + '"]')
+    .setAttribute('data-active', '');
 }
 
 function handlePageLink(event) {
   event.preventDefault();
   let target = event.target.closest('a');
   let pageKey;
-  for (let key in pages) if (pages[key].slug === target.getAttribute('href')) pageKey = key;
+  for (let key in pages)
+    if (pages[key].slug === target.getAttribute('href')) pageKey = key;
 
   let stateObj = { pageKey: pageKey }; // create state object
   buildPage(stateObj, true);
