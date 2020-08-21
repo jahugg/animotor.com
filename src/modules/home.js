@@ -232,16 +232,13 @@ export function render() {
     let max = 80;
     speed = helpers.clamp(speed, min, max);
 
-    let fadeScroll = helpers.map(speed, min, max, 1, 0.15);
+    let fadeScroll = helpers.map(speed, min, max, 1, 0);
     let fadeStatic = helpers.map(speed, min, max, 0, 1);
 
     let staticAnim = document.querySelector('.static-anim');
     let infiniteScroll = document.querySelector('.infinite-scroll');
     staticAnim.style.opacity = fadeStatic;
     infiniteScroll.style.opacity = fadeScroll;
-
-    staticAnim.style.opacity = 1;
-    infiniteScroll.style.opacity = 0;
   }
 
   function getScrollPos() {
