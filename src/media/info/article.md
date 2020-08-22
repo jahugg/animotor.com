@@ -7,22 +7,23 @@ Stephan Geiger<br>
 [stephan@animotor.ch](mailto:stephan@animotor.ch)<br>
 [+41 79 533 23 94](tel:+41795332394)
 
-Pablo Hintermüller<br>
+Pablo Hintermüller
 [pablo@animotor.ch](mailto:pablo@animotor.ch)<br>
 [+41 76 463 66 95](tel:+41764636695)
 
-- [Vimeo](https://vimeo.com/animotorstudio)<br>
-- [Instagram](http://instagram.com/animotor_studio)
-
 ![Portrait Image](portrait.jpg)
 
-Animotor is a collaborative graphic design studio run by Pablo Hintermüller and Stephan Geiger. Since small children we wanted to be rockstars and athletes, well now we are rocking computers and have sporty brains. We are fascinated by the power of shapes, stories, moving images, music, arts and some other things<sup>1</sup>. In these fields we feel home and we love to push our imagination to the next level. In close cooperation with our clients, we develop concepts and create products in the wide field of visual matters<sup>2</sup>.
-If you like us get in touch and check out our [portfolio](portfolio.pdf)<sup>3</sup>.
+# We are
 
-1. movie nights, comic stores, jamaican vibes, indie games, art and magazines, rhum on the rocks, japanese food, football and beer, rooftop raves, amaretto sours, hiking the alps, summer days, sun and bathing, subtitles, record stores, festivals and concerts, cinema and snacks, skateparks, growing plants, screens and prints, tie breaks, art books, VR and, dinosaurs, museum, swimming in pools, deep talk, streets and food, ping pong and shows, posters and flyers, planet earth, cats and dogs, turntables, fashion, tags in toilets, fishing, discussions, backyards and barbeques, coffee  and shops, berlin at night, colombian coco locos, caribbean fruits, hip and hop, beaches and bars,  fast internet, space and cakes
+a collaborative graphic design studio. Since small children we wanted to be rockstars and athletes, well now we are rocking computers and have sporty brains. We are fascinated by the power of shapes, stories and moving images. In these fields we feel home and we love to push our imagination to the next level. In close cooperation with our clients, we develop concepts and create products in the wide field of visual matters.
 
-2. Editorial design, illustration, animation, corporate identity, concept art, storytelling, infographics, explainer-videos
+# We love
 
-3. [Download Portfolio](portfolio.pdf)
+beats and barbeques, browsers and bowser, cats and dogs, eazy-e and easy ease, fonts and croissants, hi-res and wellness, hot tubs and lap tops, ice tea and 3-D, internet and cigarettes, kobe and adobe, movies and nights, ping pong and shows, rooftops and raves, sun and bathing, screens and prints, sandwiches and languages, space and cakes, sneakers and speakers, vinyls and semifinals, thursdays and birthdays, super mario and rio di janeiro, paper and skyscrapers, vacation and playstation, virtual and reality
 
-4. [Download AGB](portfolio.pdf) im ärnscht?
+# We do
+
+advertising, animation, concept art, branding, editorial design, infographics, illustration, explainer-videos, web design, zumba lessons
+
+- [Vimeo](https://vimeo.com/animotorstudio)<br>
+- [Instagram](http://instagram.com/animotor_studio)

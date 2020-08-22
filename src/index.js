@@ -128,6 +128,8 @@ function buildPage(stateObj, addToHistory) {
     let header = document.querySelector('header');
     header.classList.remove(...header.classList);
     header.classList.add('header--relative');
+
+    document.getElementById('app').removeAttribute('data-invert');
   } else {
     // create main
     main = document.createElement('main');
