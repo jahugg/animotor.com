@@ -228,11 +228,11 @@ export function render() {
 
   function controlFade(deltaY) {
     let speed = Math.abs(deltaY);
-    let min = 30;
+    let min = 70;
     let max = 80;
     speed = helpers.clamp(speed, min, max);
 
-    let fadeScroll = helpers.map(speed, min, max, 1, 0);
+    let fadeScroll = helpers.map(speed, min, max, 1, .05);
     let fadeStatic = helpers.map(speed, min, max, 0, 1);
 
     let staticAnim = document.querySelector('.static-anim');

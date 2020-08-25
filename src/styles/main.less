@@ -112,7 +112,7 @@ video {
 // General Page styles
 
 #app {
-  font: normal 1.5rem/1.2em 'GTAmerica', Helvetica, Arial, sans-serif;
+  font: normal 1.4rem/1.2em 'GTAmerica', Helvetica, Arial, sans-serif;
   background: white;
   transition: background 0.05s ease-out;
 
@@ -189,8 +189,6 @@ video {
     color: inherit;
     text-transform: lowercase;
 
-    &:hover,
-    &:focus,
     &[data-active] {
       font-style: italic;
     }
@@ -198,11 +196,18 @@ video {
 
   // special home button styling
   li[data-page='home'] a {
-    @size: 50px;
+    @size: 40px;
     display: block;
     height: @size;
     width: @size;
-    padding: 10px;
+    padding: 7px;
+
+    @media @bp-small {
+      @size: 50px;
+      height: @size;
+      width: @size;
+      padding: 10px;
+    }
 
     img {
       width: 100%;
@@ -309,7 +314,7 @@ video {
 
   h1 {
     .text-h1;
-    margin-bottom: .5em;
+    margin-bottom: 0.5em;
   }
 
   a {
@@ -319,7 +324,7 @@ video {
 
     &:hover {
       text-decoration: none;
-      color: rgba(0, 0, 0, 0.6);
+      color: darken(white, 40%);
     }
   }
 
@@ -348,11 +353,8 @@ video {
 }
 
 .slideshow {
-  @size: ~'calc(100vw - var(--padding) * 2)';
-  @maxSize: 600px;
-
-  width: @size;
-  max-width: @maxSize;
+  width: 100vw;
+  max-width: 600px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -424,6 +426,7 @@ video {
   }
 }
 
+// inverted color style for info page
 #app[data-invert] {
   background: black;
   color: white;
