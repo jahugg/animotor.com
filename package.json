@@ -15,8 +15,12 @@
     "cssnano": "^4.1.10",
     "less": "^3.11.1",
     "marked": "^1.0.0",
-    "parcel-bundler": "^1.6.1"
+    "parcel-bundler": "^1.6.1",
+    "parcel-plugin-static-files-copy": "^2.5.0"
   },
   "keywords": [],
-  "repository": "https://github.com/jahugg/animotor.com.git"
+  "repository": "https://github.com/jahugg/animotor.com.git",
+  "staticFiles": {
+    "staticPath": ["_redirects"]
+  }
 }
