@@ -34,7 +34,8 @@ video {
 
 .text-h1 {
   font-size: 1.3em;
-  margin: 0em;
+  line-height: 1.2em;
+  margin: 0 0 0.5em 0;
   font-weight: normal;
 }
 
@@ -184,10 +185,12 @@ video {
 
   a {
     .text-h1;
+    margin: 0;
     position: relative;
     text-decoration: none;
     color: inherit;
     text-transform: lowercase;
+    outline: none;
 
     &[data-active] {
       font-style: italic;
@@ -292,10 +295,12 @@ video {
 .info {
   padding: 1em var(--padding);
   margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 
   @media @bp-small {
-    column-count: 2;
-    column-gap: 40px;
+    gap: ~"calc(var(--padding)*10)";
   }
 
   > * {
@@ -304,17 +309,6 @@ video {
 
   img {
     width: 100%;
-    break-after: always;
-  }
-
-  p {
-    .text-regular;
-    margin: 0 0 2em 0;
-  }
-
-  h1 {
-    .text-h1;
-    margin-bottom: 0.5em;
   }
 
   a {
@@ -324,7 +318,7 @@ video {
 
     &:hover {
       text-decoration: none;
-      color: darken(white, 40%);
+      font-style: italic;
     }
   }
 
@@ -340,6 +334,26 @@ video {
 
   ol {
     padding-left: ~'calc(var(--padding) * 2)';
+  }
+}
+
+.info__left {
+
+  p {
+    .text-h1;
+    margin: 0 0 ~"calc(var(--padding)*6)" 0;
+  }
+}
+
+.info__right {
+
+  h1 {
+    .text-h1;
+  }
+
+  p {
+    .text-regular;
+    margin: 0 0 ~"calc(var(--padding)*6)" 0;
   }
 }
 
