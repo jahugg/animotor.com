@@ -46,7 +46,7 @@ video {
 }
 
 //media query breakpoints
-@bp-small: ~'screen and (min-width: 50em)';
+@bp-small: ~'screen and (min-width: 60em)';
 
 :root {
   --padding: 10px;
@@ -295,23 +295,24 @@ video {
 .info {
   padding: 1em var(--padding);
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 
   @media @bp-small {
-    gap: ~"calc(var(--padding)*10)";
+    column-count: 2;
   }
 
-  > * {
+  article {
     max-width: 700px;
   }
 
   img {
     width: 100%;
+    break-after: column;
   }
 
   a {
+    .text-h1;
+    margin: 0;
+    display: block;
     color: inherit;
     text-decoration: none;
     transition: color 0.2s;
@@ -322,38 +323,33 @@ video {
     }
   }
 
+  h1 {
+    .text-h1;
+  }
+
+  h2 {
+    .text-h1;
+    margin: 0;
+  }
+
+  p {
+    .text-regular;
+    margin: 0 0 ~'calc(var(--padding)*6)' 0;
+  }
+
   ul {
     list-style-type: none;
     padding: 0;
+
+    a {
+      display: inline;
+      .text-regular;
+    }
   }
 
   ul > li:before {
     content: '→';
     margin-right: 0.5em;
-  }
-
-  ol {
-    padding-left: ~'calc(var(--padding) * 2)';
-  }
-}
-
-.info__left {
-
-  p {
-    .text-h1;
-    margin: 0 0 ~"calc(var(--padding)*6)" 0;
-  }
-}
-
-.info__right {
-
-  h1 {
-    .text-h1;
-  }
-
-  p {
-    .text-regular;
-    margin: 0 0 ~"calc(var(--padding)*6)" 0;
   }
 }
 

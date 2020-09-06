@@ -1,5 +1,4 @@
-import textLeft from './../media/info/text-left.md';
-import textRight from './../media/info/text-right.md';
+import article from './../media/info/article.md';
 
 export function render() {
     // invert colors
@@ -7,7 +6,6 @@ export function render() {
 
   let main = document.getElementById('main');
   main.innerHTML = `<div class="info">
-    <article class="info__left">${textLeft}</article>
-    <article class="info__right">${textRight}</article>
+    <article>${article}</article>
   </div>`;
 }
