@@ -35,7 +35,7 @@ video {
 .text-h1 {
   font-size: 1.3em;
   line-height: 1.2em;
-  margin: 0 0 0.5em 0;
+  margin: 0 0 .2em 0;
   font-weight: normal;
 }
 
@@ -295,10 +295,18 @@ video {
 .info {
   padding: 1em var(--padding);
   margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: ~'calc(var(--padding) * 2)';
 
   @media @bp-small {
-    column-count: 2;
+    flex-wrap: nowrap;
   }
+}
+
+.info__left,
+.info__right {
+  width: 100%;
 
   article {
     max-width: 700px;
@@ -306,50 +314,50 @@ video {
 
   img {
     width: 100%;
-    break-after: column;
-  }
-
-  a {
-    .text-h1;
-    margin: 0;
-    display: block;
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.2s;
-
-    &:hover {
-      text-decoration: none;
-      font-style: italic;
-    }
   }
 
   h1 {
     .text-h1;
   }
 
-  h2 {
-    .text-h1;
-    margin: 0;
-  }
-
   p {
     .text-regular;
-    margin: 0 0 ~'calc(var(--padding)*6)' 0;
+    margin: 0 0 ~'calc(var(--padding) * 6)' 0;
+  }
+
+  a {
+    display: inline-block;
+    font: inherit;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: inherit;
+      font-style: italic;
+    }
   }
 
   ul {
     list-style-type: none;
     padding: 0;
+  }
 
-    a {
-      display: inline;
-      .text-regular;
-    }
+  ul > a {
+    display: inline;
+    .text-regular;
   }
 
   ul > li:before {
     content: '→';
     margin-right: 0.5em;
+  }
+}
+
+.info__left {
+
+  p {
+    .text-h1;
+    margin: 0 0 ~'calc(var(--padding) * 6)' 0;
   }
 }
 
@@ -378,8 +386,8 @@ video {
 .slideshow__slides-wrapper {
   overflow: scroll;
   display: flex;
-  scroll-snap-type: x mandatory;
   -ms-scroll-snap-type: x mandatory;
+  scroll-snap-type: x mandatory;
   scroll-snap-stop: always;
 
   &::-webkit-scrollbar {

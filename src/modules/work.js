@@ -79,7 +79,6 @@ export function render() {
         if (multipleImages) {
           let indicatorItem = document.createElement('div');
           indicatorItem.classList.add('slideshow__indicator');
-          indicatorItem.addEventListener('click', jumpToSlide);
           indicatorsWrapper.appendChild(indicatorItem);
         }
       }
@@ -91,7 +90,6 @@ export function render() {
 
   function jumpToSlide(event) {
     event.stopPropagation();
-    console.log('hit');
 
     let target = event.target;
     let parent = target.closest('.slideshow__indicators-wrapper');
