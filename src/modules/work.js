@@ -70,7 +70,7 @@ export function render() {
       },
     });
 
-    // add click for next slide event
+    // add click event for next slide
     if (multipleImages)
       slideshow.addEventListener('click', (e) => {
         swiper.slideNext();
