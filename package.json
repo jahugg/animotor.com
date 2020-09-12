@@ -9,7 +9,9 @@
     "start": "parcel src/index.html --open",
     "build": "parcel build src/index.html --experimental-scope-hoisting"
   },
-  "dependencies": {},
+  "dependencies": {
+    "swiper": "^6.2.0"
+  },
   "devDependencies": {
     "@babel/core": "7.2.0",
     "cssnano": "^4.1.10",
@@ -21,6 +23,8 @@
   "keywords": [],
   "repository": "https://github.com/jahugg/animotor.com.git",
   "staticFiles": {
-    "staticPath": ["_redirects"]
+    "staticPath": [
+      "_redirects"
+    ]
   }
 }
