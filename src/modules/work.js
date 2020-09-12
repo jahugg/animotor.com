@@ -49,14 +49,17 @@ export function render() {
       }
     }
 
-    let pagination = document.createElement('div');
-    pagination.classList.add("slideshow__pagination");
-    slideshow.appendChild(pagination);
+    // create pagination
+    if (multipleImages) {
+      let pagination = document.createElement('div');
+      pagination.classList.add('slideshow__pagination');
+      slideshow.appendChild(pagination);
+    }
 
     // initialize swiper instance
     let swiper = new Swiper(slideshow, {
       mousewheel: true,
-      loop: true,
+      loop: multipleImages ? true : false,
       wrapperClass: 'slideshow__wrapper',
       slideClass: 'slideshow__slide',
 
@@ -68,8 +71,9 @@ export function render() {
     });
 
     // add click for next slide event
-    slideshow.addEventListener('click', (e) => {
-      swiper.slideNext();
-    });
+    if (multipleImages)
+      slideshow.addEventListener('click', (e) => {
+        swiper.slideNext();
+      });
   }
 }
