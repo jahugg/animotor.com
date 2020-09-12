@@ -2,46 +2,74 @@ import projects from './../media/work/*/*.*';
 import * as helpers from './helpers.js';
 import Swiper, { Pagination } from 'swiper';
 
-// configure Swiper to use modules
+// configure Swiper to use pagination
 Swiper.use([Pagination]);
 
 export function render() {
-
+  sessionStorage.clear();
 
   let main = document.getElementById('main');
-  let slideshowsContainer = document.createElement("div");
-  slideshowsContainer.classList.add("slideshows-container");
+  let slideshowsContainer = document.createElement('div');
+  slideshowsContainer.classList.add('slideshows-container');
   main.appendChild(slideshowsContainer);
 
-  let slideshow = document.createElement("div");
-  slideshow.classList.add('slideshow');
-  slideshow.innerHTML = `
-  <div class="slideshow__wrapper">
-    <div class="slideshow__slide">Slide 1</div>
-    <div class="slideshow__slide">Slide 2</div>
-    <div class="slideshow__slide">Slide 3</div>
-    <div class="slideshow__slide">Slide 4</div>
-    <div class="slideshow__slide">Slide 5</div>
-    <div class="slideshow__slide">Slide 6</div>
-    <div class="slideshow__slide">Slide 7</div>
-    <div class="slideshow__slide">Slide 8</div>
-    <div class="slideshow__slide">Slide 9</div>
-    <div class="slideshow__slide">Slide 10</div>
-  </div>
-  <div class="slideshow__pagination"></div>`;
+  // iterate over projects// iterate over projects
+  for (let projectName in projects) {
+    // check if multiple images
+    let multipleImages =
+      Object.keys(projects[projectName]).length > 1 ? true : false;
+    let projectID = helpers.sanitizeString(projectName);
 
-  slideshowsContainer.appendChild(slideshow);
+    // create slideshow
+    let slideshow = document.createElement('div');
+    slideshow.classList.add('slideshow');
+    slideshow.id = projectID;
+    slideshowsContainer.appendChild(slideshow);
 
-  let swiper = new Swiper('.slideshow', {
+    // create wrapper
+    let slidesWrapper = document.createElement('div');
+    slidesWrapper.classList.add('slideshow__wrapper');
+    slideshow.appendChild(slidesWrapper);
 
-    mousewheel: true,
-    wrapperClass: "slideshow__wrapper",
-    slideClass: "slideshow__slide",
-  
-    pagination: {
-      el: '.slideshow__pagination',
-      bulletClass: 'slideshow__pagination-bullet',
-      bulletActiveClass: 'slideshow__pagination-bullet-active'
+    // iterate and add project files to slideshow
+    for (let fileName in projects[projectName]) {
+      for (let fileType in projects[projectName][fileName]) {
+        let filepath = projects[projectName][fileName][fileType];
+        let slide = document.createElement('div');
+        slide.classList.add('slideshow__slide');
+        slidesWrapper.appendChild(slide);
+
+        // add media item
+        if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif') {
+          let media = document.createElement('img');
+          media.src = filepath;
+          media.classList.add('slideshow__slide__media');
+          slide.appendChild(media);
+        }
+      }
     }
-  });
+
+    let pagination = document.createElement('div');
+    pagination.classList.add("slideshow__pagination");
+    slideshow.appendChild(pagination);
+
+    // initialize swiper instance
+    let swiper = new Swiper(slideshow, {
+      mousewheel: true,
+      loop: true,
+      wrapperClass: 'slideshow__wrapper',
+      slideClass: 'slideshow__slide',
+
+      pagination: {
+        el: '.slideshow__pagination',
+        bulletClass: 'slideshow__pagination-bullet',
+        bulletActiveClass: 'slideshow__pagination-bullet-active',
+      },
+    });
+
+    // add click for next slide event
+    slideshow.addEventListener('click', (e) => {
+      swiper.slideNext();
+    });
+  }
 }
