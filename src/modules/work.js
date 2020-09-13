@@ -13,11 +13,10 @@ export function render() {
   slideshowsContainer.classList.add('slideshows-container');
   main.appendChild(slideshowsContainer);
 
-  // iterate over projects// iterate over projects
+  // iterate over projects
   for (let projectName in projects) {
     // check if multiple images
-    let multipleImages =
-      Object.keys(projects[projectName]).length > 1 ? true : false;
+    let multipleImages = Object.keys(projects[projectName]).length > 1 ? true : false;
     let projectID = helpers.sanitizeString(projectName);
 
     // create slideshow
@@ -58,10 +57,11 @@ export function render() {
 
     // initialize swiper instance
     let swiper = new Swiper(slideshow, {
-      mousewheel: true,
       loop: multipleImages ? true : false,
       wrapperClass: 'slideshow__wrapper',
       slideClass: 'slideshow__slide',
+      slidesPerView: 1,
+      mousewheel: true,
 
       pagination: {
         el: '.slideshow__pagination',

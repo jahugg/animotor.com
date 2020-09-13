@@ -2,9 +2,10 @@ import textLeft from './../media/info/text-left.md';
 import textRight from './../media/info/text-right.md';
 
 export function render() {
-    // invert colors
+  // invert colors
   document.getElementById('app').setAttribute('data-invert', '');
 
+  // embedd contents
   let main = document.getElementById('main');
   main.innerHTML = `<div class="info">
     <div class="info__left">

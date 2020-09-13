@@ -1,11 +1,6 @@
 // ================
 // Prefered Default styles
 
-::selection {
-  background: black;
-  color: white;
-}
-
 html {
   box-sizing: border-box;
 }
@@ -23,6 +18,11 @@ video {
 *:before,
 *:after {
   box-sizing: inherit;
+}
+
+::selection {
+  background: white;
+  color: black;
 }
 
 // ================
@@ -50,6 +50,11 @@ video {
 
 :root {
   --padding: 10px;
+  --font-size: 1.5rem;
+
+  @media @bp-small {
+    --font-size: 1.8rem;
+  }
 }
 
 @keyframes loading {
@@ -110,16 +115,12 @@ video {
 }
 
 // ================
-// General Page styles
+// General Page Styles
 
 #app {
-  font: normal 1.4rem/1.2em 'GTAmerica', Helvetica, Arial, sans-serif;
+  font: normal var(--font-size) / 1.2em 'GTAmerica', Helvetica, Arial, sans-serif;
   background: white;
   transition: background 0.05s ease-out;
-
-  @media @bp-small {
-    font-size: 1.8rem;
-  }
 }
 
 .header {
@@ -292,12 +293,30 @@ video {
 // ================
 // Info Page Styles
 
+// Invert Colors
+#app[data-invert] {
+  background: black;
+  color: white;
+
+  .header--relative,
+  .header--fixed-open {
+    background: black;
+    border-color: white;
+    color: white;
+  }
+
+  li[data-page='home'] a img {
+    filter: invert(100%);
+  }
+}
+
 .info {
   padding: 1em var(--padding);
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
-  gap: ~'calc(var(--padding) * 4)';
+  // gap: ~'calc(var(--padding) * 4)';
+  // not yet supported in Safari using padding instead
 
   @media @bp-small {
     flex-wrap: nowrap;
@@ -353,7 +372,17 @@ video {
   }
 }
 
+.info__right {
+  @media @bp-small {
+    padding-left: ~'calc(var(--padding) * 3)';
+  }
+}
+
 .info__left {
+  @media @bp-small {
+    padding-right: ~'calc(var(--padding) * 3)';
+  }
+
   p {
     .text-h1;
     margin: 0 0 ~'calc(var(--padding) * 6)' 0;
@@ -412,22 +441,5 @@ video {
 
   &.slideshow__pagination-bullet-active {
     transform: scale(2);
-  }
-}
-
-// inverted color style for info page
-#app[data-invert] {
-  background: black;
-  color: white;
-
-  .header--relative,
-  .header--fixed-open {
-    background: black;
-    border-color: white;
-    color: white;
-  }
-
-  li[data-page='home'] a img {
-    filter: invert(100%);
   }
 }
