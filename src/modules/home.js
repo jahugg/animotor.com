@@ -7,8 +7,9 @@ export function render() {
   let autoScrollAnim;
   let ignoreWheel;
   let maxDeltaY = 120;
+  let lastTranslateY = 0;
 
-  // change navigation to fixed
+  // change header to fixed
   let header = document.querySelector('header');
   header.classList.replace('header--relative', 'header--fixed');
 
@@ -18,7 +19,7 @@ export function render() {
   container.innerHTML = '<div class="infinite-scroll-loader"><div>';
   document.getElementById('main').appendChild(container);
 
-  // pick new animation
+  // pick animation
   let keys = Object.keys(animations);
   let animationKey;
   let lastAnimKey = sessionStorage.getItem('animKey');
@@ -32,7 +33,7 @@ export function render() {
     else animationKey = lastAnimKey + 1;
   }
 
-  // save animation key to session
+  // save animation key to session storage
   sessionStorage.setItem('animKey', animationKey);
 
   let animationObject = animations[keys[animationKey]];
@@ -41,7 +42,7 @@ export function render() {
   let arrayKeys = Object.keys(animation[0]);
   let fileType = arrayKeys[0];
 
-  // preload all images
+  // load animation images
   let promises = [];
   for (let frame of animation) promises.push(helpers.loadImage(frame[fileType]));
 
@@ -51,10 +52,10 @@ export function render() {
     .catch((err) => console.error(err));
 
   function initAnimationScroller(images) {
-    // remove loading message
+    // remove preloader
     container.innerHTML = '';
 
-    // static animation frame
+    // build static animation frame
     let staticAnim = document.createElement('div');
     staticAnim.classList.add('static-anim');
     container.appendChild(staticAnim);
@@ -63,7 +64,7 @@ export function render() {
     frame.setAttribute('data-id', 0);
     staticAnim.appendChild(frame);
 
-    // infinite scroll
+    // build infinite scroller
     let infiniteScroll = document.createElement('div');
     infiniteScroll.classList.add('infinite-scroll');
     container.appendChild(infiniteScroll);
@@ -89,12 +90,22 @@ export function render() {
           let firstChild = infiniteScroll.firstChild;
           let lastChild = infiniteScroll.lastChild;
 
+          // determine scroll direction
+          let scrollDir = 0;
+          if (translateY != 0 && translateY != -firstChild.offsetHeight) {
+            if (translateY < lastTranslateY) scrollDir = 1;
+            else if (translateY > lastTranslateY) scrollDir = -1;
+          }
+
+          // save tranlsateY for direction determination
+          lastTranslateY = translateY;
+
           // remove first child if out of bounds
           if (Math.abs(translateY) > firstChild.offsetHeight) {
             firstChild.remove();
             infiniteScroll.style.transform = 'translateY(0)';
           }
-          // remove last child out of bounds
+          // remove last child if out of bounds
           else if (infiniteScroll.offsetHeight - lastChild.offsetHeight - Math.abs(translateY) > containerRect.height) lastChild.remove();
 
           // prepend new child if top reached
@@ -107,26 +118,39 @@ export function render() {
           let items = document.getElementsByClassName('infinite-scroll__item');
           let staticContainer = document.querySelector('.static-anim');
           let staticRect = staticContainer.getBoundingClientRect();
+          let staticCenter = staticRect.top + staticRect.height;
           let closestItem;
           let lastDist = 9999;
 
           // find closest item
           for (let item of items) {
             let itemRect = item.getBoundingClientRect();
-            let dist = Math.abs(itemRect.top - staticRect.top);
+            let itemCenter = itemRect.top + itemRect.height;
+            let dist = Math.abs(itemCenter - staticCenter);
 
             if (dist < lastDist) {
               lastDist = dist;
               closestItem = item;
+
+              for (let item of items) item.classList.remove('closest');
+              item.classList.add('closest');
             }
           }
 
-          // if closest item is above static apply image
+          // swap image considering scroll direction and nearest item
           let closestRect = closestItem.getBoundingClientRect();
+          let closestRectCenter = closestRect.top + closestRect.height;
 
-          if (closestRect.top <= staticRect.top) {
-            let staticImage = staticContainer.querySelector('img');
+          if (scrollDir === 1 && closestRectCenter <= staticCenter) {
             let id = closestItem.getAttribute('data-id');
+            swapStaticImage(id);
+          } else if (scrollDir === -1 && closestRectCenter >= staticCenter) {
+            let id = closestItem.getAttribute('data-id');
+            swapStaticImage(id);
+          }
+
+          function swapStaticImage(id) {
+            let staticImage = staticContainer.querySelector('img');
             staticImage.src = animation[id][fileType];
             staticImage.setAttribute('data-id', id);
           }
@@ -232,8 +256,10 @@ export function render() {
     let max = 60;
     speed = helpers.clamp(speed, min, max);
 
-    let fadeScroll = helpers.map(speed, min, max, 1, 0);
-    let fadeStatic = helpers.map(speed, min, max, 0, 1);
+    // let fadeScroll = helpers.map(speed, min, max, 1, 0);
+    // let fadeStatic = helpers.map(speed, min, max, 0, 1);
+    let fadeScroll = helpers.map(speed, min, max, 1, 1);
+    let fadeStatic = helpers.map(speed, min, max, 1, 1);
 
     let staticAnim = document.querySelector('.static-anim');
     let infiniteScroll = document.querySelector('.infinite-scroll');

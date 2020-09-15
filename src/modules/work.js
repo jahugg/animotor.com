@@ -60,8 +60,6 @@ export function render() {
       loop: multipleImages ? true : false,
       wrapperClass: 'slideshow__wrapper',
       slideClass: 'slideshow__slide',
-      slidesPerView: 1,
-      mousewheel: true,
 
       pagination: {
         el: '.slideshow__pagination',
