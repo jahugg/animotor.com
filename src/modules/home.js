@@ -253,10 +253,8 @@ export function render() {
     let max = 60;
     speed = helpers.clamp(speed, min, max);
 
-    // let fadeScroll = helpers.map(speed, min, max, 1, 0);
-    // let fadeStatic = helpers.map(speed, min, max, 0, 1);
-    let fadeScroll = helpers.map(speed, min, max, 1, 1);
-    let fadeStatic = helpers.map(speed, min, max, 1, 1);
+    let fadeScroll = helpers.map(speed, min, max, 1, 0);
+    let fadeStatic = helpers.map(speed, min, max, 0, 1);
 
     let staticAnim = document.querySelector('.static-anim');
     let infiniteScroll = document.querySelector('.infinite-scroll');
