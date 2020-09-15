@@ -44,6 +44,7 @@ export function render() {
 
   // load animation images
   let promises = [];
+  console.log(animation);
   for (let frame of animation) promises.push(helpers.loadImage(frame[fileType]));
 
   // add animation scroller after images have been loaded
