@@ -118,28 +118,25 @@ export function render() {
           let items = document.getElementsByClassName('infinite-scroll__item');
           let staticContainer = document.querySelector('.static-anim');
           let staticRect = staticContainer.getBoundingClientRect();
-          let staticCenter = staticRect.top + staticRect.height;
+          let staticCenter = staticRect.top + staticRect.height / 2;
           let closestItem;
           let lastDist = 9999;
 
           // find closest item
           for (let item of items) {
             let itemRect = item.getBoundingClientRect();
-            let itemCenter = itemRect.top + itemRect.height;
+            let itemCenter = itemRect.top + itemRect.height / 2;
             let dist = Math.abs(itemCenter - staticCenter);
 
             if (dist < lastDist) {
               lastDist = dist;
               closestItem = item;
-
-              for (let item of items) item.classList.remove('closest');
-              item.classList.add('closest');
             }
           }
 
           // swap image considering scroll direction and nearest item
           let closestRect = closestItem.getBoundingClientRect();
-          let closestRectCenter = closestRect.top + closestRect.height;
+          let closestRectCenter = closestRect.top + closestRect.height / 2;
 
           if (scrollDir === 1 && closestRectCenter <= staticCenter) {
             let id = closestItem.getAttribute('data-id');
