@@ -26,10 +26,9 @@ export function render() {
     project[1] = imagesSorted;
   }
 
-  // iterate over projects
-  for (let projectName in projects) {
-    // check if multiple images
-    let multipleImages = Object.keys(projects[projectName]).length > 1 ? true : false;
+  for (let project of projectsSorted) {
+    let projectName = project[0];
+    let multipleImages = project[1].length > 1 ? true : false;
     let projectID = helpers.sanitizeString(projectName);
 
     // create slideshow
@@ -44,20 +43,20 @@ export function render() {
     slideshow.appendChild(slidesWrapper);
 
     // iterate and add project files to slideshow
-    for (let fileName in projects[projectName]) {
-      for (let fileType in projects[projectName][fileName]) {
-        let filepath = projects[projectName][fileName][fileType];
-        let slide = document.createElement('div');
-        slide.classList.add('slideshow__slide');
-        slidesWrapper.appendChild(slide);
+    for (let fileObject of project[1]) {
+      let fileType = Object.keys(fileObject)[0];
+      let filePath = fileObject[fileType];
 
-        // add media item
-        if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif') {
-          let media = document.createElement('img');
-          media.src = filepath;
-          media.classList.add('slideshow__slide__media');
-          slide.appendChild(media);
-        }
+      let slide = document.createElement('div');
+      slide.classList.add('slideshow__slide');
+      slidesWrapper.appendChild(slide);
+
+      // add media item
+      if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif') {
+        let media = document.createElement('img');
+        media.src = filePath;
+        media.classList.add('slideshow__slide__media');
+        slide.appendChild(media);
       }
     }
 
