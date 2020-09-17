@@ -13,6 +13,19 @@ export function render() {
   slideshowsContainer.classList.add('slideshows-container');
   main.appendChild(slideshowsContainer);
 
+  // sort projects by name
+  let projectsSorted = Object.entries(projects).sort();
+  for (let project of projectsSorted) {
+    // sort project images by filename
+    let imagesSorted = Object.values(project[1]).sort((a, b) => {
+      let keyA = Object.keys(a);
+      let keyB = Object.keys(b);
+      return a[keyB].localeCompare(b[keyA]);
+    });
+
+    project[1] = imagesSorted;
+  }
+
   // iterate over projects
   for (let projectName in projects) {
     // check if multiple images

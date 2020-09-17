@@ -37,7 +37,6 @@ export function render() {
   sessionStorage.setItem('animKey', animationKey);
   container.setAttribute('data-anim', animationKey);
 
-  
   // get animation object and filetype
   let animationObject = animations[keys[animationKey]];
   let fileType = Object.keys(Object.values(animationObject)[0])[0];
