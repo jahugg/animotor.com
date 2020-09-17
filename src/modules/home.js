@@ -33,19 +33,23 @@ export function render() {
     else animationKey = lastAnimKey + 1;
   }
 
-  // save animation key to session storage
+  // save animation key to session storage and container
   sessionStorage.setItem('animKey', animationKey);
-
-  let animationObject = animations[keys[animationKey]];
   container.setAttribute('data-anim', animationKey);
-  let animation = Object.values(animationObject);
-  let arrayKeys = Object.keys(animation[0]);
-  let fileType = arrayKeys[0];
 
-  // load animation images
+  
+  // get animation object and filetype
+  let animationObject = animations[keys[animationKey]];
+  let fileType = Object.keys(Object.values(animationObject)[0])[0];
+
+  // push object to array and sort elements
+  let animationSorted = [];
+  for (let key in animationObject) animationSorted.push(animationObject[key][fileType]);
+  animationSorted.sort();
+
+  // preload animation images
   let promises = [];
-  console.log(animation);
-  for (let frame of animation) promises.push(helpers.loadImage(frame[fileType]));
+  for (let frame of animationSorted) promises.push(helpers.loadImage(frame));
 
   // add animation scroller after images have been loaded
   Promise.all(promises)
@@ -61,7 +65,7 @@ export function render() {
     staticAnim.classList.add('static-anim');
     container.appendChild(staticAnim);
     let frame = document.createElement('img');
-    frame.src = animation[0][fileType];
+    frame.src = animationSorted[0];
     frame.setAttribute('data-id', 0);
     staticAnim.appendChild(frame);
 
@@ -149,7 +153,7 @@ export function render() {
 
           function swapStaticImage(id) {
             let staticImage = staticContainer.querySelector('img');
-            staticImage.src = animation[id][fileType];
+            staticImage.src = animationSorted[id];
             staticImage.setAttribute('data-id', id);
           }
         }
@@ -295,11 +299,11 @@ export function render() {
     // define new id if children exist
     if (infinteScroll.hasChildNodes()) {
       let prevId = parseInt(infinteScroll.lastChild.getAttribute('data-id'), 10);
-      if (prevId === animation.length - 1) newId = 0;
+      if (prevId === animationSorted.length - 1) newId = 0;
       else newId = prevId + 1;
     }
 
-    item.innerHTML = `<img src="` + animation[newId][fileType] + `">`;
+    item.innerHTML = `<img src="` + animationSorted[newId] + `">`;
     item.setAttribute('data-id', newId);
     infinteScroll.appendChild(item);
   }
@@ -311,10 +315,10 @@ export function render() {
     item.classList.add('infinite-scroll__item');
 
     let prevId = parseInt(infiniteScroll.firstChild.getAttribute('data-id'), 10);
-    if (prevId === 0) newId = animation.length - 1;
+    if (prevId === 0) newId = animationSorted.length - 1;
     else newId = prevId - 1;
 
-    item.innerHTML = `<img src="` + animation[newId][fileType] + `">`;
+    item.innerHTML = `<img src="` + animationSorted[newId] + `">`;
     item.setAttribute('data-id', newId);
     infiniteScroll.prepend(item);
 
