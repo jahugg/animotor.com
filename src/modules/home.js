@@ -265,7 +265,7 @@ export function render() {
   function controlFade(deltaY) {
     let speed = Math.abs(deltaY);
     let min = 50;
-    let max = 60;
+    let max = 51;
     speed = helpers.clamp(speed, min, max);
 
     let fadeScroll = helpers.map(speed, min, max, 1, 0);
