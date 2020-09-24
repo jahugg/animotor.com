@@ -20,7 +20,7 @@ export function render() {
     let imagesSorted = Object.values(project[1]).sort((a, b) => {
       let keyA = Object.keys(a);
       let keyB = Object.keys(b);
-      return a[keyB].localeCompare(b[keyA]);
+      return a[keyA].localeCompare(b[keyB]);
     });
 
     project[1] = imagesSorted;
@@ -42,7 +42,7 @@ export function render() {
     slidesWrapper.classList.add('slideshow__wrapper');
     slideshow.appendChild(slidesWrapper);
 
-    // iterate and add project files to slideshow
+    // iterate project files
     for (let fileObject of project[1]) {
       let fileType = Object.keys(fileObject)[0];
       let filePath = fileObject[fileType];
@@ -52,9 +52,10 @@ export function render() {
       slidesWrapper.appendChild(slide);
 
       // add media item
-      if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif') {
+      if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg') {
         let media = document.createElement('img');
         media.src = filePath;
+        media.alt = `${project[0]} ${filePath}`;
         media.classList.add('slideshow__slide__media');
         slide.appendChild(media);
       }
@@ -72,6 +73,11 @@ export function render() {
       loop: multipleImages ? true : false,
       wrapperClass: 'slideshow__wrapper',
       slideClass: 'slideshow__slide',
+
+      // why do the following settings have no effect?
+      // mousewheel: true,
+      // preloadImages: false,
+      // lazy: true,
 
       pagination: {
         el: '.slideshow__pagination',

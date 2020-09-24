@@ -8,6 +8,7 @@ export function render() {
   let ignoreWheel;
   let maxDeltaY = 120;
   let lastTranslateY = 0;
+  let lastTouchDeltas = [];
 
   // change header to fixed
   let header = document.querySelector('header');
@@ -202,6 +203,7 @@ export function render() {
     let touches = event.changedTouches;
     lastTouchPosY = touches[0].pageY;
     endTouchPosY = lastTouchPosY; // reset
+    lastTouchDeltas = [];
     window.cancelAnimationFrame(autoScrollAnim);
   }
 
@@ -215,6 +217,10 @@ export function render() {
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
     controlFade(deltaY);
+
+    // handle array of last deltas for a better scroll experience
+    lastTouchDeltas.push(deltaY);
+    if (lastTouchDeltas.length > 4) lastTouchDeltas.shift();
   }
 
   function handleTouchEnd(event) {
@@ -223,6 +229,11 @@ export function render() {
     let touches = event.changedTouches;
     let deltaY = (endTouchPosY - touches[0].pageY) * -multiplier;
     startAutoScroll(deltaY);
+
+    let averageDelta = lastTouchDeltas.reduce((a, b) => a + b) / lastTouchDeltas.length;
+
+    console.log(lastTouchDeltas);
+    // console.log(deltaY, lastTouchDeltas[lastTouchDeltas.length - 1] * -multiplier);
   }
 
   function handleWheel(event) {
