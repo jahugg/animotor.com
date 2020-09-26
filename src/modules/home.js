@@ -164,6 +164,10 @@ export function render() {
     const observer = new MutationObserver(onScrollChange);
     observer.observe(infiniteScroll, { attributes: true });
 
+    // make sure animation is stopped before starting new animation!
+    let homeLink = document.querySelector('li[data-page="home"]');
+    homeLink.addEventListener('click', () => window.cancelAnimationFrame(autoScrollAnim));
+
     // start initial animation
     startAutoScroll(-maxDeltaY);
   }
@@ -178,14 +182,15 @@ export function render() {
     let duration = Math.round(helpers.map(Math.abs(deltaY), 0, maxDeltaY, 0, maxDuration));
     let startTime;
     let stepSize = deltaY / duration;
+
     autoScrollAnim = window.requestAnimationFrame(autoScrollStep);
 
     function autoScrollStep(timestamp) {
-      // make sure infiniteScroll element still exist (page change)
+      // make sure infiniteScroll element exists (page change)
       let infiniteScroll = !!document.querySelector('.infinite-scroll');
       if (infiniteScroll) {
         if (startTime === undefined) startTime = timestamp;
-
+        
         const elapsedTime = timestamp - startTime;
 
         let thisStep = elapsedTime * stepSize;
@@ -230,7 +235,9 @@ export function render() {
     let deltaY = (endTouchPosY - touches[0].pageY) * -multiplier;
     startAutoScroll(deltaY);
 
-    let averageDelta = lastTouchDeltas.reduce((a, b) => a + b) / lastTouchDeltas.length;
+    // calculate avarage deltaY
+    let averageDelta;
+    if (lastTouchDeltas.length > 2) averageDelta = lastTouchDeltas.reduce((a, b) => a + b) / lastTouchDeltas.length;
 
     console.log(lastTouchDeltas);
     // console.log(deltaY, lastTouchDeltas[lastTouchDeltas.length - 1] * -multiplier);
