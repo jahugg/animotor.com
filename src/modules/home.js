@@ -2,13 +2,11 @@ import animations from './../media/home/animations/*/*.*';
 import * as helpers from './helpers.js';
 
 export function render() {
-  let lastTouchPosY;
-  let endTouchPosY;
   let autoScrollAnim;
   let ignoreWheel;
   let maxDeltaY = 120;
   let lastTranslateY = 0;
-  let lastTouchDeltas = [];
+  let touchHistory = [];
 
   // change header to fixed
   let header = document.querySelector('header');
@@ -165,7 +163,7 @@ export function render() {
     observer.observe(infiniteScroll, { attributes: true });
 
     // make sure animation is stopped before starting new animation!
-    let homeLink = document.querySelector('li[data-page="home"]');
+    let homeLink = document.querySelector('li[data-page]');
     homeLink.addEventListener('click', () => window.cancelAnimationFrame(autoScrollAnim));
 
     // start initial animation
@@ -190,7 +188,7 @@ export function render() {
       let infiniteScroll = !!document.querySelector('.infinite-scroll');
       if (infiniteScroll) {
         if (startTime === undefined) startTime = timestamp;
-        
+
         const elapsedTime = timestamp - startTime;
 
         let thisStep = elapsedTime * stepSize;
@@ -206,41 +204,46 @@ export function render() {
   function handleTouchStart(event) {
     event.preventDefault();
     let touches = event.changedTouches;
-    lastTouchPosY = touches[0].pageY;
-    endTouchPosY = lastTouchPosY; // reset
-    lastTouchDeltas = [];
+    touchHistory = [];
+    touchHistory.push(touches[0].pageY);
     window.cancelAnimationFrame(autoScrollAnim);
   }
 
   function handleTouchMove(event) {
     event.preventDefault();
-    endTouchPosY = lastTouchPosY; // save for touch end
     let touches = event.changedTouches;
-    let deltaY = (lastTouchPosY - touches[0].pageY) * -1;
-    lastTouchPosY = touches[0].pageY;
+
+    touchHistory.unshift(touches[0].pageY);
+    if (touchHistory.length > 4) touchHistory.pop();
+
+    let deltaY = 0;
+    if (touchHistory.length > 1) deltaY = (touchHistory[1] - touchHistory[0]) * -1;
 
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
     controlFade(deltaY);
-
-    // handle array of last deltas for a better scroll experience
-    lastTouchDeltas.push(deltaY);
-    if (lastTouchDeltas.length > 4) lastTouchDeltas.shift();
   }
 
   function handleTouchEnd(event) {
     event.preventDefault();
-    const multiplier = 1.7;
+    const multiplier = 1.5;
     let touches = event.changedTouches;
-    let deltaY = (endTouchPosY - touches[0].pageY) * -multiplier;
+
+
+    // only add to touch history if different then last
+    if (touches[0].pageY != touchHistory[0]) {
+      touchHistory.unshift(touches[0].pageY);
+      if (touchHistory.length > 4) touchHistory.pop();
+    }
+
+    let deltaY = 0;
+    if (touchHistory.length > 1) deltaY = (touchHistory[1] - touchHistory[0]) * -multiplier;
+
     startAutoScroll(deltaY);
 
     // calculate avarage deltaY
-    let averageDelta;
-    if (lastTouchDeltas.length > 2) averageDelta = lastTouchDeltas.reduce((a, b) => a + b) / lastTouchDeltas.length;
-
-    console.log(lastTouchDeltas);
-    // console.log(deltaY, lastTouchDeltas[lastTouchDeltas.length - 1] * -multiplier);
+    // let averageDelta;
+    // if (touchDeltas.length >= 2) averageDelta = touchDeltas.reduce((a, b) => a + b) / touchDeltas.length;
   }
 
   function handleWheel(event) {
