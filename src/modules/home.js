@@ -204,8 +204,7 @@ export function render() {
   function handleTouchStart(event) {
     event.preventDefault();
     let touches = event.changedTouches;
-    touchHistory = [];
-    touchHistory.push(touches[0].pageY);
+    touchHistory = [touches[0].pageY, touches[0].pageY];
     window.cancelAnimationFrame(autoScrollAnim);
   }
 
@@ -214,11 +213,9 @@ export function render() {
     let touches = event.changedTouches;
 
     touchHistory.unshift(touches[0].pageY);
-    if (touchHistory.length > 4) touchHistory.pop();
+    touchHistory.pop();
 
-    let deltaY = 0;
-    if (touchHistory.length > 1) deltaY = (touchHistory[1] - touchHistory[0]) * -1;
-
+    let deltaY = (touchHistory[1] - touchHistory[0]) * -1;
     let translateY = getScrollPos() + deltaY;
     setScrollPos(translateY);
     controlFade(deltaY);
@@ -229,16 +226,13 @@ export function render() {
     const multiplier = 1.5;
     let touches = event.changedTouches;
 
-
     // only add to touch history if different then last
     if (touches[0].pageY != touchHistory[0]) {
       touchHistory.unshift(touches[0].pageY);
-      if (touchHistory.length > 4) touchHistory.pop();
+      touchHistory.pop();
     }
 
-    let deltaY = 0;
-    if (touchHistory.length > 1) deltaY = (touchHistory[1] - touchHistory[0]) * -multiplier;
-
+    let deltaY = (touchHistory[1] - touchHistory[0]) * -multiplier;
     startAutoScroll(deltaY);
 
     // calculate avarage deltaY
