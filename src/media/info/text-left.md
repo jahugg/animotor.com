@@ -1,4 +1,4 @@
-Animotoren<br>
+Animotor<br>
 Lagerplatz 6<br>
 8400 Winterthur<br>
 [info@animotor.ch](mailto:info@animotor.ch)
