@@ -55,7 +55,7 @@ export function render() {
       if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg') {
         let media = document.createElement('img');
         media.src = filePath;
-        media.alt = `${project[0]} ${filePath}`;
+        media.alt = `Image ${filePath} of project ${project[0]}`;
         media.classList.add('slideshow__slide__media');
         slide.appendChild(media);
       }
