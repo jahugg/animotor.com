@@ -65,6 +65,7 @@ export function render() {
     let frame = document.createElement('img');
     frame.src = animationSorted[0];
     frame.setAttribute('data-id', 0);
+    frame.alt = "current animation frame";
     staticAnim.appendChild(frame);
 
     // build infinite scroller
@@ -317,7 +318,7 @@ export function render() {
       else newId = prevId + 1;
     }
 
-    item.innerHTML = `<img src="` + animationSorted[newId] + `">`;
+    item.innerHTML = `<img src="${animationSorted[newId]}" alt="animation frame number ${newId}">`;
     item.setAttribute('data-id', newId);
     infinteScroll.appendChild(item);
   }
@@ -332,7 +333,7 @@ export function render() {
     if (prevId === 0) newId = animationSorted.length - 1;
     else newId = prevId - 1;
 
-    item.innerHTML = `<img src="` + animationSorted[newId] + `">`;
+    item.innerHTML = `<img src="${animationSorted[newId]}" alt="animation frame number ${newId}">`;
     item.setAttribute('data-id', newId);
     infiniteScroll.prepend(item);
 

@@ -55,10 +55,25 @@ export function render() {
       if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg') {
         let media = document.createElement('img');
         media.src = filePath;
-        media.alt = `Image ${filePath} of project ${project[0]}`;
+        media.alt = `Image ${filePath} of project${project[0]}`;
+        media.setAttribute('loading', 'lazy');
         media.classList.add('slideshow__slide__media');
         slide.appendChild(media);
       }
+
+      // add media item using lazy load
+      // if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg') {
+      //   let media = document.createElement('img');
+      //   // media.src = filePath;
+      //   media.setAttribute('data-src', filePath);
+      //   media.alt = `Image ${filePath} of project ${project[0]}`;
+      //   media.classList.add('slideshow__slide__media', 'swiper-lazy');
+      //   slide.appendChild(media);
+
+      //   let preloader = document.createElement('div');
+      //   preloader.classList.add('swiper-lazy-preloader');
+      //   slide.appendChild(preloader);
+      // }
     }
 
     // create pagination
@@ -74,8 +89,7 @@ export function render() {
       wrapperClass: 'slideshow__wrapper',
       slideClass: 'slideshow__slide',
 
-      // why do the following settings have no effect?
-      // mousewheel: true,
+      // enable lazy loading images
       // preloadImages: false,
       // lazy: true,
 
