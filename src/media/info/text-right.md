@@ -9,6 +9,3 @@ beats and barbecues, browser and bowser, eazy-e and easy ease, fonts and croissa
 # We do
 
 advertising, animation, concept art, branding, editorial design, explainer-videos, infographics, illustration, web design, zumba lessons
-
-- [Vimeo](https://vimeo.com/animotorstudio)
-- [Instagram](http://instagram.com/animotor_studio)

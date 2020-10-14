@@ -11,4 +11,7 @@ Pablo Hintermüller<br>
 [pablo@animotor.ch](mailto:pablo@animotor.ch)<br>
 [+41 76 463 66 95](tel:+41764636695)
 
+- [Vimeo](https://vimeo.com/animotorstudio)
+- [Instagram](http://instagram.com/animotor_studio)
+
 ![Portrait Image](portrait.jpg)
