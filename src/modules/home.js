@@ -253,7 +253,7 @@ export function render() {
 
         // set deltaY as default scrolling
         // this should be done in a more consistant way without using a threshold of 2
-        // detecting direction via array of deltaY values?
+        // use scroll direction detection in from mutation observer?
       } else if (Math.abs(deltaY) > 2) {
         window.cancelAnimationFrame(autoScrollAnim);
         let translateY = getScrollPos() + deltaY;

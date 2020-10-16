@@ -55,13 +55,14 @@ export function render() {
       if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg' || fileType === 'webp') {
         let media = document.createElement('img');
         media.src = filePath;
+        media.srcset = `${filePath} 2x`; //currently has no effect since we are pointing to the same image
         media.alt = `Image ${filePath} of project${project[0]}`;
         media.setAttribute('loading', 'lazy');
         media.classList.add('slideshow__slide__media');
         slide.appendChild(media);
       }
 
-      // add media item using lazy load
+      // add media item using swipers lazy load functionality
       // if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg' || fileType === 'webp') {
       //   let media = document.createElement('img');
       //   // media.src = filePath;
