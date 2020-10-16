@@ -52,7 +52,7 @@ export function render() {
       slidesWrapper.appendChild(slide);
 
       // add media item
-      if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg') {
+      if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg' || fileType === 'webp') {
         let media = document.createElement('img');
         media.src = filePath;
         media.alt = `Image ${filePath} of project${project[0]}`;
@@ -62,7 +62,7 @@ export function render() {
       }
 
       // add media item using lazy load
-      // if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg') {
+      // if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg' || fileType === 'webp') {
       //   let media = document.createElement('img');
       //   // media.src = filePath;
       //   media.setAttribute('data-src', filePath);
