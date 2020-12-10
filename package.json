@@ -6,7 +6,7 @@
   "author": "Jan Huggenberg",
   "license": "ISC",
   "scripts": {
-    "start": "parcel src/index.html --open",
+    "start": "parcel src/index.html",
     "build": "parcel build src/index.html --experimental-scope-hoisting"
   },
   "dependencies": {

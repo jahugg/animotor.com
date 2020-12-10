@@ -8,6 +8,33 @@ Swiper.use([Pagination]);
 export function render() {
   sessionStorage.clear();
 
+  // create intersection observer for lazy loading slideshows
+  let options = {
+    root: null,
+    rootMargin: '0px 0px 100% 0px',
+    threshold: 0,
+  };
+
+  let observer = new IntersectionObserver(lazyload, options);
+
+  function lazyload(entries, observer) {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting === true && !entry.target.getAttribute('data-loaded')) {
+        console.info('loading: ', entry.target.id);
+        entry.target.setAttribute('data-loaded', 'true');
+      }
+      // Each entry describes an intersection change for one observed
+      // target element:
+      //   entry.boundingClientRect
+      //   entry.intersectionRatio
+      //   entry.intersectionRect
+      //   entry.isIntersecting
+      //   entry.rootBounds
+      //   entry.target
+      //   entry.time
+    });
+  }
+
   let main = document.getElementById('main');
   let slideshowsContainer = document.createElement('div');
   slideshowsContainer.classList.add('slideshows-container');
@@ -98,6 +125,13 @@ export function render() {
         el: '.slideshow__pagination',
         bulletClass: 'slideshow__pagination-bullet',
         bulletActiveClass: 'slideshow__pagination-bullet-active',
+      },
+      on: {
+        /* register intersection observer
+        after swiper images have been loaded */
+        imagesReady: function () {
+          observer.observe(slideshow);
+        },
       },
     });
 
