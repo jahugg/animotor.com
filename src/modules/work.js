@@ -12,26 +12,26 @@ export function render() {
   let options = {
     root: null,
     rootMargin: '0px 0px 100% 0px',
-    threshold: 0,
+    threshold: 1,
   };
 
-  let observer = new IntersectionObserver(lazyload, options);
+  let observer = new IntersectionObserver(handleProjects, options);
 
-  function lazyload(entries, observer) {
+  function handleProjects(entries, observer) {
     entries.forEach((entry) => {
-      if (entry.isIntersecting === true && !entry.target.getAttribute('data-loaded')) {
-        console.info('loading: ', entry.target.id);
-        entry.target.setAttribute('data-loaded', 'true');
+
+      // fill viewport with projects
+      // and load new projects when intersection conditions are met.
+      if (entry.intersectionRatio === 1) {
+        //stop observing this object
+        observer.unobserve(entry.target);
+
+        // determine next project by child node count
+        let index = slideshowsContainer.childElementCount;
+        let projectCount = Object.keys(projects).length;
+        if (index < projectCount) appendProject(index);
+        else observer.disconnect();
       }
-      // Each entry describes an intersection change for one observed
-      // target element:
-      //   entry.boundingClientRect
-      //   entry.intersectionRatio
-      //   entry.intersectionRect
-      //   entry.isIntersecting
-      //   entry.rootBounds
-      //   entry.target
-      //   entry.time
     });
   }
 
@@ -53,7 +53,11 @@ export function render() {
     project[1] = imagesSorted;
   }
 
-  for (let project of projectsSorted) {
+  appendProject(0);
+
+  function appendProject(index) {
+    let project = projectsSorted[index];
+
     let projectName = project[0];
     let multipleImages = project[1].length > 1 ? true : false;
     let projectID = helpers.sanitizeString(projectName);
@@ -127,7 +131,7 @@ export function render() {
         bulletActiveClass: 'slideshow__pagination-bullet-active',
       },
       on: {
-        /* register intersection observer
+        /* register intersection observer to this element
         after swiper images have been loaded */
         imagesReady: function () {
           observer.observe(slideshow);
