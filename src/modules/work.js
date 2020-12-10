@@ -11,8 +11,8 @@ export function render() {
   // create intersection observer for lazy loading slideshows
   let options = {
     root: null,
-    rootMargin: '0px 0px 100% 0px',
-    threshold: 1,
+    rootMargin: '0px 0px 200% 0px',
+    threshold: 1
   };
 
   let observer = new IntersectionObserver(handleProjects, options);
@@ -25,6 +25,8 @@ export function render() {
       if (entry.intersectionRatio === 1) {
         //stop observing this object
         observer.unobserve(entry.target);
+
+        console.log(entry.target.id);
 
         // determine next project by child node count
         let index = slideshowsContainer.childElementCount;
@@ -53,6 +55,8 @@ export function render() {
     project[1] = imagesSorted;
   }
 
+  // add first project manually to get started and trigger
+  // the intersection observer
   appendProject(0);
 
   function appendProject(index) {
@@ -86,11 +90,11 @@ export function render() {
       if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg' || fileType === 'webp') {
         let media = document.createElement('img');
         media.src = filePath;
-        media.srcset = `${filePath} 2x`; //currently has no effect since we are pointing to the same image
         media.alt = `Image ${filePath} of project${project[0]}`;
-        media.setAttribute('loading', 'lazy');
         media.classList.add('slideshow__slide__media');
         slide.appendChild(media);
+        // media.setAttribute('loading', 'lazy');
+        // media.srcset = `${filePath} 2x`; //currently has no effect since we are pointing to the same image
       }
 
       // add media item using swipers lazy load functionality
