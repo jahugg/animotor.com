@@ -112,6 +112,7 @@ export function render() {
       preloadImages: false,
       lazy: {
         loadPrevNext: true,
+        loadPrevNextAmount: 2,
       },
       loop: multipleImages ? true : false,
       wrapperClass: 'slideshow__wrapper',
