@@ -20,8 +20,6 @@ const pages = {
   },
 };
 
-// test
-
 function initApp() {
   buildNavigation();
   navigateToCurrentURL();

@@ -1,9 +1,9 @@
 import projects from './../media/work/*/*.*';
 import * as helpers from './helpers.js';
-import Swiper, { Pagination } from 'swiper';
+import Swiper, { Pagination, Lazy } from 'swiper';
 
 // configure Swiper to use pagination
-Swiper.use([Pagination]);
+Swiper.use([Pagination, Lazy]);
 
 export function render() {
   sessionStorage.clear();
@@ -22,6 +22,8 @@ export function render() {
       // fill viewport with projects
       // and append new projects when intersection conditions are met
       if (entry.intersectionRatio === 1) {
+        console.log(entry.target.id, 'loaded');
+
         //stop observing this object
         observer.unobserve(entry.target);
 
@@ -83,30 +85,20 @@ export function render() {
       slide.classList.add('slideshow__slide');
       slidesWrapper.appendChild(slide);
 
-      // add media item
+      // add media item using swipers lazy load functionality
       if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg' || fileType === 'webp') {
         let media = document.createElement('img');
-        media.src = filePath;
-        media.alt = `Image ${filePath} of project${project[0]}`;
-        media.classList.add('slideshow__slide__media');
+        media.setAttribute('data-src', filePath);
+        media.setAttribute('data-srcset', filePath + ' 2x');
+        media.alt = `Image ${filePath} of project ${project[0]}`;
+        media.classList.add('slideshow__slide__media', 'swiper-lazy');
         slide.appendChild(media);
-        media.setAttribute('loading', 'lazy');
-        media.srcset = `${filePath} 2x`; //currently has no effect since we are pointing to the same image
+
+        let preloader = document.createElement('div');
+        preloader.classList.add('swiper-lazy-preloader');
+        preloader.innerHTML = 'HALLO';
+        slide.appendChild(preloader);
       }
-
-      // add media item using swipers lazy load functionality
-      // if (fileType === 'jpg' || fileType === 'png' || fileType === 'gif' || fileType === 'jpeg' || fileType === 'webp') {
-      //   let media = document.createElement('img');
-      //   media.setAttribute('data-src', filePath);
-      //   media.setAttribute('data-srcset', filePath + ' 2x');
-      //   media.alt = `Image ${filePath} of project ${project[0]}`;
-      //   media.classList.add('slideshow__slide__media', 'swiper-lazy');
-      //   slide.appendChild(media);
-
-      //   let preloader = document.createElement('div');
-      //   preloader.classList.add('swiper-lazy-preloader');
-      //   slide.appendChild(preloader);
-      // }
     }
 
     // create pagination
@@ -118,12 +110,10 @@ export function render() {
 
     // initialize swiper instance
     let swiper = new Swiper(slideshow, {
-      // Disable preloading of all images
-      // preloadImages: false,
-      // lazy: {
-      //   loadPrevNext: true,
-      // },
-
+      preloadImages: false,
+      lazy: {
+        loadPrevNext: true,
+      },
       loop: multipleImages ? true : false,
       wrapperClass: 'slideshow__wrapper',
       slideClass: 'slideshow__slide',
@@ -133,20 +123,20 @@ export function render() {
         bulletClass: 'slideshow__pagination-bullet',
         bulletActiveClass: 'slideshow__pagination-bullet-active',
       },
-      on: {
-        init: function () {
-          console.log(this);
-        }
-      }
     });
 
     // adding custom slideshow events
-    /* register intersection observer after images have 
+    /* register intersection observer after first image has 
       been loaded to lazy load next slideshows */
-    swiper.on('imagesReady', () => observer.observe(slideshow));
+    swiper.on('lazyImageReady', (event) => {
+      // add observer after first image has been loaded
+      if (!event.el.getAttribute('data-firstimg')) {
+        event.el.setAttribute('data-firstimg', 'loaded');
+        observer.observe(slideshow);
+      }
+    });
 
-    // next slide on click
-    if (multipleImages)
-      swiper.on('click', () => swiper.slideNext());
+    // jump to next slide on click
+    if (multipleImages) swiper.on('click', () => swiper.slideNext());
   }
 }
