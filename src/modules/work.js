@@ -90,13 +90,12 @@ export function render() {
         let media = document.createElement('img');
         media.setAttribute('data-src', filePath);
         media.setAttribute('data-srcset', filePath + ' 2x');
-        media.alt = `Image ${filePath} of project ${project[0]}`;
+        media.alt = `Image of project ${project[0]}`;
         media.classList.add('slideshow__slide__media', 'swiper-lazy');
         slide.appendChild(media);
 
         let preloader = document.createElement('div');
         preloader.classList.add('swiper-lazy-preloader');
-        preloader.innerHTML = 'HALLO';
         slide.appendChild(preloader);
       }
     }
