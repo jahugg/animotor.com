@@ -9,16 +9,23 @@ Swiper.use([Pagination, Lazy]);
 export function render() {
   sessionStorage.clear();
 
-  // create intersection observer for lazy loading projects
-  let options = {
-    root: null,
-    rootMargin: '0px 0px 200% 0px',
-    threshold: 1,
+  // RESIZE OBSERVER
+  // add intersection observer after the first image has been loaded
+  const onImageLoaded = function (entries, observer) {
+    entries.forEach((entry) => {
+      if (entry.target.offsetHeight > 60) {
+        observer.unobserve(entry.target);
+        intersectionObserver.observe(entry.target);
+      }
+    });
   };
 
-  let observer = new IntersectionObserver(lazyLoadProjects, options);
+  // create mutation observer to watch div height change
+  const resizeObserver = new ResizeObserver(onImageLoaded);
 
-  function lazyLoadProjects(entries, observer) {
+  // INTERSECTION OBSERVER
+  // create intersection observer for lazy loading projects
+  const lazyLoadProjects = function (entries, observer) {
     entries.forEach((entry) => {
       // fill viewport with projects
       // and append new projects when intersection conditions are met
@@ -34,6 +41,14 @@ export function render() {
       }
     });
   }
+
+  const options = {
+    root: null,
+    rootMargin: '0px 0px 200% 0px',
+    threshold: 1,
+  };
+
+  const intersectionObserver = new IntersectionObserver(lazyLoadProjects, options);
 
   // create basic html structure
   let main = document.getElementById('main');
@@ -108,7 +123,7 @@ export function render() {
         preloader.classList.add('swiper-lazy-preloader');
         slide.appendChild(preloader);
 
-      // handling GIF files
+        // handling GIF files
       } else if (fileType === 'gif') {
         let media = document.createElement('img');
         media.setAttribute('data-src', filePath);
@@ -116,12 +131,12 @@ export function render() {
         media.classList.add('slideshow__slide__media', 'swiper-lazy');
         slide.appendChild(media);
 
-      // unknown file type
+        // unknown file type
       } else {
         console.error('invalid filetype');
       }
 
-      observer.observe(slideshow);
+      resizeObserver.observe(slideshow);
     }
 
     // create pagination
@@ -148,19 +163,6 @@ export function render() {
         bulletActiveClass: 'slideshow__pagination-bullet-active',
       },
     });
-
-    // adding custom slideshow events
-    /* register intersection observer after first image has 
-      been loaded to lazy load next slideshows */
-    // swiper.on('lazyImageReady', (swiper, slideEl, imageEl) => {
-    //   console.info('lazy image ready, slide:', slideEl.getAttribute('data-swiper-slide-index'));
-    //   // add observer to slideshow after first image has been loaded
-    //   if (!swiper.el.getAttribute('data-firstimg')) {
-    //     swiper.el.setAttribute('data-firstimg', 'loaded');
-    //     observer.observe(slideshow);
-    //     console.info('observer added for', swiper.el.id);
-    //   }
-    // });
 
     // jump to next slide on click
     if (multipleImages) swiper.on('click', () => swiper.slideNext());
