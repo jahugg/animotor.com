@@ -47,10 +47,11 @@ export function render() {
   for (let key in animationObject) animationSorted.push(animationObject[key][fileType]);
   animationSorted.sort();
 
-  // preload all animation images (png/jpg and webp)
+  // preload webp images only
   // this is not ideal since it defeats the purpose of using picture sources
+  // and will lead to flickering problems with browsers not supporting webP
   let promises = [];
-  for (let frame of animationSorted) promises.push(helpers.loadImage(frame));
+  // for (let frame of animationSorted) promises.push(helpers.loadImage(frame));
   for (let frame in animationsWebP[animationName].webp) promises.push(helpers.loadImage(animationsWebP[animationName].webp[frame].webp));
 
   // add animation scroller after images have been loaded
