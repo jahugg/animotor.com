@@ -170,13 +170,9 @@ export function render() {
             rootName = rootName.replace(/^\//g, '');
             let webpPath = animationsWebP[animationName].webp[rootName].webp;
 
-            // swap image
-            staticContainer.innerHTML = `
-            <picture data-id="${id}">
-              <source srcset="${webpPath}" type="image/webp">
-              <img src="${animationSorted[id]}" alt="current animation frame">
-            </picture>
-            `;
+            let picture = staticContainer.querySelector('picture');
+            picture.querySelector('source').srcset = webpPath;
+            picture.querySelector('img').src = animationSorted[id];
           }
         }
       }
