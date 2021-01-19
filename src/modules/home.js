@@ -47,9 +47,11 @@ export function render() {
   for (let key in animationObject) animationSorted.push(animationObject[key][fileType]);
   animationSorted.sort();
 
-  // preload all animation images
+  // preload all animation images (png/jpg and webp)
+  // this is not ideal since it defeats the purpose of using picture sources
   let promises = [];
   for (let frame of animationSorted) promises.push(helpers.loadImage(frame));
+  for (let frame in animationsWebP[animationName].webp) promises.push(helpers.loadImage(animationsWebP[animationName].webp[frame].webp));
 
   // add animation scroller after images have been loaded
   Promise.all(promises)
