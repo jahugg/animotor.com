@@ -1,4 +1,5 @@
-import animations from './../media/home/loops/*/*.*';
+import animations from './../media/home/animations/*/*.*';
+import animationsWebP from './../media/home/animations/*/*/*.*';
 import * as helpers from './helpers.js';
 
 export function render() {
@@ -46,9 +47,12 @@ export function render() {
   for (let key in animationObject) animationSorted.push(animationObject[key][fileType]);
   animationSorted.sort();
 
-  // preload webp images
+  // preload webp images only
+  // this is not ideal since it defeats the purpose of using picture sources
+  // and will lead to flickering problems with browsers not supporting webP
   let promises = [];
-  for (let frame in animationSorted) promises.push(helpers.loadImage(animationSorted[frame]));
+  // for (let frame of animationSorted) promises.push(helpers.loadImage(frame));
+  for (let frame in animationsWebP[animationName].webp) promises.push(helpers.loadImage(animationsWebP[animationName].webp[frame].webp));
 
   // add animation scroller after images have been loaded
   Promise.all(promises)
@@ -64,7 +68,18 @@ export function render() {
     staticAnim.classList.add('static-anim');
     container.appendChild(staticAnim);
 
-    staticAnim.innerHTML = `<img data-id="0" src="${animationSorted[0]}" alt="current animation frame">`;
+    // get webp file path
+    let re = new RegExp('[^.]*');
+    let rootName = re.exec(animationSorted[0])[0];
+    rootName = rootName.replace(/^\//g, '');
+    let webpPath = animationsWebP[animationName].webp[rootName].webp;
+
+    staticAnim.innerHTML = `
+    <picture data-id="0">
+      <source srcset="${webpPath}" type="image/webp">
+      <img src="${animationSorted[0]}" alt="current animation frame">
+    </picture>
+    `;
 
     // build infinite scroller
     let infiniteScroll = document.createElement('div');
@@ -149,8 +164,15 @@ export function render() {
           }
 
           function swapStaticImage(id) {
-            let picture = staticContainer.querySelector('img');
-            picture.src = animationSorted[id];
+            // get webp file path
+            let re = new RegExp('[^.]*');
+            let rootName = re.exec(animationSorted[id])[0];
+            rootName = rootName.replace(/^\//g, '');
+            let webpPath = animationsWebP[animationName].webp[rootName].webp;
+
+            let picture = staticContainer.querySelector('picture');
+            picture.querySelector('source').srcset = webpPath;
+            picture.querySelector('img').src = animationSorted[id];
           }
         }
       }
@@ -315,7 +337,18 @@ export function render() {
       else newId = prevId + 1;
     }
 
-    item.innerHTML = `<img data-id="0" src="${animationSorted[newId]}" alt="frame ${newId}">`;
+    // get webp file path
+    let re = new RegExp('[^.]*');
+    let rootName = re.exec(animationSorted[newId])[0];
+    rootName = rootName.replace(/^\//g, '');
+    let webpPath = animationsWebP[animationName].webp[rootName].webp;
+
+    item.innerHTML = `
+    <picture>
+      <source srcset="${webpPath}" type="image/webp">
+      <img src="${animationSorted[newId]}" alt="animation frame number ${newId}">
+    </picture>
+    `;
     item.setAttribute('data-id', newId);
     infinteScroll.appendChild(item);
   }
@@ -330,7 +363,18 @@ export function render() {
     if (prevId === 0) newId = animationSorted.length - 1;
     else newId = prevId - 1;
 
-    item.innerHTML = `<img data-id="0" src="${animationSorted[newId]}" alt="frame ${newId}">`;
+    // get webp file path
+    let re = new RegExp('[^.]*');
+    let rootName = re.exec(animationSorted[newId])[0];
+    rootName = rootName.replace(/^\//g, '');
+    let webpPath = animationsWebP[animationName].webp[rootName].webp;
+
+    item.innerHTML = `
+    <picture>
+      <source srcset="${webpPath}" type="image/webp">
+      <img src="${animationSorted[newId]}" alt="animation frame number ${newId}">
+    </picture>
+    `;
     item.setAttribute('data-id', newId);
     infiniteScroll.prepend(item);
 

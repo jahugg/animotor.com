@@ -17,7 +17,7 @@ const pages = {
     title: 'Info',
     slug: '/info',
     module: import('./modules/info.js'),
-  },
+  }
 };
 
 function initApp() {
